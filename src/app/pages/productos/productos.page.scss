@@ -1,0 +1,65 @@
+ .loading-container,
+    .empty-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .placeholder-image {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ion-color-light);
+      color: var(--ion-color-medium);
+    }
+
+    .descripcion {
+      color: var(--ion-color-medium);
+      font-size: 0.9em;
+      margin-bottom: 12px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .precio-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 16px 0;
+    }
+
+    .precio {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: var(--ion-color-primary);
+    }
+
+    ion-card {
+      margin: 8px;
+    }
+
+    ion-card-header {
+      padding-bottom: 8px;
+    }
+
+    ion-badge {
+      margin-left: 8px;
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      font-size: 12px;
+    }
+
+    ion-searchbar {
+      padding: 8px;
+    }

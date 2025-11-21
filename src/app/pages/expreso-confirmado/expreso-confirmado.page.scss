@@ -1,0 +1,11 @@
+.loading-container, .success-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .success-container ion-icon { font-size: 100px; margin-bottom: 20px; }
+    .total { font-size: 1.5em; font-weight: bold; color: var(--ion-color-primary); }
+    .actions { padding: 20px; }

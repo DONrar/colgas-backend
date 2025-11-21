@@ -1,0 +1,67 @@
+ <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Contacto</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>ColGas - Distribuidora</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-icon name="location" slot="start" color="danger"></ion-icon>
+              <ion-label>
+                <h3>Dirección</h3>
+                <p>Calle 100 #15-20, Bogotá D.C.</p>
+              </ion-label>
+            </ion-item>
+
+            <ion-item>
+              <ion-icon name="time" slot="start" color="primary"></ion-icon>
+              <ion-label>
+                <h3>Horario</h3>
+                <p>Lunes a Sábado: 7:00 AM - 8:00 PM</p>
+                <p>Domingos: 8:00 AM - 2:00 PM</p>
+              </ion-label>
+            </ion-item>
+          </ion-list>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Contáctanos</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-button expand="block" (click)="llamar()">
+            <ion-icon slot="start" name="call"></ion-icon>
+            Llamar Ahora
+          </ion-button>
+
+          <ion-button expand="block" color="success" (click)="abrirWhatsApp()">
+            <ion-icon slot="start" name="logo-whatsapp"></ion-icon>
+            WhatsApp Ventas
+          </ion-button>
+
+          <ion-button expand="block" color="success" (click)="abrirWhatsAppExpresos()">
+            <ion-icon slot="start" name="logo-whatsapp"></ion-icon>
+            WhatsApp Expresos
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header>
+          <ion-card-title>Ubicación</ion-card-title>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-button expand="block" fill="outline" (click)="abrirMapa()">
+            <ion-icon slot="start" name="location"></ion-icon>
+            Ver en Google Maps
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>

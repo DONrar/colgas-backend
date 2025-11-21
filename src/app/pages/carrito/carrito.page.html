@@ -1,0 +1,102 @@
+ <ion-header>
+      <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+          <ion-back-button defaultHref="/tabs/productos"></ion-back-button>
+        </ion-buttons>
+        <ion-title>Carrito de Compras</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      @if (items().length === 0) {
+        <div class="empty-cart">
+          <ion-icon name="cart" size="large" color="medium"></ion-icon>
+          <ion-text color="medium">
+            <h2>Tu carrito está vacío</h2>
+            <p>Agrega productos para continuar</p>
+          </ion-text>
+          <ion-button routerLink="/tabs/productos" expand="block">
+            Ver Productos
+          </ion-button>
+        </div>
+      } @else {
+        <ion-list>
+          @for (item of items(); track item.producto.id) {
+            <ion-item-sliding>
+              <ion-item>
+                <div class="item-content">
+                  <div class="producto-info">
+                    <h3>{{ item.producto.nombre }}</h3>
+                    @if (item.producto.peso) {
+                      <ion-note color="medium">{{ item.producto.peso }}</ion-note>
+                    }
+                    <p class="precio-unitario">
+                      \${{ formatearPrecio(item.producto.precio) }} c/u
+                    </p>
+                  </div>
+
+                  <div class="cantidad-controls">
+                    <ion-button
+                      fill="clear"
+                      size="small"
+                      (click)="disminuirCantidad(item.producto.id)">
+                      <ion-icon slot="icon-only" name="remove"></ion-icon>
+                    </ion-button>
+
+                    <span class="cantidad">{{ item.cantidad }}</span>
+
+                    <ion-button
+                      fill="clear"
+                      size="small"
+                      (click)="aumentarCantidad(item.producto.id)">
+                      <ion-icon slot="icon-only" name="add"></ion-icon>
+                    </ion-button>
+                  </div>
+
+                  <div class="subtotal">
+                    <strong>\${{ formatearPrecio(item.subtotal) }}</strong>
+                  </div>
+                </div>
+              </ion-item>
+
+              <ion-item-options side="end">
+                <ion-item-option
+                  color="danger"
+                  (click)="eliminar(item.producto.id)">
+                  <ion-icon slot="icon-only" name="trash"></ion-icon>
+                </ion-item-option>
+              </ion-item-options>
+            </ion-item-sliding>
+          }
+        </ion-list>
+
+        <ion-card>
+          <ion-card-content>
+            <div class="resumen">
+              <div class="resumen-item">
+                <span>Productos ({{ cantidadTotal() }})</span>
+                <span>\${{ formatearPrecio(total()) }}</span>
+              </div>
+              <div class="resumen-item total">
+                <strong>Total a Pagar</strong>
+                <strong class="precio-total">\${{ formatearPrecio(total()) }}</strong>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
+    </ion-content>
+
+    @if (items().length > 0) {
+      <ion-footer>
+        <ion-toolbar>
+          <ion-button
+            expand="block"
+            size="large"
+            (click)="procederAlCheckout()">
+            <ion-icon slot="start" name="checkmark"></ion-icon>
+            Proceder al Pago
+          </ion-button>
+        </ion-toolbar>
+      </ion-footer>
+    }

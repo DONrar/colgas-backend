@@ -1,0 +1,81 @@
+ <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>Historial</ion-title>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-segment [(ngModel)]="tipoSeleccionado" (ionChange)="cambiarTipo()">
+          <ion-segment-button value="pedidos">
+            <ion-icon name="cart"></ion-icon>
+            <ion-label>Pedidos</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="expresos">
+            <ion-icon name="car"></ion-icon>
+            <ion-label>Expresos</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      <ion-card>
+        <ion-card-content>
+          <ion-item>
+            <ion-input
+              label="Buscar por teléfono"
+              labelPlacement="floating"
+              [(ngModel)]="telefono"
+              type="tel"
+              placeholder="3235162298">
+            </ion-input>
+          </ion-item>
+          <ion-button expand="block" (click)="buscar()">
+            <ion-icon slot="start" name="search"></ion-icon>
+            Buscar
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      @if (cargando()) {
+        <div class="loading"><ion-spinner></ion-spinner></div>
+      } @else if (tipoSeleccionado === 'pedidos') {
+        @if (pedidos().length === 0) {
+          <div class="empty"><ion-text color="medium"><p>No hay pedidos</p></ion-text></div>
+        } @else {
+          @for (pedido of pedidos(); track pedido.id) {
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Pedido #{{ pedido.id }}</ion-card-title>
+                <ion-badge [color]="getColorEstado(pedido.estado)">
+                  {{ pedido.estado }}
+                </ion-badge>
+              </ion-card-header>
+              <ion-card-content>
+                <p><strong>Fecha:</strong> {{ formatearFecha(pedido.fechaPedido) }}</p>
+                <p><strong>Total:</strong> \${{ formatearPrecio(pedido.total) }}</p>
+                <p><strong>Método:</strong> {{ pedido.metodoPago }}</p>
+              </ion-card-content>
+            </ion-card>
+          }
+        }
+      } @else {
+        @if (expresos().length === 0) {
+          <div class="empty"><ion-text color="medium"><p>No hay viajes</p></ion-text></div>
+        } @else {
+          @for (expreso of expresos(); track expreso.id) {
+            <ion-card>
+              <ion-card-header>
+                <ion-card-title>Viaje #{{ expreso.id }}</ion-card-title>
+                <ion-badge [color]="getColorEstado(expreso.estado)">
+                  {{ expreso.estado }}
+                </ion-badge>
+              </ion-card-header>
+              <ion-card-content>
+                <p><strong>Fecha:</strong> {{ formatearFecha(expreso.fechaSolicitud) }}</p>
+                <p><strong>Distancia:</strong> {{ expreso.distanciaKm.toFixed(2) }} km</p>
+                <p><strong>Total:</strong> \${{ formatearPrecio(expreso.precioTotal) }}</p>
+              </ion-card-content>
+            </ion-card>
+          }
+        }
+      }
+    </ion-content>

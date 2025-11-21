@@ -1,0 +1,105 @@
+ <ion-header>
+      <ion-toolbar color="primary">
+        <ion-title>ColGas - Productos</ion-title>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-searchbar
+          [(ngModel)]="busqueda"
+          (ionInput)="buscarProductos($event)"
+          placeholder="Buscar productos...">
+        </ion-searchbar>
+      </ion-toolbar>
+      <ion-toolbar>
+        <ion-segment [(ngModel)]="tipoSeleccionado" (ionChange)="filtrarPorTipo()">
+          <ion-segment-button value="TODOS">
+            <ion-label>Todos</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="PIPETA">
+            <ion-label>Pipetas</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="ACCESORIO">
+            <ion-label>Accesorios</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="REPUESTO">
+            <ion-label>Repuestos</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content>
+      @if (cargando()) {
+        <div class="loading-container">
+          <ion-spinner name="crescent"></ion-spinner>
+          <ion-text>
+            <p>Cargando productos...</p>
+          </ion-text>
+        </div>
+      } @else if (productosFiltrados().length === 0) {
+        <div class="empty-container">
+          <ion-text color="medium">
+            <h2>No hay productos disponibles</h2>
+            <p>Intenta con otro filtro</p>
+          </ion-text>
+        </div>
+      } @else {
+        <ion-grid>
+          <ion-row>
+            @for (producto of productosFiltrados(); track producto.id) {
+              <ion-col size="12" sizeMd="6" sizeLg="4">
+                <ion-card>
+                  @if (producto.imagen) {
+                    <img [src]="producto.imagen" [alt]="producto.nombre" />
+                  } @else {
+                    <div class="placeholder-image">
+                      <ion-icon name="flame" size="large"></ion-icon>
+                    </div>
+                  }
+
+                  <ion-card-header>
+                    <ion-card-title>{{ producto.nombre }}</ion-card-title>
+                    @if (producto.peso) {
+                      <ion-badge color="secondary">{{ producto.peso }}</ion-badge>
+                    }
+                  </ion-card-header>
+
+                  <ion-card-content>
+                    @if (producto.descripcion) {
+                      <p class="descripcion">{{ producto.descripcion }}</p>
+                    }
+
+                    <div class="precio-container">
+                      <span class="precio">\${{ formatearPrecio(producto.precio) }}</span>
+                      @if (producto.stock !== null) {
+                        <ion-badge
+                          [color]="producto.stock > 10 ? 'success' : 'warning'">
+                          Stock: {{ producto.stock }}
+                        </ion-badge>
+                      }
+                    </div>
+
+                    <ion-button
+                      expand="block"
+                      (click)="agregarAlCarrito(producto)"
+                      [disabled]="producto.stock === 0">
+                      <ion-icon slot="start" name="add"></ion-icon>
+                      {{ producto.stock === 0 ? 'Sin stock' : 'Agregar al carrito' }}
+                    </ion-button>
+                  </ion-card-content>
+                </ion-card>
+              </ion-col>
+            }
+          </ion-row>
+        </ion-grid>
+      }
+
+      <!-- Botón flotante del carrito -->
+      @if (cantidadCarrito() > 0) {
+        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+          <ion-fab-button (click)="irAlCarrito()" color="danger">
+            <ion-icon name="cart"></ion-icon>
+            <ion-badge class="cart-badge">{{ cantidadCarrito() }}</ion-badge>
+          </ion-fab-button>
+        </ion-fab>
+      }
+    </ion-content>

@@ -1,0 +1,28 @@
+ <ion-tabs>
+      <ion-tab-bar slot="bottom">
+
+        <ion-tab-button tab="productos">
+          <ion-icon name="flame"></ion-icon>
+          <ion-label>Productos</ion-label>
+          @if (cantidadCarrito() > 0) {
+            <ion-badge color="danger">{{ cantidadCarrito() }}</ion-badge>
+          }
+        </ion-tab-button>
+
+        <ion-tab-button tab="expresos">
+          <ion-icon name="car"></ion-icon>
+          <ion-label>Expresos</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button tab="historial">
+          <ion-icon name="time"></ion-icon>
+          <ion-label>Historial</ion-label>
+        </ion-tab-button>
+
+        <ion-tab-button tab="contacto">
+          <ion-icon name="call"></ion-icon>
+          <ion-label>Contacto</ion-label>
+        </ion-tab-button>
+
+      </ion-tab-bar>
+    </ion-tabs>

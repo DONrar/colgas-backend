@@ -1,0 +1,7 @@
+{
+  "name": "colgas-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

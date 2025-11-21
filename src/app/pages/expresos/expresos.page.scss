@@ -1,0 +1,47 @@
+ ion-card {
+      margin: 16px;
+    }
+
+    .info-viaje {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+    }
+
+    .info-item ion-label {
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    .info-item h2 {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .info-item.total {
+      background: rgba(255, 255, 255, 0.2);
+      text-align: center;
+    }
+
+    .info-item.total h1 {
+      margin: 0;
+      font-size: 2em;
+    }
+
+    ion-footer ion-button {
+      margin: 8px;
+    }
+
+    ion-note {
+      display: block;
+      margin-bottom: 12px;
+    }
