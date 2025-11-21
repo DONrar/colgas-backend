@@ -1,12 +1,10 @@
- <ion-header>
+<ion-header>
       <ion-toolbar color="primary">
         <ion-title>Servicio de Expresos</ion-title>
       </ion-toolbar>
     </ion-header>
 
     <ion-content>
-
-      <!-- Datos del Cliente -->
       <ion-card>
         <ion-card-header>
           <ion-card-title>Tus Datos</ion-card-title>
@@ -14,28 +12,19 @@
         <ion-card-content>
           <ion-list>
             <ion-item>
-              <ion-input
-                label="Nombre completo"
-                labelPlacement="floating"
-                [(ngModel)]="datosCliente.nombre"
-                placeholder="Ingresa tu nombre">
+              <ion-input label="Nombre completo" labelPlacement="floating"
+                [(ngModel)]="datosCliente.nombre" placeholder="Ingresa tu nombre">
               </ion-input>
             </ion-item>
-
             <ion-item>
-              <ion-input
-                label="Teléfono"
-                labelPlacement="floating"
-                [(ngModel)]="datosCliente.telefono"
-                type="tel"
-                placeholder="3235162298">
+              <ion-input label="Teléfono" labelPlacement="floating"
+                [(ngModel)]="datosCliente.telefono" type="tel" placeholder="3001234567">
               </ion-input>
             </ion-item>
           </ion-list>
         </ion-card-content>
       </ion-card>
 
-      <!-- Ubicación de Origen -->
       <ion-card>
         <ion-card-header>
           <ion-card-title>
@@ -44,27 +33,21 @@
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <ion-button
-            expand="block"
-            (click)="obtenerUbicacionOrigen()">
+          <ion-button expand="block" (click)="obtenerUbicacionOrigen()">
             <ion-icon slot="start" name="location"></ion-icon>
-            {{ origenObtenido() ? 'Origen Guardado' : 'Usar Mi Ubicación Actual' }}
+            {{ origenObtenido() ? 'Origen Guardado ✓' : 'Usar Mi Ubicación Actual' }}
           </ion-button>
-
           @if (origenObtenido()) {
+            <ion-note color="success">✓ Ubicación GPS guardada correctamente</ion-note>
             <ion-item>
-              <ion-input
-                label="Dirección de origen (opcional)"
-                labelPlacement="floating"
-                [(ngModel)]="direccionOrigen"
-                placeholder="Ej: Calle 100 #15-20">
+              <ion-input label="Dirección de origen (opcional)" labelPlacement="floating"
+                [(ngModel)]="direccionOrigen" placeholder="Ej: Calle 100 #15-20">
               </ion-input>
             </ion-item>
           }
         </ion-card-content>
       </ion-card>
 
-      <!-- Ubicación de Destino -->
       <ion-card>
         <ion-card-header>
           <ion-card-title>
@@ -73,52 +56,86 @@
           </ion-card-title>
         </ion-card-header>
         <ion-card-content>
-          <ion-note color="medium">
-            Ingresa manualmente las coordenadas del destino o usa un mapa
-          </ion-note>
+          <ion-segment [(ngModel)]="modoSeleccion" (ionChange)="cambiarModoSeleccion()">
+            <ion-segment-button value="mapa">
+              <ion-icon name="map"></ion-icon>
+              <ion-label>Mapa</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="busqueda">
+              <ion-icon name="search"></ion-icon>
+              <ion-label>Buscar</ion-label>
+            </ion-segment-button>
+            <ion-segment-button value="manual">
+              <ion-label>Manual</ion-label>
+            </ion-segment-button>
+          </ion-segment>
 
-          <ion-list>
+          @if (modoSeleccion === 'mapa') {
+            <div class="map-container">
+              @if (!mapaListo()) {
+                <div class="map-loading">
+                  <ion-spinner></ion-spinner>
+                  <p>Cargando mapa...</p>
+                </div>
+              }
+              <div #mapRef class="map" [class.hidden]="!mapaListo()"></div>
+              <ion-note color="primary" class="map-note">
+                Toca en el mapa para seleccionar el destino
+              </ion-note>
+            </div>
+            @if (destinoSeleccionado()) {
+              <ion-note color="success">
+                ✓ Destino: {{ latitudDestino?.toFixed(4) }}, {{ longitudDestino?.toFixed(4) }}
+              </ion-note>
+            }
+          } @else if (modoSeleccion === 'busqueda') {
             <ion-item>
-              <ion-input
-                label="Latitud"
-                labelPlacement="floating"
-                [(ngModel)]="latitudDestino"
-                type="number"
-                placeholder="4.6550">
+              <ion-input label="Buscar lugar" labelPlacement="floating"
+                [(ngModel)]="busquedaTexto" placeholder="Ej: Aeropuerto El Dorado"
+                (ionInput)="buscarLugar()">
               </ion-input>
             </ion-item>
+            @if (lugaresEncontrados().length > 0) {
+              <ion-list>
+                @for (lugar of lugaresEncontrados(); track lugar.id) {
+                  <ion-item button (click)="seleccionarLugar(lugar)">
+                    <ion-label>
+                      <h3>{{ lugar.nombre }}</h3>
+                      <p>{{ lugar.direccion }}</p>
+                    </ion-label>
+                  </ion-item>
+                }
+              </ion-list>
+            }
+          } @else {
+            <ion-note color="medium">Ingresa las coordenadas manualmente</ion-note>
+            <ion-list>
+              <ion-item>
+                <ion-input label="Latitud" labelPlacement="floating"
+                  [(ngModel)]="latitudDestino" type="number" placeholder="4.6550">
+                </ion-input>
+              </ion-item>
+              <ion-item>
+                <ion-input label="Longitud" labelPlacement="floating"
+                  [(ngModel)]="longitudDestino" type="number" placeholder="-74.0930">
+                </ion-input>
+              </ion-item>
+            </ion-list>
+          }
 
-            <ion-item>
-              <ion-input
-                label="Longitud"
-                labelPlacement="floating"
-                [(ngModel)]="longitudDestino"
-                type="number"
-                placeholder="-74.0930">
-              </ion-input>
-            </ion-item>
+          <ion-item>
+            <ion-input label="Dirección de destino (opcional)" labelPlacement="floating"
+              [(ngModel)]="direccionDestino" placeholder="Ej: Carrera 15 #30-20">
+            </ion-input>
+          </ion-item>
 
-            <ion-item>
-              <ion-input
-                label="Dirección de destino (opcional)"
-                labelPlacement="floating"
-                [(ngModel)]="direccionDestino"
-                placeholder="Ej: Carrera 15 #30-20">
-              </ion-input>
-            </ion-item>
-          </ion-list>
-
-          <ion-button
-            expand="block"
-            fill="outline"
-            [disabled]="!puedeCalcular()"
+          <ion-button expand="block" fill="outline" [disabled]="!puedeCalcular()"
             (click)="calcularViaje()">
             Calcular Precio del Viaje
           </ion-button>
         </ion-card-content>
       </ion-card>
 
-      <!-- Resultado del Cálculo -->
       @if (calculo()) {
         <ion-card color="success">
           <ion-card-header>
@@ -128,30 +145,19 @@
             <div class="info-viaje">
               <div class="info-item">
                 <ion-label>Distancia</ion-label>
-                <ion-text>
-                  <h2>{{ calculo()!.distanciaKm.toFixed(2) }} km</h2>
-                </ion-text>
+                <ion-text><h2>{{ calculo()!.distanciaKm.toFixed(2) }} km</h2></ion-text>
               </div>
-
               <div class="info-item">
                 <ion-label>Duración estimada</ion-label>
-                <ion-text>
-                  <h2>{{ calculo()!.duracionMinutos }} minutos</h2>
-                </ion-text>
+                <ion-text><h2>{{ calculo()!.duracionMinutos }} minutos</h2></ion-text>
               </div>
-
               <div class="info-item">
                 <ion-label>Precio por km</ion-label>
-                <ion-text>
-                  <h2>\${{ formatearPrecio(calculo()!.precioPorKm) }}</h2>
-                </ion-text>
+                <ion-text><h2>\${{ formatearPrecio(calculo()!.precioPorKm) }}</h2></ion-text>
               </div>
-
               <div class="info-item total">
                 <ion-label>Total a Pagar</ion-label>
-                <ion-text color="light">
-                  <h1>\${{ formatearPrecio(calculo()!.precioTotal) }}</h1>
-                </ion-text>
+                <ion-text color="light"><h1>\${{ formatearPrecio(calculo()!.precioTotal) }}</h1></ion-text>
               </div>
             </div>
           </ion-card-content>
@@ -161,23 +167,16 @@
       @if (error()) {
         <ion-card color="danger">
           <ion-card-content>
-            <ion-text color="light">
-              <p>{{ error() }}</p>
-            </ion-text>
+            <ion-text color="light"><p>{{ error() }}</p></ion-text>
           </ion-card-content>
         </ion-card>
       }
-
     </ion-content>
 
     @if (calculo() && formularioValido()) {
       <ion-footer>
         <ion-toolbar>
-          <ion-button
-            expand="block"
-            size="large"
-            color="success"
-            (click)="confirmarExpreso()">
+          <ion-button expand="block" size="large" color="success" (click)="confirmarExpreso()">
             <ion-icon slot="start" name="checkmark"></ion-icon>
             Solicitar Viaje
           </ion-button>
