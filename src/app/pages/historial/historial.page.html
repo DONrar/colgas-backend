@@ -1,81 +1,192 @@
- <ion-header>
-      <ion-toolbar color="primary">
-        <ion-title>Historial</ion-title>
-      </ion-toolbar>
-      <ion-toolbar>
-        <ion-segment [(ngModel)]="tipoSeleccionado" (ionChange)="cambiarTipo()">
-          <ion-segment-button value="pedidos">
-            <ion-icon name="cart"></ion-icon>
-            <ion-label>Pedidos</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="expresos">
-            <ion-icon name="car"></ion-icon>
-            <ion-label>Expresos</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </ion-toolbar>
-    </ion-header>
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-title>
+      <ion-icon name="time-outline" style="color: #3B9797;"></ion-icon>
+      &nbsp;Historial
+    </ion-title>
+  </ion-toolbar>
 
-    <ion-content>
-      <ion-card>
-        <ion-card-content>
-          <ion-item>
-            <ion-input
-              label="Buscar por teléfono"
-              labelPlacement="floating"
-              [(ngModel)]="telefono"
-              type="tel"
-              placeholder="3235162298">
-            </ion-input>
-          </ion-item>
-          <ion-button expand="block" (click)="buscar()">
-            <ion-icon slot="start" name="search"></ion-icon>
-            Buscar
-          </ion-button>
-        </ion-card-content>
-      </ion-card>
+  <!-- Segment mejorado -->
+  <ion-toolbar style="--background: #16476A;">
+    <ion-segment
+      [(ngModel)]="tipoSeleccionado"
+      (ionChange)="cambiarTipo()"
+      class="custom-segment">
+      <ion-segment-button value="pedidos" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="cart"></ion-icon>
+          <ion-label>Pedidos</ion-label>
+        </div>
+      </ion-segment-button>
+      <ion-segment-button value="expresos" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="car"></ion-icon>
+          <ion-label>Expresos</ion-label>
+        </div>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
 
-      @if (cargando()) {
-        <div class="loading"><ion-spinner></ion-spinner></div>
-      } @else if (tipoSeleccionado === 'pedidos') {
-        @if (pedidos().length === 0) {
-          <div class="empty"><ion-text color="medium"><p>No hay pedidos</p></ion-text></div>
-        } @else {
-          @for (pedido of pedidos(); track pedido.id) {
-            <ion-card>
-              <ion-card-header>
-                <ion-card-title>Pedido #{{ pedido.id }}</ion-card-title>
-                <ion-badge [color]="getColorEstado(pedido.estado)">
-                  {{ pedido.estado }}
-                </ion-badge>
-              </ion-card-header>
-              <ion-card-content>
-                <p><strong>Fecha:</strong> {{ formatearFecha(pedido.fechaPedido) }}</p>
-                <p><strong>Total:</strong> \${{ formatearPrecio(pedido.total) }}</p>
-                <p><strong>Método:</strong> {{ pedido.metodoPago }}</p>
-              </ion-card-content>
-            </ion-card>
-          }
-        }
+<ion-content [fullscreen]="true">
+  <div class="container">
+
+    <!-- Card de búsqueda mejorada -->
+    <ion-card class="card-elevated search-card">
+      <ion-card-content>
+        <div class="search-header">
+          <ion-icon name="search-outline" class="search-icon"></ion-icon>
+          <h3>Buscar Historial</h3>
+        </div>
+
+        <ion-item class="custom-input-item">
+          <ion-input
+            label="Buscar por teléfono"
+            labelPlacement="stacked"
+            [(ngModel)]="telefono"
+            type="tel"
+            placeholder="323 516 2298"
+            class="custom-input">
+          </ion-input>
+        </ion-item>
+
+        <ion-button expand="block" class="btn-primary" (click)="buscar()">
+          <ion-icon slot="start" name="search"></ion-icon>
+          Buscar Historial
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Estados de carga -->
+    @if (cargando()) {
+      <div class="loading-container">
+        <div class="loading-spinner">
+          <ion-spinner name="crescent"></ion-spinner>
+          <p>Buscando historial...</p>
+        </div>
+      </div>
+    }
+
+    <!-- Contenido principal -->
+    @else if (tipoSeleccionado === 'pedidos') {
+      @if (pedidos().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon-container">
+            <ion-icon name="cart-outline"></ion-icon>
+          </div>
+          <h2>No hay pedidos</h2>
+          <p>No se encontraron pedidos para este teléfono</p>
+        </div>
       } @else {
-        @if (expresos().length === 0) {
-          <div class="empty"><ion-text color="medium"><p>No hay viajes</p></ion-text></div>
-        } @else {
-          @for (expreso of expresos(); track expreso.id) {
-            <ion-card>
-              <ion-card-header>
-                <ion-card-title>Viaje #{{ expreso.id }}</ion-card-title>
-                <ion-badge [color]="getColorEstado(expreso.estado)">
-                  {{ expreso.estado }}
+        <div class="results-header">
+          <h3>{{ pedidos().length }} pedidos encontrados</h3>
+        </div>
+
+        @for (pedido of pedidos(); track pedido.id) {
+          <ion-card class="card-elevated history-card" button (click)="verDetallePedido(pedido)">
+            <ion-card-header class="card-header-custom">
+              <div class="card-header-main">
+                <div class="card-title-section">
+                  <ion-card-title>Pedido #{{ pedido.id }}</ion-card-title>
+                  <p class="card-subtitle">{{ formatearFecha(pedido.fechaPedido) }}</p>
+                </div>
+                <ion-badge class="status-badge" [class]="getBadgeClass(pedido.estado)">
+                  {{ getEstadoText(pedido.estado) }}
                 </ion-badge>
-              </ion-card-header>
-              <ion-card-content>
-                <p><strong>Fecha:</strong> {{ formatearFecha(expreso.fechaSolicitud) }}</p>
-                <p><strong>Distancia:</strong> {{ expreso.distanciaKm.toFixed(2) }} km</p>
-                <p><strong>Total:</strong> \${{ formatearPrecio(expreso.precioTotal) }}</p>
-              </ion-card-content>
-            </ion-card>
-          }
+              </div>
+            </ion-card-header>
+
+            <ion-card-content>
+              <div class="history-details">
+                <div class="detail-item">
+                  <div class="detail-icon-container primary">
+                    <ion-icon name="cash"></ion-icon>
+                  </div>
+                  <div class="detail-info">
+                    <span class="detail-label">Total</span>
+                    <span class="detail-value">{{ formatearMoneda(pedido.total) }}</span>
+                  </div>
+                </div>
+
+                <div class="detail-item">
+                  <div class="detail-icon-container success">
+                    <ion-icon name="card"></ion-icon>
+                  </div>
+                  <div class="detail-info">
+                    <span class="detail-label">Método de pago</span>
+                    <span class="detail-value">{{ pedido.metodoPago }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Indicador de que es clickable -->
+              <div class="card-action-indicator">
+                <ion-icon name="chevron-forward" class="action-icon"></ion-icon>
+              </div>
+            </ion-card-content>
+          </ion-card>
         }
       }
-    </ion-content>
+    }
+
+    @else {
+      @if (expresos().length === 0) {
+        <div class="empty-state">
+          <div class="empty-icon-container">
+            <ion-icon name="car-outline"></ion-icon>
+          </div>
+          <h2>No hay viajes</h2>
+          <p>No se encontraron viajes express para este teléfono</p>
+        </div>
+      } @else {
+        <div class="results-header">
+          <h3>{{ expresos().length }} viajes encontrados</h3>
+        </div>
+
+        @for (expreso of expresos(); track expreso.id) {
+          <ion-card class="card-elevated history-card" button (click)="verDetalleExpreso(expreso)">
+            <ion-card-header class="card-header-custom">
+              <div class="card-header-main">
+                <div class="card-title-section">
+                  <ion-card-title>Viaje Express #{{ expreso.id }}</ion-card-title>
+                  <p class="card-subtitle">{{ formatearFecha(expreso.fechaSolicitud) }}</p>
+                </div>
+                <ion-badge class="status-badge" [class]="getBadgeClass(expreso.estado)">
+                  {{ getEstadoText(expreso.estado) }}
+                </ion-badge>
+              </div>
+            </ion-card-header>
+
+            <ion-card-content>
+              <div class="history-details">
+                <div class="detail-item">
+                  <div class="detail-icon-container info">
+                    <ion-icon name="navigate"></ion-icon>
+                  </div>
+                  <div class="detail-info">
+                    <span class="detail-label">Distancia</span>
+                    <span class="detail-value">{{ expreso.distanciaKm.toFixed(2) }} km</span>
+                  </div>
+                </div>
+
+                <div class="detail-item">
+                  <div class="detail-icon-container primary">
+                    <ion-icon name="cash"></ion-icon>
+                  </div>
+                  <div class="detail-info">
+                    <span class="detail-label">Total</span>
+                    <span class="detail-value">{{ formatearMoneda(expreso.precioTotal) }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-action-indicator">
+                <ion-icon name="chevron-forward" class="action-icon"></ion-icon>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        }
+      }
+    }
+  </div>
+</ion-content>

@@ -1,183 +1,375 @@
- <ion-header>
-      <ion-toolbar color="primary">
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/carrito"></ion-back-button>
-        </ion-buttons>
-        <ion-title>Finalizar Pedido</ion-title>
-      </ion-toolbar>
-    </ion-header>
+<ion-header class="premium-header">
+  <ion-toolbar class="gradient-toolbar">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/carrito" class="custom-back-button" style="--color: white;"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="card" style="color: #3B9797;"></ion-icon>
+      &nbsp;Finalizar Pedido
+    </ion-title>
+    <div class="header-decoration"></div>
+  </ion-toolbar>
+</ion-header>
 
-    <ion-content>
-      <form #checkoutForm="ngForm">
+<ion-content class="premium-checkout">
+  <!-- Fondo animado -->
+  <div class="animated-background">
+    <div class="floating-shapes">
+      <div class="shape shape-1"></div>
+      <div class="shape shape-2"></div>
+      <div class="shape shape-3"></div>
+    </div>
+  </div>
 
-        <!-- Datos del Cliente -->
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Datos del Cliente</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-list>
-              <ion-item>
-                <ion-input
-                  label="Nombre completo"
-                  labelPlacement="floating"
-                  [(ngModel)]="datosCliente.nombre"
-                  name="nombre"
-                  required
-                  placeholder="Ingresa tu nombre">
-                </ion-input>
-              </ion-item>
+  <div class="checkout-container">
+    <form #checkoutForm="ngForm" class="checkout-form">
 
-              <ion-item>
-                <ion-input
-                  label="Teléfono"
-                  labelPlacement="floating"
-                  [(ngModel)]="datosCliente.telefono"
-                  name="telefono"
-                  type="tel"
-                  required
-                  placeholder="3235162298">
-                </ion-input>
-              </ion-item>
-            </ion-list>
-          </ion-card-content>
-        </ion-card>
+      <!-- Progreso del checkout -->
+      <div class="checkout-progress">
+        <div class="progress-steps">
+          <div class="step active" [class.completed]="datosCliente.nombre && datosCliente.telefono">
+            <div class="step-icon">
+              <ion-icon name="person"></ion-icon>
+            </div>
+            <span class="step-label">Cliente</span>
+          </div>
+          <div class="step" [class.active]="datosCliente.nombre && datosCliente.telefono"
+               [class.completed]="direccion || ubicacionObtenida()">
+            <div class="step-icon">
+              <ion-icon name="location"></ion-icon>
+            </div>
+            <span class="step-label">Dirección</span>
+          </div>
+          <div class="step" [class.active]="direccion || ubicacionObtenida()"
+               [class.completed]="metodoPago">
+            <div class="step-icon">
+              <ion-icon name="card"></ion-icon>
+            </div>
+            <span class="step-label">Pago</span>
+          </div>
+          <div class="step" [class.active]="metodoPago">
+            <div class="step-icon">
+              <ion-icon name="checkmark"></ion-icon>
+            </div>
+            <span class="step-label">Confirmar</span>
+          </div>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="getCheckoutProgress()"></div>
+        </div>
+      </div>
 
-        <!-- Dirección de Entrega -->
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Dirección de Entrega</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-item>
+      <!-- Datos del Cliente -->
+      <ion-card class="premium-card card-elevated">
+        <ion-card-header class="card-header">
+          <div class="header-content">
+            <div class="header-icon primary">
+              <ion-icon name="person-circle"></ion-icon>
+            </div>
+            <div>
+              <ion-card-title>Información del Cliente</ion-card-title>
+              <ion-card-subtitle>Completa tus datos personales</ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="input-group">
+            <div class="input-wrapper" [class.valid]="datosCliente.nombre">
+              <label class="floating-label">Nombre completo</label>
+              <ion-input
+                [(ngModel)]="datosCliente.nombre"
+                name="nombre"
+                required
+                placeholder="Ingresa tu nombre completo"
+                class="premium-input">
+              </ion-input>
+              <div class="input-decoration"></div>
+              <ion-icon name="person-outline" class="input-icon"></ion-icon>
+            </div>
+
+            <div class="input-wrapper" [class.valid]="datosCliente.telefono">
+              <label class="floating-label">Teléfono</label>
+              <ion-input
+                [(ngModel)]="datosCliente.telefono"
+                name="telefono"
+                type="tel"
+                required
+                placeholder="3235162298"
+                class="premium-input">
+              </ion-input>
+              <div class="input-decoration"></div>
+              <ion-icon name="call-outline" class="input-icon"></ion-icon>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Dirección de Entrega -->
+      <ion-card class="premium-card card-elevated">
+        <ion-card-header class="card-header">
+          <div class="header-content">
+            <div class="header-icon accent">
+              <ion-icon name="location"></ion-icon>
+            </div>
+            <div>
+              <ion-card-title>Dirección de Entrega</ion-card-title>
+              <ion-card-subtitle>¿Dónde entregamos tu pedido?</ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="input-group">
+            <div class="input-wrapper full-width" [class.valid]="direccion">
+              <label class="floating-label">Dirección completa</label>
               <ion-textarea
-                label="Dirección"
-                labelPlacement="floating"
                 [(ngModel)]="direccion"
                 name="direccion"
-                rows="2"
-                placeholder="Calle, carrera, número...">
+                rows="3"
+                placeholder="Calle, carrera, número, barrio..."
+                class="premium-textarea">
               </ion-textarea>
-            </ion-item>
-
-            <ion-button
-              expand="block"
-              fill="outline"
-              (click)="obtenerUbicacion()">
-              <ion-icon slot="start" name="location"></ion-icon>
-              {{ ubicacionObtenida() ? 'Ubicación guardada' : 'Usar mi ubicación' }}
-            </ion-button>
-
-            @if (ubicacionObtenida()) {
-              <ion-note color="success">
-                ✓ Ubicación GPS guardada correctamente
-              </ion-note>
-            }
-          </ion-card-content>
-        </ion-card>
-
-        <!-- Método de Pago -->
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Método de Pago</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-radio-group [(ngModel)]="metodoPago" name="metodoPago">
-
-              <ion-item>
-                <ion-radio value="EFECTIVO" slot="start"></ion-radio>
-                <ion-label>
-                  <h2>Efectivo</h2>
-                  <p>Paga al recibir tu pedido</p>
-                </ion-label>
-                <ion-icon name="cash" slot="end" color="success"></ion-icon>
-              </ion-item>
-
-              <ion-item>
-                <ion-radio value="TRANSFERENCIA" slot="start"></ion-radio>
-                <ion-label>
-                  <h2>Transferencia Bancaria</h2>
-                  <p>Bancolombia, Davivienda</p>
-                </ion-label>
-                <ion-icon name="card" slot="end" color="primary"></ion-icon>
-              </ion-item>
-
-              <ion-item>
-                <ion-radio value="DAVIPLATA" slot="start"></ion-radio>
-                <ion-label>
-                  <h2>Daviplata</h2>
-                  <p>Pago por aplicación</p>
-                </ion-label>
-              </ion-item>
-
-              <ion-item>
-                <ion-radio value="NEQUI" slot="start"></ion-radio>
-                <ion-label>
-                  <h2>Nequi</h2>
-                  <p>Pago por aplicación</p>
-                </ion-label>
-              </ion-item>
-
-            </ion-radio-group>
-
-            @if (metodoPago === 'EFECTIVO') {
-              <div class="pago-efectivo">
-                <ion-item>
-                  <ion-input
-                    label="¿Con cuánto vas a pagar?"
-                    labelPlacement="floating"
-                    [(ngModel)]="pagaCon"
-                    name="pagaCon"
-                    type="number"
-                    placeholder="Ej: 100000">
-                  </ion-input>
-                </ion-item>
-
-                @if (pagaCon && pagaCon >= total()) {
-                  <ion-note color="success">
-                    Vueltas: \${{ formatearPrecio(pagaCon - total()) }}
-                  </ion-note>
-                } @else if (pagaCon) {
-                  <ion-note color="danger">
-                    El monto debe ser mayor o igual al total
-                  </ion-note>
-                }
-              </div>
-            }
-          </ion-card-content>
-        </ion-card>
-
-        <!-- Resumen del Pedido -->
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Resumen del Pedido</ion-card-title>
-          </ion-card-header>
-          <ion-card-content>
-            @for (item of items(); track item.producto.id) {
-              <div class="resumen-item">
-                <span>{{ item.producto.nombre }} x{{ item.cantidad }}</span>
-                <span>\${{ formatearPrecio(item.subtotal) }}</span>
-              </div>
-            }
-            <div class="resumen-total">
-              <strong>Total</strong>
-              <strong>\${{ formatearPrecio(total()) }}</strong>
+              <div class="input-decoration"></div>
+              <ion-icon name="home-outline" class="input-icon"></ion-icon>
             </div>
-          </ion-card-content>
-        </ion-card>
+          </div>
 
-      </form>
-    </ion-content>
+          <button
+            type="button"
+            class="location-btn"
+            (click)="obtenerUbicacion()"
+            [class.active]="ubicacionObtenida()">
+            <div class="btn-content">
+              <ion-icon [name]="ubicacionObtenida() ? 'checkmark-circle' : 'location'"></ion-icon>
+              <span>{{ ubicacionObtenida() ? 'Ubicación guardada' : 'Usar mi ubicación GPS' }}</span>
+            </div>
+            <div class="btn-shine"></div>
+          </button>
 
-    <ion-footer>
-      <ion-toolbar>
-        <ion-button
-          expand="block"
-          size="large"
-          (click)="confirmarPedido()"
-          [disabled]="!formularioValido()">
-          <ion-icon slot="start" name="send"></ion-icon>
-          Confirmar Pedido
-        </ion-button>
-      </ion-toolbar>
-    </ion-footer>
+          @if (ubicacionObtenida()) {
+            <div class="success-message">
+              <ion-icon name="checkmark-circle"></ion-icon>
+              <span>Ubicación GPS guardada correctamente</span>
+            </div>
+          }
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Método de Pago -->
+      <ion-card class="premium-card card-elevated">
+        <ion-card-header class="card-header">
+          <div class="header-content">
+            <div class="header-icon warning">
+              <ion-icon name="card"></ion-icon>
+            </div>
+            <div>
+              <ion-card-title>Método de Pago</ion-card-title>
+              <ion-card-subtitle>Elige cómo quieres pagar</ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="payment-methods">
+            <div class="payment-option"
+                 [class.selected]="metodoPago === MetodoPago.EFECTIVO"
+                 (click)="seleccionarMetodoPago(MetodoPago.EFECTIVO)">
+              <div class="payment-icon cash">
+                <ion-icon name="cash-outline"></ion-icon>
+              </div>
+              <div class="payment-info">
+                <h3>Efectivo</h3>
+                <p>Paga al recibir tu pedido</p>
+              </div>
+              <div class="payment-check">
+                <div class="check-circle" [class.checked]="metodoPago === MetodoPago.EFECTIVO">
+                  <ion-icon name="checkmark"></ion-icon>
+                </div>
+              </div>
+            </div>
+
+            <div class="payment-option"
+                 [class.selected]="metodoPago === MetodoPago.TRANSFERENCIA"
+                 (click)="seleccionarMetodoPago(MetodoPago.TRANSFERENCIA)">
+              <div class="payment-icon transfer">
+                <ion-icon name="card-outline"></ion-icon>
+              </div>
+              <div class="payment-info">
+                <h3>Transferencia</h3>
+                <p>Bancolombia, Davivienda</p>
+              </div>
+              <div class="payment-check">
+                <div class="check-circle" [class.checked]="metodoPago === MetodoPago.TRANSFERENCIA">
+                  <ion-icon name="checkmark"></ion-icon>
+                </div>
+              </div>
+            </div>
+
+            <div class="payment-option"
+                 [class.selected]="metodoPago === MetodoPago.DAVIPLATA"
+                 (click)="seleccionarMetodoPago(MetodoPago.DAVIPLATA)">
+              <div class="payment-icon daviplata">
+                <ion-icon name="phone-portrait-outline"></ion-icon>
+              </div>
+              <div class="payment-info">
+                <h3>Daviplata</h3>
+                <p>Pago por aplicación</p>
+              </div>
+              <div class="payment-check">
+                <div class="check-circle" [class.checked]="metodoPago === MetodoPago.DAVIPLATA">
+                  <ion-icon name="checkmark"></ion-icon>
+                </div>
+              </div>
+            </div>
+
+            <div class="payment-option"
+                 [class.selected]="metodoPago === MetodoPago.NEQUI"
+                 (click)="seleccionarMetodoPago(MetodoPago.NEQUI)">
+              <div class="payment-icon nequi">
+                <ion-icon name="phone-portrait-outline"></ion-icon>
+              </div>
+              <div class="payment-info">
+                <h3>Nequi</h3>
+                <p>Pago por aplicación</p>
+              </div>
+              <div class="payment-check">
+                <div class="check-circle" [class.checked]="metodoPago === MetodoPago.NEQUI">
+                  <ion-icon name="checkmark"></ion-icon>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          @if (metodoPago === MetodoPago.EFECTIVO) {
+            <div class="cash-payment-details">
+              <div class="input-wrapper" [class.valid]="pagaCon && pagaCon >= total()">
+                <label class="floating-label">¿Con cuánto vas a pagar?</label>
+                <ion-input
+                  [(ngModel)]="pagaCon"
+                  name="pagaCon"
+                  type="number"
+                  placeholder="Ej: 100000"
+                  class="premium-input">
+                </ion-input>
+                <div class="input-decoration"></div>
+                <ion-icon name="cash-outline" class="input-icon"></ion-icon>
+              </div>
+
+              @if (pagaCon && pagaCon >= total()) {
+                <div class="change-message success">
+                  <ion-icon name="checkmark-circle"></ion-icon>
+                  <span>Vueltas: ${{ formatearPrecio(pagaCon - total()) }}</span>
+                </div>
+              } @else if (pagaCon) {
+                <div class="change-message error">
+                  <ion-icon name="alert-circle"></ion-icon>
+                  <span>El monto debe ser mayor o igual al total</span>
+                </div>
+              }
+            </div>
+          }
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Resumen del Pedido -->
+      <ion-card class="premium-card summary-card card-elevated">
+        <ion-card-header class="card-header">
+          <div class="header-content">
+            <div class="header-icon success">
+              <ion-icon name="receipt"></ion-icon>
+            </div>
+            <div>
+              <ion-card-title>Resumen del Pedido</ion-card-title>
+              <ion-card-subtitle>Revisa los detalles de tu compra</ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="order-items">
+            @for (item of items(); track item.producto.id || $index) {
+              <div class="order-item">
+                <div class="item-info">
+                  <span class="item-name">{{ item.producto.nombre }}</span>
+                  <span class="item-quantity">x{{ item.cantidad }}</span>
+                </div>
+                <span class="item-price">${{ formatearPrecio(item.subtotal) }}</span>
+              </div>
+            }
+          </div>
+
+          <div class="order-total">
+            <div class="total-line">
+              <span>Subtotal</span>
+              <span>${{ formatearPrecio(total()) }}</span>
+            </div>
+            <div class="total-line">
+              <span>Envío</span>
+              <span>${{ formatearPrecio(0) }}</span>
+            </div>
+            <div class="total-separator"></div>
+            <div class="total-line final">
+              <strong>Total</strong>
+              <strong>${{ formatearPrecio(total()) }}</strong>
+            </div>
+          </div>
+
+          <!-- Beneficios -->
+          <div class="benefits-grid">
+            <div class="benefit-item">
+              <ion-icon name="shield-checkmark" color="success"></ion-icon>
+              <span>Compra 100% segura</span>
+            </div>
+            <div class="benefit-item">
+              <ion-icon name="time" color="primary"></ion-icon>
+              <span>Entrega rápida</span>
+            </div>
+            <div class="benefit-item">
+              <ion-icon name="headset" color="warning"></ion-icon>
+              <span>Soporte 24/7</span>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+    </form>
+  </div>
+
+  <!-- Toast para mensajes -->
+  <ion-toast
+    [isOpen]="mostrarToast"
+    [message]="mensajeToast"
+    [duration]="3000"
+    (didDismiss)="mostrarToast = false"
+    style="--background: #3B9797; --color: white;">
+  </ion-toast>
+</ion-content>
+
+<ion-footer class="premium-footer">
+  <ion-toolbar>
+    <div class="footer-content">
+      <div class="total-display">
+        <span class="total-label">Total a pagar</span>
+        <span class="total-amount">${{ formatearPrecio(total()) }}</span>
+      </div>
+      <button
+        class="confirm-btn"
+        (click)="confirmarPedido()"
+        [class.disabled]="!formularioValido()"
+        [class.loading]="isLoading">
+        <span class="btn-content">
+          @if (!isLoading) {
+            <span class="btn-text">Confirmar Pedido</span>
+            <ion-icon name="send" class="btn-icon"></ion-icon>
+          }
+          @if (isLoading) {
+            <span class="btn-text loading">Procesando...</span>
+            <div class="btn-loader">
+              <div class="loader-dot"></div>
+              <div class="loader-dot"></div>
+              <div class="loader-dot"></div>
+            </div>
+          }
+        </span>
+        <div class="btn-shine"></div>
+      </button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

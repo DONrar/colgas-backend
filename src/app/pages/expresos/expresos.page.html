@@ -1,10 +1,10 @@
-<ion-header>
+  <ion-header>
       <ion-toolbar color="primary">
         <ion-title>Servicio de Expresos</ion-title>
       </ion-toolbar>
     </ion-header>
 
-    <ion-content>
+    <ion-content [scrollY]="modoSeleccion !== 'mapa'">
       <ion-card>
         <ion-card-header>
           <ion-card-title>Tus Datos</ion-card-title>
@@ -78,11 +78,13 @@
                   <p>Cargando mapa...</p>
                 </div>
               }
-              <div #mapRef class="map" [class.hidden]="!mapaListo()"></div>
-              <ion-note color="primary" class="map-note">
-                Toca en el mapa para seleccionar el destino
-              </ion-note>
+              <div #mapRef id="expresos-map" class="map"></div>
             </div>
+
+            <ion-note color="primary" class="map-note">
+              Toca en el mapa para seleccionar el destino
+            </ion-note>
+
             @if (destinoSeleccionado()) {
               <ion-note color="success">
                 ✓ Destino: {{ latitudDestino?.toFixed(4) }}, {{ longitudDestino?.toFixed(4) }}

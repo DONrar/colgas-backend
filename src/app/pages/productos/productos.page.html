@@ -1,105 +1,275 @@
- <ion-header>
-      <ion-toolbar color="primary">
-        <ion-title>ColGas - Productos</ion-title>
-      </ion-toolbar>
-      <ion-toolbar>
-        <ion-searchbar
-          [(ngModel)]="busqueda"
-          (ionInput)="buscarProductos($event)"
-          placeholder="Buscar productos...">
-        </ion-searchbar>
-      </ion-toolbar>
-      <ion-toolbar>
-        <ion-segment [(ngModel)]="tipoSeleccionado" (ionChange)="filtrarPorTipo()">
-          <ion-segment-button value="TODOS">
-            <ion-label>Todos</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="PIPETA">
-            <ion-label>Pipetas</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="ACCESORIO">
-            <ion-label>Accesorios</ion-label>
-          </ion-segment-button>
-          <ion-segment-button value="REPUESTO">
-            <ion-label>Repuestos</ion-label>
-          </ion-segment-button>
-        </ion-segment>
-      </ion-toolbar>
-    </ion-header>
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/" style="--color: white;"></ion-back-button>
+    </ion-buttons>
 
-    <ion-content>
-      @if (cargando()) {
-        <div class="loading-container">
-          <ion-spinner name="crescent"></ion-spinner>
-          <ion-text>
-            <p>Cargando productos...</p>
-          </ion-text>
+    <ion-title>
+      <ion-icon name="flame" style="color: #3B9797;"></ion-icon>
+      &nbsp;Productos ColGas
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="verCarrito()" style="--color: white;" [disabled]="cantidadCarrito() === 0">
+        <div class="cart-indicator">
+          <ion-icon name="cart"></ion-icon>
+          @if (cantidadCarrito() > 0) {
+            <ion-badge class="header-badge">{{ cantidadCarrito() }}</ion-badge>
+          }
         </div>
-      } @else if (productosFiltrados().length === 0) {
-        <div class="empty-container">
-          <ion-text color="medium">
-            <h2>No hay productos disponibles</h2>
-            <p>Intenta con otro filtro</p>
-          </ion-text>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Barra de búsqueda mejorada -->
+  <ion-toolbar style="--background: #16476A;">
+    <ion-searchbar
+      [(ngModel)]="busqueda"
+      (ionInput)="buscarProductos($event)"
+      placeholder="Buscar productos..."
+      style="--background: rgba(255,255,255,0.1); --color: white; --placeholder-color: rgba(255,255,255,0.7);"
+      class="custom-searchbar">
+    </ion-searchbar>
+  </ion-toolbar>
+
+  <!-- Segmentos mejorados -->
+  <ion-toolbar style="--background: #132440;">
+    <ion-segment
+      [(ngModel)]="tipoSeleccionado"
+      (ionChange)="filtrarPorTipo()"
+      style="--background: transparent;"
+      class="custom-segment">
+
+      <ion-segment-button value="TODOS" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="apps"></ion-icon>
+          <ion-label>Todos</ion-label>
         </div>
-      } @else {
-        <ion-grid>
-          <ion-row>
-            @for (producto of productosFiltrados(); track producto.id) {
-              <ion-col size="12" sizeMd="6" sizeLg="4">
-                <ion-card>
-                  @if (producto.imagen) {
-                    <img [src]="producto.imagen" [alt]="producto.nombre" />
-                  } @else {
-                    <div class="placeholder-image">
-                      <ion-icon name="flame" size="large"></ion-icon>
-                    </div>
+      </ion-segment-button>
+
+      <ion-segment-button value="PIPETA" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="flask"></ion-icon>
+          <ion-label>Pipetas</ion-label>
+        </div>
+      </ion-segment-button>
+
+      <ion-segment-button value="ACCESORIO" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="construct"></ion-icon>
+          <ion-label>Accesorios</ion-label>
+        </div>
+      </ion-segment-button>
+
+      <ion-segment-button value="REPUESTO" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="hardware-chip"></ion-icon>
+          <ion-label>Repuestos</ion-label>
+        </div>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="products-page">
+  <!-- Refresher para actualizar -->
+  <ion-refresher slot="fixed" (ionRefresh)="refrescarProductos($event)">
+    <ion-refresher-content
+      pullingIcon="arrow-down"
+      pullingText="Desliza para actualizar"
+      refreshingSpinner="circles"
+      style="--color: #3B9797;">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="container">
+    <!-- Filtros rápidos -->
+    <div class="filters-container animated-fade-in" *ngIf="!cargando() && productosFiltrados().length > 0">
+      <div class="filters-scroll">
+        <ion-chip
+          *ngFor="let filtro of filtrosRapidos"
+          [class.active]="filtroActivo === filtro.id"
+          (click)="aplicarFiltroRapido(filtro.id)"
+          class="filter-chip">
+          <ion-icon [name]="filtro.icono"></ion-icon>
+          <ion-label>{{ filtro.nombre }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- Estado de carga -->
+    @if (cargando()) {
+      <div class="loading-container animated-fade-in">
+        <div class="loading-spinner">
+          <ion-spinner name="crescent" style="--color: #3B9797;"></ion-spinner>
+        </div>
+        <div class="loading-content">
+          <h3>Cargando productos</h3>
+          <p>Estamos preparando todo para ti...</p>
+        </div>
+      </div>
+    }
+
+    <!-- Estado vacío -->
+    @else if (productosFiltrados().length === 0) {
+      <div class="empty-container animated-fade-in">
+        <div class="empty-icon">
+          <ion-icon name="search-outline"></ion-icon>
+        </div>
+        <div class="empty-content">
+          <h2>No se encontraron productos</h2>
+          <p>{{ obtenerMensajeVacio() }}</p>
+          <ion-button (click)="reiniciarFiltros()" fill="solid" class="btn-primary">
+            <ion-icon slot="start" name="refresh"></ion-icon>
+            Ver todos los productos
+          </ion-button>
+        </div>
+      </div>
+    }
+
+    <!-- Grid de productos -->
+    @else {
+      <div class="products-grid animated-fade-in">
+        <!-- Usamos $index como fallback para el track -->
+        @for (producto of productosFiltrados(); track producto.id || $index) {
+          <ion-card class="product-card card-elevated"
+                   [class.low-stock]="producto.stock !== undefined && producto.stock !== null && producto.stock <= 10 && producto.stock > 0"
+                   [class.no-stock]="producto.stock === 0">
+
+            <!-- Header de la card -->
+            <div class="card-header">
+              @if (producto.stock === 0) {
+                <ion-badge class="stock-badge out-of-stock">
+                  <ion-icon name="close-circle"></ion-icon>
+                  Agotado
+                </ion-badge>
+              } @else if (producto.stock !== undefined && producto.stock !== null && producto.stock <= 10) {
+                <ion-badge class="stock-badge low-stock-badge">
+                  <ion-icon name="warning"></ion-icon>
+                  Últimas {{ producto.stock }} unidades
+                </ion-badge>
+              }
+            </div>
+
+            <!-- Imagen del producto -->
+            <div class="product-image-container">
+              @if (producto.imagen) {
+                <img
+                  [src]="producto.imagen"
+                  [alt]="producto.nombre"
+                  class="product-image"
+                  (click)="verDetalleProducto(producto)"
+                  loading="lazy" />
+              } @else {
+                <div class="placeholder-image" (click)="verDetalleProducto(producto)">
+                  <div class="placeholder-icon" [class]="getTipoIcon(producto.tipo)">
+                    <ion-icon [name]="getTipoIcon(producto.tipo)"></ion-icon>
+                  </div>
+                </div>
+              }
+
+              <!-- Overlay de acciones -->
+              <div class="image-overlay">
+                <ion-button
+                  fill="clear"
+                  class="quick-action-btn"
+                  (click)="verDetalleProducto(producto)">
+                  <ion-icon name="eye"></ion-icon>
+                </ion-button>
+
+                <ion-button
+                  fill="clear"
+                  class="quick-action-btn favorite-btn"
+                  (click)="toggleFavorito(producto)">
+                  <ion-icon
+                    [name]="esFavorito(producto.id) ? 'heart' : 'heart-outline'"
+                    [class.favorited]="esFavorito(producto.id)">
+                  </ion-icon>
+                </ion-button>
+              </div>
+            </div>
+
+            <!-- Contenido de la card -->
+            <ion-card-content class="product-content">
+              <!-- Información del producto -->
+              <div class="product-info">
+                <h3 class="product-name" (click)="verDetalleProducto(producto)">{{ producto.nombre }}</h3>
+
+                @if (producto.descripcion) {
+                  <p class="product-description">{{ producto.descripcion }}</p>
+                }
+
+                <div class="product-meta">
+                  @if (producto.peso) {
+                    <span class="product-weight">
+                      <ion-icon name="scale"></ion-icon>
+                      {{ producto.peso }}
+                    </span>
                   }
 
-                  <ion-card-header>
-                    <ion-card-title>{{ producto.nombre }}</ion-card-title>
-                    @if (producto.peso) {
-                      <ion-badge color="secondary">{{ producto.peso }}</ion-badge>
-                    }
-                  </ion-card-header>
+                  <span class="product-type" [class]="producto.tipo?.toLowerCase()">
+                    <ion-icon [name]="getTipoIcon(producto.tipo)"></ion-icon>
+                    {{ getTipoNombre(producto.tipo) }}
+                  </span>
+                </div>
+              </div>
 
-                  <ion-card-content>
-                    @if (producto.descripcion) {
-                      <p class="descripcion">{{ producto.descripcion }}</p>
-                    }
+              <!-- Precio y acciones -->
+              <div class="product-actions">
+                <div class="price-container">
+                  <span class="current-price">${{ formatearPrecio(producto.precio) }}</span>
 
-                    <div class="precio-container">
-                      <span class="precio">\${{ formatearPrecio(producto.precio) }}</span>
-                      @if (producto.stock !== null) {
-                        <ion-badge
-                          [color]="producto.stock > 10 ? 'success' : 'warning'">
-                          Stock: {{ producto.stock }}
-                        </ion-badge>
-                      }
+                  @if (producto.stock !== undefined && producto.stock !== null) {
+                    <div class="stock-info">
+                      <ion-icon
+                        [name]="producto.stock > 10 ? 'checkmark-circle' : 'time'"
+                        [class]="producto.stock > 10 ? 'in-stock' : 'low-stock'">
+                      </ion-icon>
+                      <span>{{ producto.stock }} disponibles</span>
                     </div>
+                  }
+                </div>
 
-                    <ion-button
-                      expand="block"
-                      (click)="agregarAlCarrito(producto)"
-                      [disabled]="producto.stock === 0">
-                      <ion-icon slot="start" name="add"></ion-icon>
-                      {{ producto.stock === 0 ? 'Sin stock' : 'Agregar al carrito' }}
-                    </ion-button>
-                  </ion-card-content>
-                </ion-card>
-              </ion-col>
-            }
-          </ion-row>
-        </ion-grid>
-      }
+                <ion-button
+                  expand="block"
+                  class="add-to-cart-btn"
+                  (click)="agregarAlCarrito(producto)"
+                  [disabled]="producto.stock === 0"
+                  [class]="producto.stock === 0 ? 'btn-disabled' : 'btn-primary'">
 
-      <!-- Botón flotante del carrito -->
-      @if (cantidadCarrito() > 0) {
-        <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-          <ion-fab-button (click)="irAlCarrito()" color="danger">
-            <ion-icon name="cart"></ion-icon>
-            <ion-badge class="cart-badge">{{ cantidadCarrito() }}</ion-badge>
-          </ion-fab-button>
-        </ion-fab>
-      }
-    </ion-content>
+                  <ion-icon
+                    slot="start"
+                    [name]="producto.stock === 0 ? 'close-circle' : 'add'">
+                  </ion-icon>
+
+                  {{ producto.stock === 0 ? 'Sin stock' : 'Agregar al carrito' }}
+                </ion-button>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- FAB del carrito mejorado -->
+  @if (cantidadCarrito() > 0) {
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="cart-fab">
+      <ion-fab-button class="fab-primary" (click)="irAlCarrito()">
+        <div class="fab-content">
+          <ion-icon name="cart"></ion-icon>
+          <ion-badge class="fab-badge">{{ cantidadCarrito() }}</ion-badge>
+        </div>
+      </ion-fab-button>
+    </ion-fab>
+  }
+
+  <!-- Toast para mensajes -->
+  <ion-toast
+    [isOpen]="mostrarToast"
+    [message]="mensajeToast"
+    [duration]="2000"
+    (didDismiss)="mostrarToast = false"
+    style="--background: #3B9797; --color: white;">
+  </ion-toast>
+</ion-content>

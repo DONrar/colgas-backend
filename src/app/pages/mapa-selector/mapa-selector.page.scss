@@ -1,0 +1,29 @@
+  ion-content {
+      --background: transparent !important;
+    }
+
+    capacitor-google-map {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .info-card {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      right: 16px;
+      margin: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .info-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.1em;
+    }
+
+    .info-card p {
+      margin: 2px 0;
+      font-size: 0.9em;
+    }

@@ -5,33 +5,13 @@ import { Router } from '@angular/router';
 import { GoogleMap } from '@capacitor/google-maps';
 import { environment } from '../../../environments/environment';
 import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonButton,
-  IonIcon,
-  IonList,
-  IonItem,
-  IonLabel,
-  IonInput,
-  IonNote,
-  IonText,
-  IonFooter,
-  IonSegment,
-  IonSegmentButton,
-  IonSpinner
+  IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader,
+  IonCardTitle, IonCardContent, IonButton, IonIcon, IonList, IonItem,
+  IonLabel, IonInput, IonNote, IonText, IonFooter, IonSegment,
+  IonSegmentButton, IonSpinner
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import {
-  navigate,
-  location,
-  checkmark,
-  map as mapIcon, create, search } from 'ionicons/icons';
+import { navigate, location, checkmark, map as mapIcon, search } from 'ionicons/icons';
 import { ExpresoService } from '../../core/services/expreso-service';
 import { UbicacionService } from '../../core/services/ubicacion-service';
 import { LoadingService } from '../../core/services/loading-service';
@@ -50,31 +30,16 @@ interface CalculoCache {
   resultado: ExpresoCalculo;
   timestamp: number;
 }
+
 @Component({
   selector: 'app-expresos',
   templateUrl: './expresos.page.html',
   styleUrls: ['./expresos.page.scss'],
   standalone: true,
-  imports: [CommonModule,
-    FormsModule,
-    IonHeader,
-    IonToolbar,
-    IonTitle,
-    IonContent,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
-    IonCardContent,
-    IonButton,
-    IonIcon,
-    IonList,
-    IonItem,
-    IonLabel,
-    IonInput,
-    IonSegment,
-    IonNote,
-    IonText,
-    IonFooter, IonSegmentButton, IonSpinner]
+  imports: [CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, IonContent,
+    IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonIcon,
+    IonList, IonItem, IonLabel, IonInput, IonNote, IonText, IonFooter,
+    IonSegment, IonSegmentButton, IonSpinner]
 })
 export class ExpresosPage implements OnInit, AfterViewInit {
   @ViewChild('mapRef') mapRef!: ElementRef;
@@ -106,11 +71,9 @@ export class ExpresosPage implements OnInit, AfterViewInit {
   private destinoMarkerId: string | null = null;
   private origenMarkerId: string | null = null;
 
-  // Cache para reducir llamadas a la API
   private calculoCache: Map<string, CalculoCache> = new Map();
   private readonly CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
-  // Lugares predefinidos (sin costo)
   private lugaresFrecuentes = [
     { id: 1, nombre: 'Aeropuerto El Dorado', direccion: 'Bogotá', lat: 4.7016, lng: -74.1469 },
     { id: 2, nombre: 'Terminal de Transporte', direccion: 'Bogotá', lat: 4.6560, lng: -74.0981 },
@@ -125,6 +88,16 @@ export class ExpresosPage implements OnInit, AfterViewInit {
   ngOnInit() {
     const datosGuardados = this.storageService.obtener<DatosCliente>('colgas_cliente');
     if (datosGuardados) this.datosCliente = datosGuardados;
+
+    const destinoGuardado = sessionStorage.getItem('destino_seleccionado');
+    if (destinoGuardado) {
+      const destino = JSON.parse(destinoGuardado);
+      this.latitudDestino = destino.latitud;
+      this.longitudDestino = destino.longitud;
+      this.destinoSeleccionado.set(true);
+      sessionStorage.removeItem('destino_seleccionado');
+      this.toastService.success('Destino cargado desde el mapa');
+    }
   }
 
   async ngAfterViewInit() {
@@ -135,7 +108,14 @@ export class ExpresosPage implements OnInit, AfterViewInit {
 
   async inicializarMapa() {
     try {
+      const permisos = await this.ubicacionService.verificarPermisos();
+      if (!permisos) {
+        console.warn('Permisos de ubicación no otorgados');
+      }
+
       const coordenadasDefault = { lat: 4.6097, lng: -74.0817 };
+
+      console.log('Inicializando Google Maps con API Key:', environment.googleMapsApiKey?.substring(0, 10) + '...');
 
       this.googleMap = await GoogleMap.create({
         id: 'expresos-map',
@@ -145,8 +125,11 @@ export class ExpresosPage implements OnInit, AfterViewInit {
           center: coordenadasDefault,
           zoom: 12,
           androidLiteMode: false
+          // Removido: disableDefaultUI - no es una propiedad válida en GoogleMapConfig
         }
       });
+
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       this.mapaListo.set(true);
 
@@ -154,9 +137,10 @@ export class ExpresosPage implements OnInit, AfterViewInit {
         this.seleccionarDestino(event.latitude, event.longitude);
       });
 
+      console.log('Mapa inicializado correctamente');
       this.toastService.success('Toca en el mapa para seleccionar el destino');
     } catch (error) {
-      console.error('Error al inicializar mapa:', error);
+      console.error('Error detallado al inicializar mapa:', error);
       this.toastService.error('Error al cargar el mapa. Usa búsqueda o modo manual.');
       this.modoSeleccion = 'busqueda';
     }
@@ -188,7 +172,6 @@ export class ExpresosPage implements OnInit, AfterViewInit {
       this.lugaresEncontrados.set([]);
       return;
     }
-    // Búsqueda local sin costo
     const resultados = this.lugaresFrecuentes.filter(lugar =>
       lugar.nombre.toLowerCase().includes(texto) ||
       lugar.direccion.toLowerCase().includes(texto)
@@ -250,7 +233,6 @@ export class ExpresosPage implements OnInit, AfterViewInit {
   async calcularViaje() {
     if (!this.puedeCalcular() || !this.origen) return;
 
-    // Verificar cache primero (reducir costos)
     const cacheKey = `${this.origen.latitud.toFixed(4)},${this.origen.longitud.toFixed(4)}-${this.latitudDestino!.toFixed(4)},${this.longitudDestino!.toFixed(4)}`;
     const cached = this.calculoCache.get(cacheKey);
 
@@ -271,7 +253,6 @@ export class ExpresosPage implements OnInit, AfterViewInit {
     }).subscribe({
       next: async (resultado) => {
         this.calculo.set(resultado);
-        // Guardar en cache
         this.calculoCache.set(cacheKey, { key: cacheKey, resultado, timestamp: Date.now() });
         await this.loadingService.ocultar();
         this.toastService.success('Viaje calculado correctamente');

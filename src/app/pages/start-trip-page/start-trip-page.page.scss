@@ -1,0 +1,536 @@
+/* Variables y estilos globales */
+.container {
+  padding: 16px;
+  padding-bottom: 80px;
+  background: #f8f9fa;
+}
+
+/* Hero section */
+.hero-section {
+  text-align: center;
+  padding: 40px 20px 30px;
+  position: relative;
+}
+
+.hero-icon-container {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 20px;
+}
+
+.hero-icon-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #16476A 0%, #3B9797 100%);
+  position: relative;
+  z-index: 2;
+
+  .hero-icon {
+    font-size: 48px;
+    color: white;
+  }
+}
+
+.hero-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(59, 151, 151, 0.2);
+  animation: pulse 2s infinite;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
+  }
+}
+
+.hero-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #132440;
+  margin: 0 0 8px 0;
+}
+
+.hero-subtitle {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Progress container */
+.progress-container {
+  margin: 30px 0;
+}
+
+.progress-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.step-indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  .step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e0e0e0;
+    color: #999;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+
+    ion-icon {
+      font-size: 18px;
+      color: white;
+    }
+  }
+
+  .step-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: #999;
+    transition: all 0.3s ease;
+  }
+
+  &.active {
+    .step-number {
+      background: #16476A;
+      color: white;
+    }
+
+    .step-label {
+      color: #16476A;
+      font-weight: 600;
+    }
+  }
+
+  &.completed {
+    .step-number {
+      background: #3B9797;
+      color: white;
+    }
+
+    .step-label {
+      color: #3B9797;
+      font-weight: 600;
+    }
+  }
+}
+
+.step-connector {
+  width: 60px;
+  height: 2px;
+  background: #e0e0e0;
+  transition: all 0.3s ease;
+
+  &.active {
+    background: #3B9797;
+  }
+}
+
+/* Card general */
+.card-elevated {
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.card-header-custom {
+  padding-bottom: 8px;
+
+  ion-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #132440;
+  }
+}
+
+.card-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+
+  ion-icon {
+    font-size: 20px;
+    color: white;
+  }
+
+  &.primary {
+    background: #16476A;
+  }
+
+  &.success {
+    background: #3B9797;
+  }
+
+  &.warning {
+    background: #BF092F;
+  }
+
+  &.info {
+    background: #11998e;
+  }
+
+  &.medium {
+    background: #999;
+  }
+}
+
+/* Configuración card */
+.config-card {
+  ion-card-content {
+    padding: 24px;
+  }
+}
+
+.step-section {
+  transition: all 0.3s ease;
+
+  &.disabled {
+    opacity: 0.6;
+  }
+
+  &.active {
+    .step-header {
+      .step-icon-container {
+        transform: scale(1.05);
+      }
+    }
+  }
+}
+
+.step-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.step-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+
+  ion-icon {
+    font-size: 24px;
+    color: white;
+  }
+
+  &.primary {
+    background: #16476A;
+  }
+
+  &.success {
+    background: #3B9797;
+  }
+
+  &.medium {
+    background: #999;
+  }
+}
+
+.step-info {
+  flex: 1;
+
+  h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #132440;
+    margin: 0 0 4px 0;
+  }
+
+  p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    line-height: 1.4;
+  }
+}
+
+.step-status {
+  .badge-success {
+    background: #3B9797;
+    color: white;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+
+    ion-icon {
+      font-size: 14px;
+      margin-right: 4px;
+    }
+  }
+
+  .badge-warning {
+    background: #BF092F;
+    color: white;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+
+    ion-icon {
+      font-size: 14px;
+      margin-right: 4px;
+    }
+  }
+}
+
+.step-action {
+  margin-top: 16px;
+}
+
+.location-details {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background: rgba(59, 151, 151, 0.05);
+  border-radius: 12px;
+  border: 1px solid rgba(59, 151, 151, 0.2);
+}
+
+.location-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .success-icon {
+    font-size: 24px;
+    color: #3B9797;
+  }
+
+  .location-label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #132440;
+    margin-bottom: 2px;
+  }
+
+  .location-coords {
+    display: block;
+    font-size: 12px;
+    color: #666;
+    font-family: monospace;
+  }
+}
+
+.btn-change {
+  --color: #3B9797;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.step-divider {
+  height: 1px;
+  background: #e0e0e0;
+  margin: 24px 0;
+  position: relative;
+  transition: all 0.3s ease;
+
+  &.active {
+    background: #3B9797;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 8px;
+      height: 8px;
+      background: #3B9797;
+      border-radius: 50%;
+      animation: pulseDot 2s infinite;
+    }
+  }
+}
+
+@keyframes pulseDot {
+  0%, 100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+}
+
+/* Botones */
+.btn-primary {
+  --background: #16476A;
+  --background-activated: #132440;
+  --background-hover: #3B9797;
+  --color: white;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+}
+
+.btn-success {
+  --background: #3B9797;
+  --background-activated: #2a7a7a;
+  --background-hover: #4ab3b3;
+  --color: white;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+
+  &.disabled {
+    --background: #999;
+    --background-activated: #777;
+    --background-hover: #999;
+    pointer-events: none;
+  }
+}
+
+/* Info card */
+.info-card {
+  .info-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .info-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+
+    .info-step-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #16476A;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .info-step-content {
+      flex: 1;
+
+      strong {
+        display: block;
+        font-size: 14px;
+        color: #132440;
+        margin-bottom: 4px;
+      }
+
+      p {
+        font-size: 13px;
+        color: #666;
+        margin: 0;
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .container {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+
+  .hero-section {
+    padding: 30px 16px 20px;
+  }
+
+  .hero-icon-circle {
+    width: 80px;
+    height: 80px;
+
+    .hero-icon {
+      font-size: 36px;
+    }
+  }
+
+  .hero-pulse {
+    width: 120px;
+    height: 120px;
+  }
+
+  .hero-title {
+    font-size: 24px;
+  }
+
+  .step-header {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .step-status {
+    align-self: center;
+  }
+
+  .location-details {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+
+  .progress-steps {
+    gap: 4px;
+  }
+
+  .step-connector {
+    width: 40px;
+  }
+}

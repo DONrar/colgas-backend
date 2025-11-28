@@ -1,0 +1,606 @@
+/* Variables y estilos globales */
+.container {
+  padding: 16px;
+  padding-bottom: 80px;
+  background: #f8f9fa;
+}
+
+/* Estados de carga */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+    --color: #3B9797;
+  }
+
+  p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+/* Card general */
+.card-elevated {
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.card-header-custom {
+  padding-bottom: 8px;
+
+  ion-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #132440;
+  }
+}
+
+.card-title-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+
+  ion-icon {
+    font-size: 20px;
+    color: white;
+  }
+
+  &.primary {
+    background: #16476A;
+  }
+
+  &.success {
+    background: #3B9797;
+  }
+
+  &.warning {
+    background: #BF092F;
+  }
+
+  &.info {
+    background: #11998e;
+  }
+}
+
+/* Header del viaje */
+.header-card {
+  background: linear-gradient(135deg, #132440 0%, #16476A 100%);
+  color: white;
+
+  ion-card-content {
+    padding: 24px;
+  }
+}
+
+.expreso-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+}
+
+.expreso-info {
+  flex: 1;
+}
+
+.expreso-title-section {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.expreso-number {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0;
+  color: white;
+}
+
+.status-badge {
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &.badge-success {
+    background: #3B9797;
+    color: white;
+  }
+
+  &.badge-warning {
+    background: #BF092F;
+    color: white;
+  }
+
+  &.badge-primary {
+    background: #16476A;
+    color: white;
+  }
+
+  &.badge-info {
+    background: #11998e;
+    color: white;
+  }
+}
+
+.expreso-meta {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.9);
+
+  .meta-icon {
+    font-size: 16px;
+  }
+}
+
+.expreso-total {
+  text-align: right;
+
+  .total-label {
+    display: block;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 4px;
+  }
+
+  .total-amount {
+    font-size: 24px;
+    font-weight: 700;
+    color: white;
+  }
+}
+
+/* Información del cliente */
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #f0f0f0;
+  }
+}
+
+.info-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(59, 151, 151, 0.1);
+
+  ion-icon {
+    font-size: 18px;
+    color: #3B9797;
+  }
+}
+
+.info-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+
+  .info-label {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+  }
+
+  .info-value {
+    font-size: 14px;
+    color: #132440;
+    font-weight: 600;
+  }
+}
+
+/* Detalles del viaje */
+.journey-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.journey-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background: rgba(59, 151, 151, 0.05);
+  }
+
+  &.total-item {
+    background: linear-gradient(135deg, rgba(59, 151, 151, 0.1) 0%, rgba(22, 71, 106, 0.1) 100%);
+    border: 1px solid rgba(59, 151, 151, 0.2);
+  }
+}
+
+.journey-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+
+  ion-icon {
+    font-size: 24px;
+    color: white;
+  }
+
+  &.primary {
+    background: #16476A;
+  }
+
+  &.success {
+    background: #3B9797;
+  }
+
+  &.warning {
+    background: #BF092F;
+  }
+
+  &.info {
+    background: #11998e;
+  }
+}
+
+.journey-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+
+  .journey-label {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+  }
+
+  .journey-value {
+    font-size: 16px;
+    font-weight: 600;
+    color: #132440;
+
+    &.total-amount {
+      font-size: 18px;
+      color: #3B9797;
+    }
+  }
+}
+
+/* Rutas y direcciones */
+.routes-container {
+  position: relative;
+  padding: 20px 0;
+}
+
+.route-line {
+  position: absolute;
+  left: 24px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #3B9797, #16476A);
+}
+
+.route-line-progress {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, #3B9797, #16476A, #3B9797);
+  animation: routeProgress 2s ease-in-out infinite;
+}
+
+@keyframes routeProgress {
+  0% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.3;
+  }
+}
+
+.route-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 32px;
+  position: relative;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.route-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+
+  .marker-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    position: absolute;
+  }
+
+  .marker-icon {
+    font-size: 20px;
+    color: white;
+    position: relative;
+    z-index: 3;
+  }
+
+  &.start {
+    background: rgba(59, 151, 151, 0.2);
+
+    .marker-dot {
+      background: #3B9797;
+    }
+  }
+
+  &.end {
+    background: rgba(191, 9, 47, 0.2);
+
+    .marker-dot {
+      background: #BF092F;
+    }
+  }
+}
+
+.route-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  padding-top: 8px;
+
+  .route-label {
+    font-size: 12px;
+    color: #666;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .route-address {
+    font-size: 14px;
+    color: #132440;
+    font-weight: 600;
+    line-height: 1.4;
+  }
+}
+
+.route-summary {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 16px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 12px;
+  margin-top: 20px;
+
+  .route-distance,
+  .route-duration {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: #132440;
+
+    .summary-icon {
+      font-size: 18px;
+      color: #3B9797;
+    }
+  }
+}
+
+/* Botones y acciones */
+.actions-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.btn-whatsapp {
+  --background: #25D366;
+  --background-activated: #128C7E;
+  --background-hover: #22c55e;
+  --color: white;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+}
+
+.btn-maps {
+  --background: #4285F4;
+  --background-activated: #3367D6;
+  --background-hover: #3b82f6;
+  --color: white;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+}
+
+.btn-primary {
+  --background: #16476A;
+  --background-activated: #132440;
+  --background-hover: #3B9797;
+  --color: white;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+}
+
+.btn-secondary {
+  --border-color: #16476A;
+  --color: #16476A;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+}
+
+/* Empty state */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+
+  .empty-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(59, 151, 151, 0.1);
+    margin-bottom: 24px;
+
+    ion-icon {
+      font-size: 60px;
+      color: #3B9797;
+    }
+  }
+
+  h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #132440;
+  }
+
+  p {
+    color: #666;
+    font-size: 16px;
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .container {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+
+  .expreso-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .expreso-total {
+    text-align: left;
+  }
+
+  .expreso-title-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .expreso-meta {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .journey-item {
+    padding: 12px;
+  }
+
+  .journey-icon-container {
+    width: 40px;
+    height: 40px;
+
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+
+  .route-marker {
+    width: 40px;
+    height: 40px;
+
+    .marker-icon {
+      font-size: 18px;
+    }
+  }
+
+  .route-line {
+    left: 20px;
+  }
+
+  .route-summary {
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+}

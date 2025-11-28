@@ -1,100 +1,788 @@
-.empty-cart {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 40px 20px;
-      text-align: center;
-    }
+/* Estilos mejorados para el carrito */
+.cart-page {
+  --background: #f8f9fa;
+}
 
-    .empty-cart ion-icon {
-      font-size: 80px;
-      margin-bottom: 20px;
-    }
+.container {
+  padding: 16px;
+  padding-bottom: 80px;
+}
 
-    .empty-cart h2 {
-      margin: 20px 0 10px;
-    }
+/* Header mejorado */
+.header-badge {
+  font-size: 12px;
+  font-weight: 600;
+  min-width: 20px;
+  height: 20px;
+}
 
-    .empty-cart ion-button {
-      margin-top: 20px;
-      max-width: 300px;
-    }
+/* Estado Vacío Mejorado */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
 
-    .item-content {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      padding: 12px 0;
-      gap: 12px;
-    }
+.empty-icon-container {
+  margin-bottom: 32px;
+}
 
-    .producto-info {
-      flex: 1;
-      min-width: 0;
-    }
+.empty-icon-gradient {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #16476A 0%, #3B9797 100%);
+  margin: 0 auto;
+}
 
-    .producto-info h3 {
-      margin: 0 0 4px;
-      font-size: 1em;
+.empty-main-icon {
+  font-size: 60px;
+  color: white;
+}
+
+.empty-icon-overlay {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  background: #f8f9fa;
+  border-radius: 50%;
+  padding: 4px;
+
+  .empty-overlay-icon {
+    font-size: 24px;
+    color: #BF092F;
+  }
+}
+
+.empty-content {
+  h2.empty-title {
+    font-size: 24px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+    color: #132440;
+  }
+
+  p.empty-message {
+    color: #666;
+    margin-bottom: 24px;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+}
+
+.browse-button {
+  --background: #16476A;
+  --background-activated: #132440;
+  --background-hover: #3B9797;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+}
+
+/* Sugerencias */
+.suggestions {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #e0e0e0;
+
+  .suggestions-title {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+}
+
+.suggestion-chips {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.suggestion-chip {
+  --background: rgba(59, 151, 151, 0.1);
+  --color: #132440;
+  font-weight: 500;
+
+  ion-icon {
+    color: #3B9797;
+  }
+}
+
+/* Header del Carrito Mejorado */
+.cart-header {
+  margin-bottom: 24px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.header-text {
+  .cart-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: #132440;
+    background: linear-gradient(135deg, #132440 0%, #16476A 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .cart-subtitle {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+  }
+}
+
+.clear-cart-btn {
+  --color: #BF092F;
+  font-size: 14px;
+}
+
+/* Barra de Progreso */
+.progress-container {
+  background: white;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.progress-bar {
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #16476A 0%, #3B9797 100%);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: space-between;
+
+  .step {
+    font-size: 12px;
+    font-weight: 500;
+    color: #999;
+
+    &.active {
+      color: #3B9797;
       font-weight: 600;
     }
+  }
+}
 
-    .producto-info ion-note {
-      font-size: 0.85em;
+/* Lista de Productos Mejorada */
+.cart-list {
+  background: transparent;
+  padding: 0;
+}
+
+.cart-item {
+  margin-bottom: 12px;
+}
+
+.product-item {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.product-image-container {
+  position: relative;
+  margin-right: 16px;
+}
+
+.product-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.image-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.placeholder-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+
+  ion-icon {
+    font-size: 32px;
+    color: white;
+  }
+
+  &.pipeta {
+    background: linear-gradient(135deg, #16476A 0%, #3B9797 100%);
+  }
+
+  &.accesorio {
+    background: linear-gradient(135deg, #BF092F 0%, #fa709a 100%);
+  }
+
+  &.repuesto {
+    background: linear-gradient(135deg, #132440 0%, #16476A 100%);
+  }
+}
+
+.quantity-indicator {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #BF092F;
+  color: white;
+  border-radius: 10px;
+  min-width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.quantity-number {
+  line-height: 1;
+}
+
+.product-content {
+  flex: 1;
+}
+
+.product-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.product-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #132440;
+  cursor: pointer;
+  flex: 1;
+  margin-right: 8px;
+  line-height: 1.3;
+
+  &:hover {
+    color: #3B9797;
+  }
+}
+
+.delete-btn {
+  --padding-start: 4px;
+  --padding-end: 4px;
+  width: 32px;
+  height: 32px;
+}
+
+.product-info {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.product-weight, .product-type {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+
+  ion-icon {
+    font-size: 14px;
+  }
+}
+
+.product-type {
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(59, 151, 151, 0.1);
+
+  &.pipeta {
+    background: rgba(22, 71, 106, 0.1);
+    color: #16476A;
+  }
+
+  &.accesorio {
+    background: rgba(191, 9, 47, 0.1);
+    color: #BF092F;
+  }
+
+  &.repuesto {
+    background: rgba(19, 36, 64, 0.1);
+    color: #132440;
+  }
+}
+
+.product-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.price-section {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.unit-price {
+  font-size: 12px;
+  color: #666;
+}
+
+.subtotal-price {
+  font-size: 16px;
+  font-weight: 700;
+  color: #132440;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quantity-btn {
+  --border-radius: 8px;
+  --border-width: 1px;
+  --border-color: #3B9797;
+  --color: #3B9797;
+  width: 32px;
+  height: 32px;
+
+  &.decrease {
+    --color: #BF092F;
+    --border-color: #BF092F;
+  }
+
+  &.increase {
+    --color: #3B9797;
+    --border-color: #3B9797;
+  }
+}
+
+.quantity-display {
+  font-size: 14px;
+  font-weight: 600;
+  color: #132440;
+  min-width: 24px;
+  text-align: center;
+}
+
+.stock-warning {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: rgba(191, 9, 47, 0.1);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #BF092F;
+
+  ion-icon {
+    font-size: 12px;
+  }
+}
+
+/* Opciones de Swipe Mejoradas */
+.swipe-options {
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+
+.swipe-delete, .swipe-save, .swipe-details {
+  height: 100%;
+  border-radius: 16px;
+}
+
+.option-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px;
+}
+
+.option-icon {
+  font-size: 20px;
+}
+
+.option-text {
+  font-size: 10px;
+  font-weight: 500;
+}
+
+/* Resumen del Pedido Mejorado */
+.summary-card {
+  border-radius: 20px;
+  margin: 24px 0;
+}
+
+.summary-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 8px;
+}
+
+.header-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+
+  ion-icon {
+    font-size: 24px;
+    color: white;
+  }
+
+  &.primary {
+    background: #16476A;
+  }
+}
+
+.summary-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #132440;
+  margin-bottom: 4px;
+}
+
+.summary-content {
+  padding-top: 0;
+}
+
+.summary-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+
+  &.highlight {
+    background: rgba(59, 151, 151, 0.05);
+    margin: 0 -16px;
+    padding: 12px 16px;
+    border-radius: 8px;
+  }
+
+  &.total-row {
+    border-top: 1px solid #e0e0e0;
+    margin-top: 8px;
+    padding-top: 16px;
+  }
+}
+
+.summary-label-container, .total-label-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.summary-label, .total-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #132440;
+}
+
+.total-label {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.summary-description, .total-description {
+  font-size: 11px;
+  color: #666;
+}
+
+.summary-value, .total-price {
+  font-size: 14px;
+  font-weight: 600;
+  color: #132440;
+}
+
+.total-price {
+  font-size: 20px;
+  color: #3B9797;
+}
+
+.free-shipping {
+  color: #3B9797 !important;
+}
+
+.summary-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, #e0e0e0 50%, transparent 100%);
+  margin: 8px 0;
+}
+
+/* Beneficios */
+.benefits-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.benefit-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  text-align: center;
+  padding: 12px 8px;
+  background: rgba(59, 151, 151, 0.05);
+  border-radius: 8px;
+
+  ion-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  span {
+    font-size: 10px;
+    font-weight: 500;
+    color: #132440;
+    line-height: 1.2;
+  }
+}
+
+/* Tarjeta de Información */
+.info-card {
+  border-radius: 16px;
+}
+
+.info-content {
+  .info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    ion-icon {
+      font-size: 20px;
+      margin-top: 2px;
+      flex-shrink: 0;
     }
 
-    .precio-unitario {
-      margin: 4px 0 0;
-      font-size: 0.9em;
-      color: var(--ion-color-medium);
-    }
+    .info-text {
+      h4 {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 0 0 4px 0;
+        color: #132440;
+      }
 
-    .cantidad-controls {
-      display: flex;
-      align-items: center;
-      gap: 4px;
+      p {
+        font-size: 12px;
+        color: #666;
+        margin: 0;
+        line-height: 1.4;
+      }
     }
+  }
+}
 
-    .cantidad {
-      min-width: 30px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 1.1em;
-    }
+.contact-btn {
+  --color: #3B9797;
+  font-size: 14px;
+  margin-top: 8px;
+}
 
-    .subtotal {
-      min-width: 90px;
-      text-align: right;
-      font-size: 1.1em;
-    }
+/* Footer Mejorado */
+.checkout-footer {
+  ion-toolbar {
+    --background: white;
+    --border-color: #e0e0e0;
+  }
+}
 
-    .resumen {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 0;
+}
 
-    .resumen-item {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 8px 0;
-    }
+.total-display {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
 
-    .resumen-item.total {
-      border-top: 2px solid var(--ion-color-light);
-      padding-top: 16px;
-      margin-top: 8px;
-      font-size: 1.2em;
-    }
+.total-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 
-    .precio-total {
-      color: var(--ion-color-primary);
-      font-size: 1.3em;
-    }
+.total-label {
+  font-size: 14px;
+  color: #666;
+}
 
-    ion-footer ion-button {
-      margin: 8px;
-    }
+.total-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #132440;
+}
+
+.items-count {
+  font-size: 11px;
+  color: #666;
+}
+
+.checkout-button {
+  --background: #16476A;
+  --background-activated: #132440;
+  --background-hover: #3B9797;
+  --border-radius: 12px;
+  font-weight: 600;
+  flex: 2;
+
+  &[disabled] {
+    --background: #666;
+    --background-activated: #666;
+    --background-hover: #666;
+  }
+}
+
+.footer-spacer {
+  height: 20px;
+}
+
+/* Animaciones */
+.animated-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animated-slide-in {
+  animation: slideIn 0.6s ease-out;
+}
+
+.animated-slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+
+  .product-actions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .quantity-controls {
+    align-self: flex-end;
+  }
+
+  .benefits-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .checkout-button {
+    width: 100%;
+  }
+}

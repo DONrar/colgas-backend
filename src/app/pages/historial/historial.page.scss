@@ -1,8 +1,331 @@
-.loading, .empty {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 40px;
-      text-align: center;
+/* Variables y estilos globales */
+.container {
+  padding: 16px;
+  padding-bottom: 80px;
+  background: #f8f9fa;
+}
+
+/* Segment personalizado */
+.custom-segment {
+  --background: transparent;
+}
+
+.segment-btn {
+  --background: transparent;
+  --background-checked: #3B9797;
+  --border-radius: 12px;
+  --color: white;
+  --color-checked: white;
+  margin: 0 4px;
+
+  .segment-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+
+    ion-icon {
+      font-size: 18px;
     }
-    ion-badge { margin-left: 8px; }
+
+    ion-label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+  }
+}
+
+/* Card de búsqueda */
+.search-card {
+  margin-bottom: 24px;
+
+  .search-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+
+    .search-icon {
+      font-size: 24px;
+      color: #3B9797;
+    }
+
+    h3 {
+      margin: 0;
+      color: #132440;
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+}
+
+.custom-input-item {
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --background: transparent;
+  margin-bottom: 16px;
+}
+
+.custom-input {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  background: #f8f9fa;
+  border-radius: 12px;
+  border: 2px solid #e0e0e0;
+  transition: border-color 0.3s ease;
+
+  &:focus-within {
+    border-color: #3B9797;
+  }
+}
+
+/* Botón primario */
+.btn-primary {
+  --background: #16476A;
+  --background-activated: #132440;
+  --background-hover: #3B9797;
+  --color: white;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+  margin-top: 8px;
+}
+
+/* Estados de carga */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+}
+
+.loading-spinner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+    --color: #3B9797;
+  }
+
+  p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+/* Header de resultados */
+.results-header {
+  margin-bottom: 16px;
+
+  h3 {
+    color: #132440;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+  }
+}
+
+/* Cards de historial */
+.history-card {
+  margin-bottom: 16px;
+  border-radius: 16px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+.card-header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.card-title-section {
+  flex: 1;
+
+  ion-card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #132440;
+    margin-bottom: 4px;
+  }
+
+  .card-subtitle {
+    font-size: 12px;
+    color: #666;
+    margin: 0;
+  }
+}
+
+/* Badges de estado */
+.status-badge {
+  font-size: 11px;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+
+  &.badge-success {
+    background: #3B9797;
+    color: white;
+  }
+
+  &.badge-warning {
+    background: #BF092F;
+    color: white;
+  }
+
+  &.badge-primary {
+    background: #16476A;
+    color: white;
+  }
+
+  &.badge-info {
+    background: #11998e;
+    color: white;
+  }
+}
+
+/* Detalles del historial */
+.history-details {
+  display: grid;
+  gap: 16px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detail-icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+
+  ion-icon {
+    font-size: 18px;
+    color: white;
+  }
+
+  &.primary {
+    background: #16476A;
+  }
+
+  &.success {
+    background: #3B9797;
+  }
+
+  &.info {
+    background: #11998e;
+  }
+
+  &.warning {
+    background: #BF092F;
+  }
+}
+
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .detail-label {
+    font-size: 12px;
+    color: #666;
+  }
+
+  .detail-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #132440;
+  }
+}
+
+/* Indicador de acción */
+.card-action-indicator {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+
+  .action-icon {
+    color: #3B9797;
+    font-size: 18px;
+  }
+}
+
+/* Empty state mejorado */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+
+  .empty-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(59, 151, 151, 0.1);
+    margin-bottom: 24px;
+
+    ion-icon {
+      font-size: 60px;
+      color: #3B9797;
+    }
+  }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #132440;
+  }
+
+  p {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 0;
+    line-height: 1.5;
+  }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .container {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+
+  .card-header-main {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .status-badge {
+    align-self: flex-start;
+  }
+
+  .history-details {
+    grid-template-columns: 1fr;
+  }
+}

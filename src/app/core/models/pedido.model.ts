@@ -17,8 +17,10 @@ export enum EstadoPedido {
 }
 
 export interface ItemPedido {
-  productoId: number;
+  productoId?: number;  // Hacer opcional
+  nombreProducto: string; // Agregar nombre como respaldo
   cantidad: number;
+  precioUnitario: number; // Agregar precio para respaldo
 }
 
 export interface ItemPedidoResponse {

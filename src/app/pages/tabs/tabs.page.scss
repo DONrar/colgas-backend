@@ -1,0 +1,47 @@
+
+
+:root {
+  // Colores principales
+  --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --accent-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+
+  // Colores base
+  --color-primary: #667eea;
+  --color-primary-dark: #5568d3;
+  --color-secondary: #764ba2;
+  --color-accent: #f5576c;
+  --color-success: #00f2fe;
+  --color-warning: #fee140;
+  --color-error: #ff6b6b;
+
+  // Colores neutros
+  --color-bg: #0f0f1e;
+  --color-bg-light: #1a1a2e;
+  --color-bg-card: #16213e;
+  --color-surface: #1f2937;
+  --color-text: #ffffff;
+  --color-text-secondary: #a0aec0;
+  --color-text-muted: #718096;
+
+  // Sombras
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.2);
+  --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.4);
+
+  // Bordes
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 50px;
+
+  // Transiciones
+  --transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}

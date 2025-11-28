@@ -1,0 +1,231 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="volver()" style="--color: white;">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="navigate-outline" style="color: #3B9797;"></ion-icon>
+      &nbsp;Detalle del Viaje
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+    @if (cargando) {
+      <div class="loading-container">
+        <div class="loading-spinner">
+          <ion-spinner name="crescent"></ion-spinner>
+          <p>Cargando viaje...</p>
+        </div>
+      </div>
+    } @else if (expreso) {
+      <!-- Header del viaje -->
+      <ion-card class="card-elevated header-card">
+        <ion-card-content>
+          <div class="expreso-header">
+            <div class="expreso-info">
+              <div class="expreso-title-section">
+                <h1 class="expreso-number">Viaje Express #{{ expreso.id }}</h1>
+                <ion-badge class="status-badge" [class]="getBadgeClass(expreso.estado)">
+                  {{ getEstadoTexto(expreso.estado) }}
+                </ion-badge>
+              </div>
+              <div class="expreso-meta">
+                <div class="meta-item">
+                  <ion-icon name="calendar-outline" class="meta-icon"></ion-icon>
+                  <span>{{ formatearFecha(expreso.fechaSolicitud) }}</span>
+                </div>
+                <div class="meta-item">
+                  <ion-icon name="time-outline" class="meta-icon"></ion-icon>
+                  <span>{{ formatearHora(expreso.fechaSolicitud) }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="expreso-total">
+              <span class="total-label">Total</span>
+              <span class="total-amount">{{ formatearMoneda(expreso.precioTotal) }}</span>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Información del cliente -->
+      <ion-card class="card-elevated">
+        <ion-card-header class="card-header-custom">
+          <div class="card-title-with-icon">
+            <div class="title-icon-container primary">
+              <ion-icon name="person-outline"></ion-icon>
+            </div>
+            <ion-card-title>Información del Cliente</ion-card-title>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-icon-container">
+                <ion-icon name="person-circle-outline"></ion-icon>
+              </div>
+              <div class="info-content">
+                <span class="info-label">Nombre</span>
+                <span class="info-value">{{ expreso.cliente.nombre }}</span>
+              </div>
+            </div>
+            <div class="info-item">
+              <div class="info-icon-container">
+                <ion-icon name="call-outline"></ion-icon>
+              </div>
+              <div class="info-content">
+                <span class="info-label">Teléfono</span>
+                <span class="info-value">{{ expreso.cliente.telefono }}</span>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Detalles del viaje -->
+      <ion-card class="card-elevated">
+        <ion-card-header class="card-header-custom">
+          <div class="card-title-with-icon">
+            <div class="title-icon-container success">
+              <ion-icon name="car-sport-outline"></ion-icon>
+            </div>
+            <ion-card-title>Detalles del Viaje</ion-card-title>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="journey-details">
+            <div class="journey-item">
+              <div class="journey-icon-container primary">
+                <ion-icon name="navigate-outline"></ion-icon>
+              </div>
+              <div class="journey-content">
+                <span class="journey-label">Distancia</span>
+                <span class="journey-value">{{ expreso.distanciaKm.toFixed(2) }} km</span>
+              </div>
+            </div>
+
+            @if (expreso.duracionMinutos) {
+              <div class="journey-item">
+                <div class="journey-icon-container info">
+                  <ion-icon name="time-outline"></ion-icon>
+                </div>
+                <div class="journey-content">
+                  <span class="journey-label">Duración estimada</span>
+                  <span class="journey-value">{{ formatearDuracion(expreso.duracionMinutos) }}</span>
+                </div>
+              </div>
+            }
+
+            <div class="journey-item">
+              <div class="journey-icon-container warning">
+                <ion-icon name="speedometer-outline"></ion-icon>
+              </div>
+              <div class="journey-content">
+                <span class="journey-label">Tarifa por km</span>
+                <span class="journey-value">{{ formatearMoneda(expreso.precioPorKm) }}</span>
+              </div>
+            </div>
+
+            <div class="journey-item total-item">
+              <div class="journey-icon-container success">
+                <ion-icon name="cash-outline"></ion-icon>
+              </div>
+              <div class="journey-content">
+                <span class="journey-label">Total del viaje</span>
+                <span class="journey-value total-amount">{{ formatearMoneda(expreso.precioTotal) }}</span>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Direcciones -->
+      <ion-card class="card-elevated">
+        <ion-card-header class="card-header-custom">
+          <div class="card-title-with-icon">
+            <div class="title-icon-container warning">
+              <ion-icon name="location-outline"></ion-icon>
+            </div>
+            <ion-card-title>Rutas del Viaje</ion-card-title>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="routes-container">
+            <div class="route-line">
+              <div class="route-line-progress"></div>
+            </div>
+
+            <div class="route-item">
+              <div class="route-marker start">
+                <div class="marker-dot"></div>
+                <ion-icon name="play-circle" class="marker-icon"></ion-icon>
+              </div>
+              <div class="route-info">
+                <span class="route-label">Origen</span>
+                <span class="route-address">{{ expreso.direccionOrigen || 'Ubicación seleccionada' }}</span>
+              </div>
+            </div>
+
+            <div class="route-item">
+              <div class="route-marker end">
+                <div class="marker-dot"></div>
+                <ion-icon name="flag" class="marker-icon"></ion-icon>
+              </div>
+              <div class="route-info">
+                <span class="route-label">Destino</span>
+                <span class="route-address">{{ expreso.direccionDestino || 'Ubicación seleccionada' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="route-summary">
+            <div class="route-distance">
+              <ion-icon name="navigate" class="summary-icon"></ion-icon>
+              <span>{{ expreso.distanciaKm.toFixed(2) }} km</span>
+            </div>
+            @if (expreso.duracionMinutos) {
+              <div class="route-duration">
+                <ion-icon name="time" class="summary-icon"></ion-icon>
+                <span>{{ formatearDuracion(expreso.duracionMinutos) }}</span>
+              </div>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Acciones -->
+      <div class="actions-container">
+        <ion-button expand="block" class="btn-whatsapp" (click)="abrirWhatsApp()">
+          <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+          Contactar por WhatsApp
+        </ion-button>
+
+        <ion-button expand="block" class="btn-maps" (click)="abrirMapa()">
+          <ion-icon name="map-outline" slot="start"></ion-icon>
+          Ver en Maps
+        </ion-button>
+
+        <ion-button expand="block" fill="outline" class="btn-secondary" (click)="volver()">
+          <ion-icon name="arrow-back" slot="start"></ion-icon>
+          Volver al Historial
+        </ion-button>
+      </div>
+    } @else {
+      <div class="empty-state">
+        <div class="empty-icon-container">
+          <ion-icon name="car-outline"></ion-icon>
+        </div>
+        <h2>Viaje no encontrado</h2>
+        <p>El viaje solicitado no existe o no se pudo cargar</p>
+        <ion-button (click)="volver()" expand="block" class="btn-primary">
+          <ion-icon name="arrow-back" slot="start"></ion-icon>
+          Volver al historial
+        </ion-button>
+      </div>
+    }
+  </div>
+</ion-content>

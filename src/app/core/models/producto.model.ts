@@ -5,13 +5,13 @@ export enum TipoProducto {
 }
 
 export interface Producto {
-  id: number;
+  id?: number;           // Opcional - se genera en el backend
   nombre: string;
   tipo: TipoProducto;
   peso?: string;
   precio: number;
   imagen?: string;
-  stock: number;
+  stock?: number;
   descripcion?: string;
-  activo: boolean;
+  activo?: boolean;      // Opcional - por defecto true en el backend
 }

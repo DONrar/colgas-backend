@@ -1,0 +1,138 @@
+.content-wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.header-section {
+  text-align: center;
+  margin: 30px 0 40px;
+
+  ion-icon {
+    font-size: 80px;
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: bold;
+    margin: 15px 0 5px;
+    color: var(--ion-color-dark);
+  }
+
+  .subtitle {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.summary-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  margin-bottom: 20px;
+
+  ion-card-header {
+    padding-bottom: 5px;
+  }
+
+  ion-card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+
+  ion-card-content {
+    padding-top: 15px;
+  }
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--ion-color-light);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+.info-icon {
+  width: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 32px;
+  }
+}
+
+.info-content {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .label {
+    font-size: 15px;
+    color: var(--ion-color-medium);
+  }
+
+  .value {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+}
+
+.total-item {
+  --background: rgba(var(--ion-color-success-rgb), 0.1);
+  --border-radius: 12px;
+  margin-top: 15px;
+  padding: 10px;
+
+  h2 {
+    font-size: 14px;
+    color: var(--ion-color-medium);
+    font-weight: 500;
+    margin: 0 0 5px 0;
+  }
+
+  .total-price {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--ion-color-success);
+    margin: 0;
+  }
+}
+
+.calculation-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 15px;
+  background: var(--ion-color-light);
+  border-radius: 12px;
+  margin-bottom: 30px;
+
+  ion-icon {
+    font-size: 20px;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: var(--ion-color-medium);
+    line-height: 1.5;
+  }
+}
+
+.button-container {
+  ion-button {
+    --border-radius: 12px;
+    height: 50px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+}

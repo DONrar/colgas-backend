@@ -1,0 +1,40 @@
+ <ion-header>
+      <ion-toolbar color="primary">
+        <ion-buttons slot="start">
+          <ion-button (click)="volver()">
+            <ion-icon name="arrow-back"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+        <ion-title>Seleccionar Destino</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content [fullscreen]="true">
+      <capacitor-google-map #map></capacitor-google-map>
+
+      @if (destinoSeleccionado) {
+        <ion-card class="info-card">
+          <ion-card-content>
+            <ion-text color="success">
+              <h3>✓ Destino Seleccionado</h3>
+              <p>Lat: {{ destinoLat?.toFixed(6) }}</p>
+              <p>Lng: {{ destinoLng?.toFixed(6) }}</p>
+            </ion-text>
+          </ion-card-content>
+        </ion-card>
+      }
+
+      <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="irAMiUbicacion()" color="light">
+          <ion-icon name="locate"></ion-icon>
+        </ion-fab-button>
+      </ion-fab>
+
+      @if (destinoSeleccionado) {
+        <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+          <ion-fab-button (click)="confirmarDestino()" color="success">
+            <ion-icon name="checkmark"></ion-icon>
+          </ion-fab-button>
+        </ion-fab>
+      }
+    </ion-content>

@@ -1,102 +1,376 @@
- <ion-header>
-      <ion-toolbar color="primary">
-        <ion-buttons slot="start">
-          <ion-back-button defaultHref="/tabs/productos"></ion-back-button>
-        </ion-buttons>
-        <ion-title>Carrito de Compras</ion-title>
-      </ion-toolbar>
-    </ion-header>
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/productos" text="Productos" style="--color: white;"></ion-back-button>
+    </ion-buttons>
 
-    <ion-content>
-      @if (items().length === 0) {
-        <div class="empty-cart">
-          <ion-icon name="cart" size="large" color="medium"></ion-icon>
-          <ion-text color="medium">
-            <h2>Tu carrito está vacío</h2>
-            <p>Agrega productos para continuar</p>
-          </ion-text>
-          <ion-button routerLink="/tabs/productos" expand="block">
-            Ver Productos
+    <ion-title>
+      <ion-icon name="cart" style="color: #3B9797;"></ion-icon>
+      &nbsp;Mi Carrito
+    </ion-title>
+
+    @if (items().length > 0) {
+      <ion-badge color="danger" slot="end" class="header-badge">
+        {{ cantidadTotal() }}
+      </ion-badge>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="cart-page">
+  <!-- Refresher para actualizar -->
+  <ion-refresher slot="fixed" (ionRefresh)="refrescarCarrito($event)">
+    <ion-refresher-content
+      pullingIcon="arrow-down"
+      pullingText="Desliza para actualizar"
+      refreshingSpinner="circles"
+      style="--color: #3B9797;">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="container">
+    @if (items().length === 0) {
+      <!-- Estado Vacío Mejorado -->
+      <div class="empty-state animated-fade-in">
+        <div class="empty-icon-container">
+          <div class="empty-icon-gradient">
+            <ion-icon name="cart-outline" class="empty-main-icon"></ion-icon>
+            <div class="empty-icon-overlay">
+              <ion-icon name="remove-circle" class="empty-overlay-icon"></ion-icon>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-content">
+          <h2 class="empty-title">Tu carrito está vacío</h2>
+          <p class="empty-message">Agrega algunos productos increíbles para comenzar tu pedido</p>
+
+          <ion-button
+            routerLink="/tabs/productos"
+            expand="block"
+            class="browse-button"
+            shape="round">
+            <ion-icon slot="start" name="storefront"></ion-icon>
+            Explorar Productos
           </ion-button>
         </div>
-      } @else {
-        <ion-list>
-          @for (item of items(); track item.producto.id) {
-            <ion-item-sliding>
-              <ion-item>
-                <div class="item-content">
-                  <div class="producto-info">
-                    <h3>{{ item.producto.nombre }}</h3>
+
+        <!-- Productos Sugeridos (Opcional) -->
+        <div class="suggestions">
+          <p class="suggestions-title">¿Necesitas ideas?</p>
+          <div class="suggestion-chips">
+            <ion-chip class="suggestion-chip" (click)="navegarATipo('PIPETA')">
+              <ion-icon name="flask"></ion-icon>
+              <ion-label>Pipetas</ion-label>
+            </ion-chip>
+            <ion-chip class="suggestion-chip" (click)="navegarATipo('ACCESORIO')">
+              <ion-icon name="construct"></ion-icon>
+              <ion-label>Accesorios</ion-label>
+            </ion-chip>
+            <ion-chip class="suggestion-chip" (click)="navegarATipo('REPUESTO')">
+              <ion-icon name="hardware-chip"></ion-icon>
+              <ion-label>Repuestos</ion-label>
+            </ion-chip>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="cart-content">
+        <!-- Header del Carrito Mejorado -->
+        <div class="cart-header animated-slide-in">
+          <div class="header-content">
+            <div class="header-text">
+              <h2 class="cart-title">Tu Pedido</h2>
+              <p class="cart-subtitle">{{ cantidadTotal() }} producto(s) en el carrito</p>
+            </div>
+            <ion-button
+              fill="clear"
+              size="small"
+              class="clear-cart-btn"
+              (click)="mostrarConfirmacionLimpiar()">
+              <ion-icon slot="start" name="trash-outline"></ion-icon>
+              Limpiar Todo
+            </ion-button>
+          </div>
+
+          <!-- Barra de Progreso -->
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width.%]="calcularProgreso()"></div>
+            </div>
+            <div class="progress-steps">
+              <span class="step active">Carrito</span>
+              <span class="step">Información</span>
+              <span class="step">Pago</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lista de Productos Mejorada -->
+        <ion-list lines="none" class="cart-list">
+          @for (item of items(); track item.producto.id || $index; let i = $index) {
+            <ion-item-sliding class="cart-item animated-fade-in" [style.animation-delay]="(i * 0.1) + 's'">
+              <ion-item class="product-item card-elevated" detail="false">
+                <!-- Imagen del Producto -->
+                <div class="product-image-container" slot="start">
+                  @if (item.producto.imagen) {
+                    <img
+                      [src]="item.producto.imagen"
+                      [alt]="item.producto.nombre"
+                      class="product-image"
+                      (click)="verDetalleProducto(item.producto)" />
+                  } @else {
+                    <div class="image-placeholder" (click)="verDetalleProducto(item.producto)">
+                      <div class="placeholder-icon" [class]="getTipoIcon(item.producto.tipo)">
+                        <ion-icon [name]="getTipoIcon(item.producto.tipo)"></ion-icon>
+                      </div>
+                    </div>
+                  }
+                  <div class="quantity-indicator">
+                    <span class="quantity-number">{{ item.cantidad }}</span>
+                  </div>
+                </div>
+
+                <!-- Contenido del Producto -->
+                <div class="product-content">
+                  <div class="product-header">
+                    <h3 class="product-name" (click)="verDetalleProducto(item.producto)">
+                      {{ item.producto.nombre }}
+                    </h3>
+                    <ion-button
+                      fill="clear"
+                      size="small"
+                      color="danger"
+                      (click)="eliminarItem(item)"
+                      class="delete-btn">
+                      <ion-icon slot="icon-only" name="close"></ion-icon>
+                    </ion-button>
+                  </div>
+
+                  <!-- Información del Producto -->
+                  <div class="product-info">
                     @if (item.producto.peso) {
-                      <ion-note color="medium">{{ item.producto.peso }}</ion-note>
+                      <span class="product-weight">
+                        <ion-icon name="scale"></ion-icon>
+                        {{ item.producto.peso }}
+                      </span>
                     }
-                    <p class="precio-unitario">
-                      \${{ formatearPrecio(item.producto.precio) }} c/u
-                    </p>
+
+                    <span class="product-type" [class]="item.producto.tipo?.toLowerCase()">
+                      <ion-icon [name]="getTipoIcon(item.producto.tipo)"></ion-icon>
+                      {{ getTipoNombre(item.producto.tipo) }}
+                    </span>
                   </div>
 
-                  <div class="cantidad-controls">
-                    <ion-button
-                      fill="clear"
-                      size="small"
-                      (click)="disminuirCantidad(item.producto.id)">
-                      <ion-icon slot="icon-only" name="remove"></ion-icon>
-                    </ion-button>
+                  <!-- Precio y Controles -->
+                  <div class="product-actions">
+                    <div class="price-section">
+                      <span class="unit-price">${{ formatearPrecio(item.producto.precio) }} c/u</span>
+                      <span class="subtotal-price">${{ formatearPrecio(item.subtotal) }}</span>
+                    </div>
 
-                    <span class="cantidad">{{ item.cantidad }}</span>
+                    <div class="quantity-controls">
+                      <ion-button
+                        fill="outline"
+                        size="small"
+                        class="quantity-btn decrease"
+                        (click)="disminuirCantidad(item)"
+                        [disabled]="item.cantidad === 1">
+                        <ion-icon slot="icon-only" name="remove"></ion-icon>
+                      </ion-button>
 
-                    <ion-button
-                      fill="clear"
-                      size="small"
-                      (click)="aumentarCantidad(item.producto.id)">
-                      <ion-icon slot="icon-only" name="add"></ion-icon>
-                    </ion-button>
+                      <span class="quantity-display">{{ item.cantidad }}</span>
+
+                      <ion-button
+                        fill="outline"
+                        size="small"
+                        class="quantity-btn increase"
+                        (click)="aumentarCantidad(item)"
+                        [disabled]="!tieneStockSuficiente(item)">
+                        <ion-icon slot="icon-only" name="add"></ion-icon>
+                      </ion-button>
+                    </div>
                   </div>
 
-                  <div class="subtotal">
-                    <strong>\${{ formatearPrecio(item.subtotal) }}</strong>
-                  </div>
+                  <!-- Información de Stock -->
+                  @if (!tieneStockSuficiente(item)) {
+                    <div class="stock-warning">
+                      <ion-icon name="warning"></ion-icon>
+                      <span>{{ obtenerMensajeStock(item) }}</span>
+                    </div>
+                  }
                 </div>
               </ion-item>
 
-              <ion-item-options side="end">
+              <!-- Opciones de Swipe -->
+              <ion-item-options side="end" class="swipe-options">
                 <ion-item-option
                   color="danger"
-                  (click)="eliminar(item.producto.id)">
-                  <ion-icon slot="icon-only" name="trash"></ion-icon>
+                  (click)="eliminarItem(item)"
+                  class="swipe-delete">
+                  <div class="option-content">
+                    <ion-icon name="trash" class="option-icon"></ion-icon>
+                    <span class="option-text">Eliminar</span>
+                  </div>
+                </ion-item-option>
+
+                <ion-item-option
+                  color="warning"
+                  class="swipe-save"
+                  (click)="guardarParaMasTarde(item)">
+                  <div class="option-content">
+                    <ion-icon name="bookmark" class="option-icon"></ion-icon>
+                    <span class="option-text">Guardar</span>
+                  </div>
+                </ion-item-option>
+
+                <ion-item-option
+                  color="primary"
+                  class="swipe-details"
+                  (click)="verDetalleProducto(item.producto)">
+                  <div class="option-content">
+                    <ion-icon name="eye" class="option-icon"></ion-icon>
+                    <span class="option-text">Ver</span>
+                  </div>
                 </ion-item-option>
               </ion-item-options>
             </ion-item-sliding>
           }
         </ion-list>
 
-        <ion-card>
-          <ion-card-content>
-            <div class="resumen">
-              <div class="resumen-item">
-                <span>Productos ({{ cantidadTotal() }})</span>
-                <span>\${{ formatearPrecio(total()) }}</span>
+        <!-- Resumen del Pedido Mejorado -->
+        <ion-card class="summary-card card-elevated animated-slide-up">
+          <ion-card-header class="summary-header">
+            <div class="header-icon-container primary">
+              <ion-icon name="receipt"></ion-icon>
+            </div>
+            <div>
+              <ion-card-title class="summary-title">Resumen del Pedido</ion-card-title>
+              <ion-card-subtitle>Detalles de tu compra</ion-card-subtitle>
+            </div>
+          </ion-card-header>
+
+          <ion-card-content class="summary-content">
+            <div class="summary-items">
+              <div class="summary-row">
+                <div class="summary-label-container">
+                  <span class="summary-label">Subtotal</span>
+                  <span class="summary-description">{{ cantidadTotal() }} producto(s)</span>
+                </div>
+                <span class="summary-value">${{ formatearPrecio(total()) }}</span>
               </div>
-              <div class="resumen-item total">
-                <strong>Total a Pagar</strong>
-                <strong class="precio-total">\${{ formatearPrecio(total()) }}</strong>
+
+              <div class="summary-row highlight">
+                <div class="summary-label-container">
+                  <span class="summary-label">Envío</span>
+                  <span class="summary-description">Entrega estándar</span>
+                </div>
+                <span class="summary-value free-shipping">Gratis</span>
+              </div>
+
+              <div class="summary-row discount">
+                <div class="summary-label-container">
+                  <span class="summary-label">Descuentos</span>
+                  <span class="summary-description">Promociones aplicadas</span>
+                </div>
+                <span class="summary-value">-$0</span>
+              </div>
+
+              <!-- Divider personalizado -->
+              <div class="summary-divider"></div>
+
+              <div class="summary-row total-row">
+                <div class="total-label-container">
+                  <span class="total-label">Total a Pagar</span>
+                  <span class="total-description">Incluye impuestos</span>
+                </div>
+                <span class="total-price">${{ formatearPrecio(total()) }}</span>
+              </div>
+            </div>
+
+            <!-- Beneficios -->
+            <div class="benefits-grid">
+              <div class="benefit-item">
+                <ion-icon name="shield-checkmark" color="success"></ion-icon>
+                <span>Compra 100% segura</span>
+              </div>
+              <div class="benefit-item">
+                <ion-icon name="time" color="primary"></ion-icon>
+                <span>Entrega rápida</span>
+              </div>
+              <div class="benefit-item">
+                <ion-icon name="headset" color="warning"></ion-icon>
+                <span>Soporte 24/7</span>
               </div>
             </div>
           </ion-card-content>
         </ion-card>
-      }
-    </ion-content>
 
-    @if (items().length > 0) {
-      <ion-footer>
-        <ion-toolbar>
-          <ion-button
-            expand="block"
-            size="large"
-            (click)="procederAlCheckout()">
-            <ion-icon slot="start" name="checkmark"></ion-icon>
-            Proceder al Pago
-          </ion-button>
-        </ion-toolbar>
-      </ion-footer>
+        <!-- Información Adicional -->
+        <ion-card class="info-card card-elevated animated-slide-up" style="animation-delay: 0.1s;">
+          <ion-card-content class="info-content">
+            <div class="info-item">
+              <ion-icon name="information-circle" color="primary"></ion-icon>
+              <div class="info-text">
+                <h4>¿Necesitas ayuda?</h4>
+                <p>Contacta a nuestro equipo de soporte para cualquier duda sobre tu pedido</p>
+              </div>
+            </div>
+            <ion-button fill="clear" size="small" class="contact-btn" (click)="contactarSoporte()">
+              <ion-icon slot="start" name="chatbubble"></ion-icon>
+              Contactar Soporte
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+
+        <!-- Espacio para el footer -->
+        <div class="footer-spacer"></div>
+      </div>
     }
+  </div>
+
+  <!-- Toast para mensajes -->
+  <ion-toast
+    [isOpen]="mostrarToast"
+    [message]="mensajeToast"
+    [duration]="3000"
+    (didDismiss)="mostrarToast = false"
+    style="--background: #3B9797; --color: white;">
+  </ion-toast>
+
+  <!-- Alert para confirmar limpieza -->
+  <ion-alert
+    [isOpen]="mostrarAlertLimpiar"
+    header="Limpiar Carrito"
+    message="¿Estás seguro de que quieres eliminar todos los productos del carrito?"
+    [buttons]="alertButtons"
+    (didDismiss)="mostrarAlertLimpiar = false">
+  </ion-alert>
+</ion-content>
+
+@if (items().length > 0) {
+  <ion-footer class="checkout-footer animated-slide-up">
+    <ion-toolbar>
+      <div class="footer-content">
+        <div class="total-display">
+          <div class="total-info">
+            <span class="total-label">Total:</span>
+            <span class="total-amount">${{ formatearPrecio(total()) }}</span>
+          </div>
+          <span class="items-count">{{ cantidadTotal() }} producto(s)</span>
+        </div>
+
+        <ion-button
+          expand="block"
+          size="large"
+          class="checkout-button"
+          (click)="procederAlCheckout()"
+          [disabled]="!puedeProcederCheckout()">
+          <ion-icon slot="start" name="lock-closed"></ion-icon>
+          Proceder al Pago
+          <ion-icon slot="end" name="arrow-forward"></ion-icon>
+        </ion-button>
+      </div>
+    </ion-toolbar>
+  </ion-footer>
+}
