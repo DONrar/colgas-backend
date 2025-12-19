@@ -1,0 +1,50 @@
+ .stock-info {
+    text-align: center;
+
+    h2 {
+      margin-bottom: 2rem;
+      color: var(--ion-color-primary);
+    }
+  }
+
+  .stock-actual, .stock-nuevo {
+    margin: 2rem 0;
+    padding: 1rem;
+    border-radius: 8px;
+    background: var(--ion-color-light);
+
+    ion-label {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--ion-color-medium);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 3rem;
+      font-weight: bold;
+    }
+  }
+
+  .stock-nuevo {
+    h1 {
+      color: var(--ion-color-primary);
+
+      &.stock-bajo {
+        color: var(--ion-color-warning);
+      }
+
+      &.stock-cero {
+        color: var(--ion-color-danger);
+      }
+    }
+  }
+
+  .ajuste-rapido {
+    display: flex;
+    gap: 0.5rem;
+    margin: 2rem 0;
+    justify-content: center;
+    flex-wrap: wrap;
+  }

@@ -1,0 +1,117 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Gestión de Pedidos</ion-title>
+  </ion-toolbar>
+
+  <!-- Estadísticas rápidas -->
+  <ion-toolbar>
+    <div class="stats-container">
+      <div class="stat-item">
+        <ion-badge color="warning">{{ estadisticas().pendientes }}</ion-badge>
+        <span>Pendientes</span>
+      </div>
+      <div class="stat-item">
+        <ion-badge color="primary">{{ estadisticas().confirmados }}</ion-badge>
+        <span>Confirmados</span>
+      </div>
+      <div class="stat-item">
+        <ion-badge color="tertiary">{{ estadisticas().enCamino }}</ion-badge>
+        <span>En Camino</span>
+      </div>
+      <div class="stat-item">
+        <ion-badge color="success">{{ estadisticas().entregados }}</ion-badge>
+        <span>Entregados</span>
+      </div>
+    </div>
+  </ion-toolbar>
+
+  <!-- Filtros -->
+  <ion-toolbar>
+    <ion-segment [value]="estadoSeleccionado()" (ionChange)="cambiarEstado($event)">
+      <ion-segment-button value="TODOS">
+        <ion-label>Todos</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="PENDIENTE">
+        <ion-label>Pendientes</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="CONFIRMADO">
+        <ion-label>Confirmados</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="EN_CAMINO">
+        <ion-label>En Camino</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="ENTREGADO">
+        <ion-label>Entregado</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (cargando()) {
+    <div class="spinner-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Cargando pedidos...</p>
+    </div>
+  } @else if (pedidosFiltrados().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="time-outline" size="large"></ion-icon>
+      <p>No hay pedidos {{ estadoSeleccionado() === 'TODOS' ? '' : 'en este estado' }}</p>
+    </div>
+  } @else {
+    <ion-grid>
+      <ion-row>
+        @for (pedido of pedidosFiltrados(); track pedido.id) {
+          <ion-col size="12" sizeMd="6" sizeLg="4">
+            <ion-card>
+              <ion-card-header>
+                <div class="pedido-header">
+                  <div>
+                    <ion-card-title>Pedido #{{ pedido.id }}</ion-card-title>
+                    <p class="fecha">{{ formatearFecha(pedido.fechaPedido) }}</p>
+                  </div>
+                  <ion-chip [color]="getColorEstado(pedido.estado)">
+                    <ion-label>{{ getTextoEstado(pedido.estado) }}</ion-label>
+                  </ion-chip>
+                </div>
+              </ion-card-header>
+
+              <ion-card-content>
+                <div class="pedido-info">
+                  <p><strong>Cliente:</strong> {{ pedido.cliente.nombre }}</p>
+                  <p><strong>Teléfono:</strong> {{ pedido.cliente.telefono }}</p>
+                  <p><strong>Productos:</strong> {{ pedido.items.length }} items</p>
+                  <p class="total"><strong>Total:</strong> ${{ pedido.total | number:'1.2-2' }}</p>
+                  <p><strong>Pago:</strong> {{ pedido.metodoPago }}</p>
+
+                  @if (pedido.pagaCon && pedido.vueltas) {
+                    <p class="vueltas">
+                      <strong>Paga con:</strong> ${{ pedido.pagaCon | number:'1.2-2' }}<br>
+                      <strong>Vueltas:</strong> ${{ pedido.vueltas | number:'1.2-2' }}
+                    </p>
+                  }
+
+                  @if (pedido.direccionEntrega) {
+                    <p class="direccion">
+                      <strong>Dirección:</strong><br>
+                      {{ pedido.direccionEntrega }}
+                    </p>
+                  }
+                </div>
+
+                <ion-button expand="block" (click)="verDetalle(pedido.id)">
+                  <ion-icon slot="start" name="eye"></ion-icon>
+                  Ver Detalle y Cambiar Estado
+                </ion-button>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        }
+      </ion-row>
+    </ion-grid>
+  }
+</ion-content>

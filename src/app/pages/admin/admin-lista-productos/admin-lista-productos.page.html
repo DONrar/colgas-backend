@@ -1,0 +1,95 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Productos</ion-title>
+    <ion-button slot="end" fill="clear" (click)="irACrear()">
+      <ion-icon slot="icon-only" name="add"></ion-icon>
+    </ion-button>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Buscar productos..."
+      (ionInput)="buscarProductos($event)"
+      [debounce]="300">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  @if (cargando()) {
+    <div class="spinner-container">
+      <ion-spinner name="crescent"></ion-spinner>
+    </div>
+  } @else if (productosFiltrados().length === 0) {
+    <div class="empty-state">
+      <ion-icon name="search" size="large"></ion-icon>
+      <p>No se encontraron productos</p>
+      <ion-button (click)="irACrear()">
+        <ion-icon slot="start" name="add"></ion-icon>
+        Crear Producto
+      </ion-button>
+    </div>
+  } @else {
+    <ion-grid>
+      <ion-row>
+        @for (producto of productosFiltrados(); track producto.id) {
+          <ion-col size="12" sizeMd="6" sizeLg="4">
+            <ion-card>
+              @if (producto.imagen) {
+                <img [src]="producto.imagen" alt="{{ producto.nombre }}" />
+              }
+
+              <ion-card-header>
+                <div class="card-header-content">
+                  <ion-card-title>{{ producto.nombre }}</ion-card-title>
+                  <ion-chip [color]="getColorStock(producto.stock)">
+                    <ion-label>Stock: {{ producto.stock ?? 0 }}</ion-label>
+                  </ion-chip>
+                </div>
+              </ion-card-header>
+
+              <ion-card-content>
+                <div class="producto-info">
+                  <p><strong>Tipo:</strong> {{ producto.tipo }}</p>
+                  @if (producto.peso) {
+                    <p><strong>Peso:</strong> {{ producto.peso }}</p>
+                  }
+                  <p class="precio"><strong>Precio:</strong> ${{ producto.precio | number:'1.2-2' }}</p>
+                  @if (producto.descripcion) {
+                    <p class="descripcion">{{ producto.descripcion }}</p>
+                  }
+                </div>
+
+                <div class="botones-accion">
+                  <ion-button
+                    expand="block"
+                    fill="outline"
+                    (click)="abrirModalStock(producto)">
+                    <ion-icon slot="start" name="cube"></ion-icon>
+                    Stock
+                  </ion-button>
+                  <ion-button expand="block" (click)="irAEditar(producto.id!)">
+                    <ion-icon slot="start" name="create"></ion-icon>
+                    Editar
+                  </ion-button>
+                  <ion-button
+                    expand="block"
+                    color="danger"
+                    fill="outline"
+                    (click)="confirmarEliminar(producto)">
+                    <ion-icon slot="start" name="trash"></ion-icon>
+                    Eliminar
+                  </ion-button>
+                </div>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        }
+      </ion-row>
+    </ion-grid>
+  }
+</ion-content>

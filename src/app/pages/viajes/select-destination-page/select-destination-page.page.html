@@ -1,0 +1,124 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" style="--color: white;">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="map-outline" style="color: #3B9797;"></ion-icon>
+      &nbsp;Seleccionar Destino
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="centerOnStartLocation()" style="--color: white;">
+        <ion-icon name="locate-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Barra de búsqueda flotante -->
+  <div class="search-container" (click)="$event.stopPropagation()">
+    <div class="search-box">
+      <ion-icon name="search" class="search-icon"></ion-icon>
+      <input
+        #searchInput
+        type="text"
+        placeholder="Buscar dirección o lugar..."
+        class="search-input"
+        (focus)="onSearchFocus()"
+      />
+      <ion-button
+        *ngIf="searchQuery"
+        fill="clear"
+        size="small"
+        (click)="clearSearch()"
+        class="clear-btn">
+        <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+
+    <!-- Sugerencias de búsqueda -->
+    <div class="search-suggestions" *ngIf="showSuggestions && predictions.length > 0">
+      <div
+        class="suggestion-item"
+        *ngFor="let prediction of predictions"
+        (click)="selectPrediction(prediction)">
+        <ion-icon name="location" class="suggestion-icon"></ion-icon>
+        <div class="suggestion-text">
+          <div class="suggestion-main">{{ prediction.structured_formatting.main_text }}</div>
+          <div class="suggestion-secondary">{{ prediction.structured_formatting.secondary_text }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje cuando no hay resultados -->
+    <div class="search-suggestions" *ngIf="showSuggestions && searchQuery && predictions.length === 0">
+      <div class="no-results">
+        <ion-icon name="sad-outline"></ion-icon>
+        <p>No se encontraron resultados</p>
+      </div>
+    </div>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true" [scrollY]="false" [scrollX]="false">
+  <!-- Contenedor del mapa -->
+  <div #map id="map" class="map-container"></div>
+
+  <!-- Instrucciones iniciales -->
+  <div class="instructions-overlay" *ngIf="!selectedLocation && !isLoading && !showSuggestions" (click)="$event.stopPropagation()">
+    <div class="instruction-bubble">
+      <ion-icon name="information-circle" class="instruction-icon"></ion-icon>
+      <div class="instruction-text">
+        <strong>Dos formas de seleccionar:</strong>
+        <span>1. Busca por nombre o dirección</span>
+        <span>2. Toca directamente en el mapa</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="map-footer" (click)="$event.stopPropagation()">
+    <!-- Sin selección -->
+    <div class="footer-state" *ngIf="!selectedLocation && !isLoading">
+      <div class="state-indicator">
+        <div class="pulse-dot"></div>
+        <span>Busca o selecciona un destino</span>
+      </div>
+    </div>
+
+    <!-- Con selección -->
+    <div class="footer-state selected" *ngIf="selectedLocation && !isLoading">
+      <div class="selection-info">
+        <div class="selection-status">
+          <ion-icon name="checkmark-circle" class="success-icon"></ion-icon>
+          <div class="location-coords">
+            <span class="coord-text">{{ selectedLocationName || 'Destino seleccionado' }}</span>
+            <span class="coord-values">{{ selectedLocation.lat | number:'1.4-4' }}, {{ selectedLocation.lng | number:'1.4-4' }}</span>
+          </div>
+        </div>
+
+        <div class="footer-actions">
+          <ion-button fill="clear" size="small" class="btn-clear" (click)="clearSelection()">
+            <ion-icon name="close" slot="start"></ion-icon>
+            Cambiar
+          </ion-button>
+
+          <ion-button class="btn-confirm" (click)="confirmDestination()">
+            <ion-icon name="checkmark" slot="start"></ion-icon>
+            Confirmar
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cargando -->
+    <div class="footer-state loading" *ngIf="isLoading">
+      <div class="loading-indicator">
+        <ion-spinner name="crescent"></ion-spinner>
+        <span>{{ loadingMessage }}</span>
+      </div>
+    </div>
+  </div>
+</ion-content>

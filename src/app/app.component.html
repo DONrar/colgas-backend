@@ -1,3 +1,84 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-menu contentId="main-content" type="overlay" class="custom-menu">
+    <ion-header>
+      <ion-toolbar style="--background: #132440; --color: white;">
+        <ion-title>Navegación</ion-title>
+        <ion-buttons slot="end">
+          <ion-button fill="clear" (click)="cerrarMenu()">
+            <ion-icon name="close-outline" style="--color: white;"></ion-icon>
+          </ion-button>
+
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="menu-content">
+      <!-- Header del menú -->
+      <div class="menu-header">
+        <div class="app-logo">
+          <div class="logo-icon">
+            <ion-icon name="cash-outline"></ion-icon>
+          </div>
+          <div class="app-info">
+            <h2>ColGas</h2>
+            <p>Panel Administrativo</p>
+          </div>
+        </div>
+      </div>
+
+      <ion-list class="menu-list">
+        <ion-menu-toggle auto-hide="false">
+          <!-- Dashboard -->
+          <ion-item routerLink="/admin-dashboard" routerLinkActive="selected" detail="false" class="menu-item">
+            <div class="menu-icon dashboard" slot="start">
+              <ion-icon name="home-outline"></ion-icon>
+            </div>
+            <ion-label>dashboard</ion-label>
+          </ion-item>
+
+
+          <!-- Clientes -->
+          <ion-item routerLink="/clientes" routerLinkActive="selected" detail="false" class="menu-item">
+            <div class="menu-item-content">
+              <div class="menu-icon clients">
+                <ion-icon name="people-outline"></ion-icon>
+              </div>
+              <ion-label>Clientes</ion-label>
+            </div>
+          </ion-item>
+
+          <!-- Búsqueda -->
+          <ion-item routerLink="/busqueda" routerLinkActive="selected" detail="false" class="menu-item">
+            <div class="menu-item-content">
+              <div class="menu-icon search">
+                <ion-icon name="search-outline"></ion-icon>
+              </div>
+              <ion-label>Búsqueda</ion-label>
+            </div>
+          </ion-item>
+
+          <!-- Configuración -->
+          <ion-item routerLink="/configuracion" routerLinkActive="selected" detail="false" class="menu-item">
+            <div class="menu-item-content">
+              <div class="menu-icon settings">
+                <ion-icon name="settings-outline"></ion-icon>
+              </div>
+              <ion-label>Configuración</ion-label>
+            </div>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+
+      <!-- Footer del menú -->
+      <div class="menu-footer">
+        <div class="app-version">
+          <ion-icon name="cube-outline"></ion-icon>
+          <span>v1.0.0</span>
+        </div>
+        <p class="footer-text">© 2025 Fiados App</p>
+      </div>
+    </ion-content>
+  </ion-menu>
+
+  <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>

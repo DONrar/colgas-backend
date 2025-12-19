@@ -1,0 +1,333 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" style="--color: white;">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="receipt-outline" style="color: #3B9797;"></ion-icon>
+      &nbsp;Resumen del Viaje
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="compartirViaje()" style="--color: white;">
+        <ion-icon name="share-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Loading State -->
+  @if (isLoading) {
+  <div class="loading-container">
+    <div class="loading-spinner">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Calculando información del viaje...</p>
+    </div>
+  </div>
+  }
+
+  <!-- Contenido principal cuando hay información -->
+  @if (!isLoading && tripInfo) {
+  <div class="container">
+    <!-- Banner de Confirmación -->
+    <div class="success-banner">
+      <div class="success-icon-container">
+        <div class="success-icon-circle">
+          <ion-icon name="checkmark-done"></ion-icon>
+        </div>
+      </div>
+      <div class="success-message">
+        <h1>¡Ruta Calculada!</h1>
+        <p class="success-subtitle">Revisa los detalles de tu viaje express</p>
+        <div class="success-details">
+          <span class="badge-primary">Viaje Express</span>
+          <span class="badge-success">Disponible</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tarjetas de Resumen Rápido -->
+    <div class="summary-cards">
+      <ion-card class="card-elevated summary-card">
+        <ion-card-content>
+          <div class="summary-item">
+            <div class="summary-icon-container primary">
+              <ion-icon name="navigate-outline"></ion-icon>
+            </div>
+            <div class="summary-text">
+              <h3>Distancia</h3>
+              <p>{{ tripInfo.distance }} km</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="card-elevated summary-card">
+        <ion-card-content>
+          <div class="summary-item">
+            <div class="summary-icon-container warning">
+              <ion-icon name="time-outline"></ion-icon>
+            </div>
+            <div class="summary-text">
+              <h3>Tiempo Estimado</h3>
+              <p>{{ tripInfo.duration }} min</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card class="card-elevated summary-card">
+        <ion-card-content>
+          <div class="summary-item">
+            <div class="summary-icon-container success">
+              <ion-icon name="cash-outline"></ion-icon>
+            </div>
+            <div class="summary-text">
+              <h3>Total a Pagar</h3>
+              <p>{{ formatCurrency(tripInfo.totalPrice) }}</p>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Detalles del Cálculo -->
+    <ion-card class="card-elevated">
+      <ion-card-header class="card-header-custom">
+        <div class="card-title-with-icon">
+          <div class="title-icon-container primary">
+            <ion-icon name="calculator-outline"></ion-icon>
+          </div>
+          <ion-card-title>Cálculo del Viaje</ion-card-title>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="calculation-details">
+          <!-- Tarifa por kilómetro -->
+          <div class="calc-row">
+            <div class="calc-label">
+              <ion-icon name="pricetag-outline"></ion-icon>
+              <span>Tarifa por kilómetro</span>
+            </div>
+            <div class="calc-value">{{ formatCurrency(tripInfo.pricePerKm) }}</div>
+          </div>
+
+          <!-- Distancia -->
+          <div class="calc-row">
+            <div class="calc-label">
+              <ion-icon name="navigate-outline"></ion-icon>
+              <span>Distancia del viaje</span>
+            </div>
+            <div class="calc-value">{{ tripInfo.distance }} km</div>
+          </div>
+
+          <div class="calc-divider"></div>
+
+          <!-- Operación -->
+          <div class="calc-operation">
+            <div class="operation-text">
+              {{ tripInfo.distance }} km × {{ formatCurrency(tripInfo.pricePerKm) }}/km
+            </div>
+          </div>
+
+          <div class="calc-divider"></div>
+
+          <!-- Total -->
+          <div class="calc-row calc-total">
+            <div class="calc-label">
+              <ion-icon name="checkmark-circle"></ion-icon>
+              <span>Total del viaje</span>
+            </div>
+            <div class="calc-value total-amount">{{ formatCurrency(tripInfo.totalPrice) }}</div>
+          </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="calc-info">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          <span>El tiempo estimado de {{ tripInfo.duration }} minutos es solo referencial y puede variar según el tráfico</span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Información de Ubicaciones -->
+    <ion-card class="card-elevated">
+      <ion-card-header class="card-header-custom">
+        <div class="card-title-with-icon">
+          <div class="title-icon-container success">
+            <ion-icon name="location-outline"></ion-icon>
+          </div>
+          <ion-card-title>Ubicaciones del Viaje</ion-card-title>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="locations-container">
+          <div class="route-line">
+            <div class="route-point start">
+              <div class="route-marker primary">
+                <ion-icon name="play-forward"></ion-icon>
+              </div>
+            </div>
+            <div class="route-path"></div>
+            <div class="route-point end">
+              <div class="route-marker warning">
+                <ion-icon name="flag"></ion-icon>
+              </div>
+            </div>
+          </div>
+
+          <div class="locations-info">
+            <div class="location-detail">
+              <h4>Origen</h4>
+              <p class="location-address">{{ getStartAddress() }}</p>
+              <div class="location-meta">
+                <span class="location-coordinates" (click)="copyCoordinates(startLocation)">
+                  <ion-icon name="copy-outline"></ion-icon>
+                  Copiar coordenadas
+                </span>
+              </div>
+            </div>
+
+            <div class="location-detail">
+              <h4>Destino</h4>
+              <p class="location-address">{{ getEndAddress() }}</p>
+              <div class="location-meta">
+                <span class="location-coordinates" (click)="copyCoordinates(endLocation)">
+                  <ion-icon name="copy-outline"></ion-icon>
+                  Copiar coordenadas
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Información Adicional -->
+    <ion-card class="card-elevated">
+      <ion-card-header class="card-header-custom">
+        <div class="card-title-with-icon">
+          <div class="title-icon-container warning">
+            <ion-icon name="information-circle-outline"></ion-icon>
+          </div>
+          <ion-card-title>Información Importante</ion-card-title>
+        </div>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="info-grid">
+          <div class="info-item">
+            <div class="info-icon-container primary">
+              <ion-icon name="shield-checkmark-outline"></ion-icon>
+            </div>
+            <div class="info-content">
+              <h4>Seguridad Garantizada</h4>
+              <p>Conductores verificados y seguimiento en tiempo real</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon-container info">
+              <ion-icon name="card-outline"></ion-icon>
+            </div>
+            <div class="info-content">
+              <h4>Múltiples Métodos de Pago</h4>
+              <p>Efectivo, tarjeta o transferencia al finalizar el viaje</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon-container success">
+              <ion-icon name="time-outline"></ion-icon>
+            </div>
+            <div class="info-content">
+              <h4>Precio Fijo por Distancia</h4>
+              <p>El costo se calcula únicamente por la distancia recorrida</p>
+            </div>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Acciones Principales -->
+    <div class="action-buttons">
+      <ion-button expand="block" class="btn-success" size="large" (click)="confirmTrip()" [disabled]="isProcessing">
+        @if (isProcessing) {
+        <ion-spinner name="crescent" slot="start"></ion-spinner>
+        Confirmando...
+        } @else {
+        <div class="button-content">
+          <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+          <div class="button-text">
+            <span class="button-title">Confirmar Viaje</span>
+            <span class="button-subtitle">{{ formatCurrency(tripInfo.totalPrice) }}</span>
+          </div>
+        </div>
+        }
+      </ion-button>
+
+      <div class="secondary-actions">
+        <ion-button expand="block" class="btn-secondary" (click)="modificarViaje()">
+          <ion-icon name="create-outline" slot="start"></ion-icon>
+          Modificar Ruta
+        </ion-button>
+
+        <ion-button expand="block" fill="clear" class="btn-text" (click)="guardarParaDespues()">
+          <ion-icon name="bookmark-outline" slot="start"></ion-icon>
+          Guardar para después
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Acciones Secundarias -->
+    <div class="additional-actions">
+      <ion-button expand="block" fill="clear" class="btn-outline" (click)="startNewTrip()">
+        <ion-icon name="close-circle" slot="start"></ion-icon>
+        Cancelar y Volver
+      </ion-button>
+
+      <ion-button expand="block" fill="clear" class="btn-text" routerLink="/tabs/historial">
+        <ion-icon name="list-outline" slot="start"></ion-icon>
+        Ver Historial de Viajes
+      </ion-button>
+    </div>
+
+    <!-- Footer Informativo -->
+    <div class="info-footer">
+      <div class="footer-item">
+        <ion-icon name="shield-checkmark-outline" color="success"></ion-icon>
+        <span>Tu viaje está cubierto por nuestro seguro de responsabilidad</span>
+      </div>
+      <div class="footer-item">
+        <ion-icon name="call-outline" color="primary"></ion-icon>
+        <span>Soporte 24/7: 01-800-123-4567</span>
+      </div>
+    </div>
+  </div>
+  }
+
+  <!-- Estado Vacío / Error -->
+  @if (!isLoading && !tripInfo) {
+  <div class="empty-state">
+    <div class="empty-icon-container">
+      <ion-icon name="alert-circle-outline"></ion-icon>
+    </div>
+    <h2>No se pudo calcular el viaje</h2>
+    <p>Ocurrió un error al calcular la información de tu viaje</p>
+    <div class="empty-actions">
+      <ion-button expand="block" class="btn-primary" (click)="startNewTrip()">
+        <ion-icon name="arrow-back" slot="start"></ion-icon>
+        Volver al Inicio
+      </ion-button>
+      <ion-button expand="block" fill="clear" class="btn-text" (click)="loadTripInfo()">
+        <ion-icon name="refresh-outline" slot="start"></ion-icon>
+        Reintentar
+      </ion-button>
+    </div>
+  </div>
+  }
+</ion-content>

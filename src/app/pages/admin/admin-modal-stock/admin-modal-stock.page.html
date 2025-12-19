@@ -1,0 +1,61 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Ajustar Stock</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="stock-info">
+    <h2>{{ producto.nombre }}</h2>
+
+    <div class="stock-actual">
+      <ion-label>Stock Actual</ion-label>
+      <h1>{{ stockActual }}</h1>
+    </div>
+
+    <div class="ajuste-rapido">
+      <ion-button (click)="ajustarCantidad(-10)" color="danger">
+        -10
+      </ion-button>
+      <ion-button (click)="ajustarCantidad(-1)" color="danger">
+        -1
+      </ion-button>
+      <ion-button (click)="ajustarCantidad(1)" color="success">
+        +1
+      </ion-button>
+      <ion-button (click)="ajustarCantidad(10)" color="success">
+        +10
+      </ion-button>
+    </div>
+
+    <ion-item>
+      <ion-label position="stacked">Ajuste Manual</ion-label>
+      <ion-input
+        [(ngModel)]="cantidadCambio"
+        type="number"
+        placeholder="0">
+      </ion-input>
+    </ion-item>
+
+    <div class="stock-nuevo">
+      <ion-label>Nuevo Stock</ion-label>
+      <h1 [class.stock-bajo]="nuevoStock <= 10"
+          [class.stock-cero]="nuevoStock === 0">
+        {{ nuevoStock }}
+      </h1>
+    </div>
+
+    <ion-button
+      expand="block"
+      (click)="guardarCambios()"
+      [disabled]="cantidadCambio === 0">
+      Guardar Cambios
+    </ion-button>
+  </div>
+</ion-content>
+ 

@@ -1,0 +1,382 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="refresh()" style="--color: white;">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="stats-chart" style="color: #3B9797;"></ion-icon>
+      &nbsp;Panel de Control
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="notificaciones()" style="--color: white;">
+        <ion-icon name="notifications-outline"></ion-icon>
+        @if (alertas() > 0) {
+          <ion-badge class="notification-badge">{{ alertas() }}</ion-badge>
+        }
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Loading State -->
+  @if (cargando()) {
+    <div class="loading-container">
+      <div class="loading-spinner">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando datos del panel...</p>
+      </div>
+    </div>
+  }
+
+  @if (!cargando()) {
+    <div class="container">
+      <!-- Banner de Bienvenida -->
+      <div class="welcome-banner">
+        <div class="welcome-content">
+          <h1>Panel de Control</h1>
+          <p class="welcome-subtitle">Administración del Sistema</p>
+          <div class="welcome-stats">
+            <span class="stat-chip">
+              <ion-icon name="time-outline"></ion-icon>
+              Actualizado ahora
+            </span>
+            <span class="stat-chip">
+              <ion-icon name="server-outline"></ion-icon>
+              Sistema: {{ systemStatus() }}
+            </span>
+          </div>
+        </div>
+        <div class="welcome-icon-container">
+          <div class="welcome-icon-circle">
+            <ion-icon name="shield-checkmark-outline"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alertas Críticas -->
+      @if (alertas() > 0) {
+        <ion-card class="card-elevated alert-card">
+          <ion-card-header class="card-header-custom">
+            <div class="card-title-with-icon">
+              <div class="title-icon-container warning">
+                <ion-icon name="alert-circle"></ion-icon>
+              </div>
+              <ion-card-title>Atención Requerida</ion-card-title>
+            </div>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="alert-grid">
+              @if (pedidosPendientes() > 0) {
+                <div class="alert-item">
+                  <div class="alert-icon-container warning">
+                    <ion-icon name="time-outline"></ion-icon>
+                  </div>
+                  <div class="alert-content">
+                    <h3>Pedidos Pendientes</h3>
+                    <p>{{ pedidosPendientes() }} pedidos requieren confirmación</p>
+                  </div>
+                  <div class="alert-action">
+                    <ion-button fill="clear" class="btn-text" (click)="irAPedidos()">
+                      Revisar
+                      <ion-icon name="arrow-forward" slot="end"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+              }
+
+              @if (productosStockBajo() > 0) {
+                <div class="alert-item">
+                  <div class="alert-icon-container danger">
+                    <ion-icon name="alert-circle-outline"></ion-icon>
+                  </div>
+                  <div class="alert-content">
+                    <h3>Stock Bajo</h3>
+                    <p>{{ productosStockBajo() }} productos necesitan reposición</p>
+                  </div>
+                  <div class="alert-action">
+                    <ion-button fill="clear" class="btn-text" (click)="irAProductos()">
+                      Revisar
+                      <ion-icon name="arrow-forward" slot="end"></ion-icon>
+                    </ion-button>
+                  </div>
+                </div>
+              }
+            </div>
+          </ion-card-content>
+        </ion-card>
+      }
+
+      <!-- Resumen General de Pedidos -->
+      <div class="summary-cards">
+        <ion-card class="card-elevated summary-card">
+          <ion-card-content>
+            <div class="summary-item">
+              <div class="summary-icon-container warning">
+                <ion-icon name="time-outline"></ion-icon>
+              </div>
+              <div class="summary-text">
+                <h3>Pendientes</h3>
+                <p class="summary-value">{{ pedidosPendientes() }}</p>
+                <span class="summary-status">Por confirmar</span>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="card-elevated summary-card">
+          <ion-card-content>
+            <div class="summary-item">
+              <div class="summary-icon-container success">
+                <ion-icon name="checkmark-circle"></ion-icon>
+              </div>
+              <div class="summary-text">
+                <h3>Confirmados</h3>
+                <p class="summary-value">{{ pedidosConfirmados() }}</p>
+                <span class="summary-status">En proceso</span>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card class="card-elevated summary-card">
+          <ion-card-content>
+            <div class="summary-item">
+              <div class="summary-icon-container info">
+                <ion-icon name="bicycle-outline"></ion-icon>
+              </div>
+              <div class="summary-text">
+                <h3>En Camino</h3>
+                <p class="summary-value">{{ pedidosEnCamino() }}</p>
+                <span class="summary-status">En entrega</span>
+              </div>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </div>
+
+      <!-- Estadísticas Detalladas de Pedidos -->
+      <ion-card class="card-elevated">
+        <ion-card-header class="card-header-custom">
+          <div class="card-title-with-icon">
+            <div class="title-icon-container primary">
+              <ion-icon name="bar-chart"></ion-icon>
+            </div>
+            <ion-card-title>Estadísticas de Pedidos</ion-card-title>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-icon-container warning">
+                <ion-icon name="time-outline"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <h2 class="stat-value">{{ pedidosPendientes() }}</h2>
+                <p class="stat-label">Pendientes</p>
+                <span class="stat-trend">
+                  <ion-icon name="alert-circle" color="warning"></ion-icon>
+                  Requieren atención
+                </span>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon-container success">
+                <ion-icon name="checkmark-circle"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <h2 class="stat-value">{{ pedidosConfirmados() }}</h2>
+                <p class="stat-label">Confirmados</p>
+                <span class="stat-trend">
+                  <ion-icon name="checkmark-done" color="success"></ion-icon>
+                  En proceso
+                </span>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon-container info">
+                <ion-icon name="bicycle-outline"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <h2 class="stat-value">{{ pedidosEnCamino() }}</h2>
+                <p class="stat-label">En Camino</p>
+                <span class="stat-trend">
+                  <ion-icon name="navigate" color="info"></ion-icon>
+                  En entrega
+                </span>
+              </div>
+            </div>
+
+            <div class="stat-item">
+              <div class="stat-icon-container primary">
+                <ion-icon name="checkmark-done-outline"></ion-icon>
+              </div>
+              <div class="stat-content">
+                <h2 class="stat-value">{{ pedidosCompletados() }}</h2>
+                <p class="stat-label">Completados</p>
+                <span class="stat-trend">
+                  <ion-icon name="trophy" color="primary"></ion-icon>
+                  Finalizados
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="stats-actions">
+            <ion-button expand="block" class="btn-primary" (click)="irAPedidos()">
+              <ion-icon name="list" slot="start"></ion-icon>
+              Ver Panel de Pedidos
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Estadísticas de Productos -->
+      <ion-card class="card-elevated">
+        <ion-card-header class="card-header-custom">
+          <div class="card-title-with-icon">
+            <div class="title-icon-container success">
+              <ion-icon name="cube"></ion-icon>
+            </div>
+            <ion-card-title>Inventario y Productos</ion-card-title>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="inventory-grid">
+            <div class="inventory-item">
+              <div class="inventory-icon-container primary">
+                <ion-icon name="cube-outline"></ion-icon>
+              </div>
+              <div class="inventory-content">
+                <h3>Total Productos</h3>
+                <p class="inventory-value">{{ totalProductos() }}</p>
+                <span class="inventory-status">Activos en sistema</span>
+              </div>
+            </div>
+
+            <div class="inventory-item critical">
+              <div class="inventory-icon-container danger">
+                <ion-icon name="alert-circle"></ion-icon>
+              </div>
+              <div class="inventory-content">
+                <h3>Stock Bajo</h3>
+                <p class="inventory-value">{{ productosStockBajo() }}</p>
+                <span class="inventory-status">Necesitan reposición</span>
+              </div>
+            </div>
+
+            <div class="inventory-item">
+              <div class="inventory-icon-container warning">
+                <ion-icon name="pricetags-outline"></ion-icon>
+              </div>
+              <div class="inventory-content">
+                <h3>Valor Total</h3>
+                <p class="inventory-value">{{ formatCurrency(valorTotalInventario()) }}</p>
+                <span class="inventory-status">Valor en inventario</span>
+              </div>
+            </div>
+
+            <div class="inventory-item">
+              <div class="inventory-icon-container info">
+                <ion-icon name="trending-up-outline"></ion-icon>
+              </div>
+              <div class="inventory-content">
+                <h3>Productos Activos</h3>
+                <p class="inventory-value">{{ productosActivos() }}</p>
+                <span class="inventory-status">Disponibles para venta</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="inventory-actions">
+            <ion-button expand="block" class="btn-success" (click)="irAProductos()">
+              <ion-icon name="cube" slot="start"></ion-icon>
+              Gestionar Inventario
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Accesos Rápidos -->
+      <ion-card class="card-elevated">
+        <ion-card-header class="card-header-custom">
+          <div class="card-title-with-icon">
+            <div class="title-icon-container info">
+              <ion-icon name="flash"></ion-icon>
+            </div>
+            <ion-card-title>Accesos Rápidos</ion-card-title>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <div class="quick-actions-grid">
+            <ion-button class="quick-action-btn" [routerLink]="['/admin/productos/crear']">
+              <div class="action-icon-container primary">
+                <ion-icon name="add-circle"></ion-icon>
+              </div>
+              <div class="action-content">
+                <h4>Crear Producto</h4>
+                <p>Agregar nuevo producto</p>
+              </div>
+            </ion-button>
+
+            <ion-button class="quick-action-btn" [routerLink]="['/admin/pedidos']">
+              <div class="action-icon-container success">
+                <ion-icon name="receipt"></ion-icon>
+              </div>
+              <div class="action-content">
+                <h4>Gestionar Pedidos</h4>
+                <p>Ver todos los pedidos</p>
+              </div>
+            </ion-button>
+
+            <ion-button class="quick-action-btn" [routerLink]="['/admin/productos']">
+              <div class="action-icon-container warning">
+                <ion-icon name="cube"></ion-icon>
+              </div>
+              <div class="action-content">
+                <h4>Inventario</h4>
+                <p>Gestionar stock</p>
+              </div>
+            </ion-button>
+
+            <ion-button class="quick-action-btn" [routerLink]="['/admin/reportes']">
+              <div class="action-icon-container info">
+                <ion-icon name="document-text"></ion-icon>
+              </div>
+              <div class="action-content">
+                <h4>Reportes</h4>
+                <p>Ver estadísticas</p>
+              </div>
+            </ion-button>
+
+            <ion-button class="quick-action-btn" [routerLink]="['/admin/configuracion']">
+              <div class="action-icon-container primary">
+                <ion-icon name="settings"></ion-icon>
+              </div>
+              <div class="action-content">
+                <h4>Configuración</h4>
+                <p>Ajustes del sistema</p>
+              </div>
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Información del Sistema -->
+      <div class="system-info">
+        <div class="info-item">
+          <ion-icon name="server-outline" color="medium"></ion-icon>
+          <span>Última actualización: {{ ultimaActualizacion() }}</span>
+        </div>
+        <div class="info-item">
+          <ion-icon name="time-outline" color="medium"></ion-icon>
+          <span>Tiempo de respuesta: {{ tiempoRespuesta() }}ms</span>
+        </div>
+      </div>
+    </div>
+  }
+</ion-content>

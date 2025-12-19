@@ -25,7 +25,6 @@ export class ProductoService {
     return this.api.get<Producto[]>(`/productos/buscar?nombre=${nombre}`);
   }
 
-  // En producto-service.ts
   convertirArchivoABase64(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -41,5 +40,14 @@ export class ProductoService {
 
   actualizar(id: number, producto: Producto): Observable<Producto> {
     return this.api.put<Producto>(`/productos/${id}`, producto);
+  }
+
+  eliminar(id: number): Observable<void> {
+    return this.api.delete<void>(`/productos/${id}`);
+  }
+
+  // Método adicional para actualizar solo el stock
+  actualizarStock(id: number, cantidad: number): Observable<Producto> {
+    return this.api.put<Producto>(`/productos/${id}/stock`, { stock: cantidad });
   }
 }
