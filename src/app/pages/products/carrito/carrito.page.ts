@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -77,6 +77,7 @@ interface CartItem {
   standalone: true,
   imports: [
     IonRefresherContent,
+    RouterLink,
     IonRefresher,
     IonChip,
     IonCardSubtitle,
@@ -274,11 +275,9 @@ export class CarritoPage {
   }
 
   contactarSoporte() {
-    // Implementar contacto con soporte
     this.mostrarMensaje('Redirigiendo a soporte...');
     console.log('Contactar soporte');
-    // Ejemplo: abrir WhatsApp de soporte
-    // window.open('https://wa.me/573001234567?text=Hola, necesito ayuda con mi pedido', '_blank');
+    window.open('https://wa.me/+573212891040?text=Hola, necesito ayuda con mi pedido', '_blank');
   }
 
   mostrarConfirmacionLimpiar() {

@@ -11,7 +11,7 @@ import { addIcons } from 'ionicons';
 import {
   arrowBack, cash, card, location, time,
   checkmarkCircle, closeCircle, car, person, receiptOutline, calendarOutline, timeOutline, personOutline, personCircleOutline, callOutline, locationOutline, cartOutline, cubeOutline, cardOutline, logoWhatsapp, documentTextOutline,
-  phonePortrait} from 'ionicons/icons';
+  phonePortrait, chatbubbleOutline, informationCircleOutline } from 'ionicons/icons';
 import { PedidoService } from '../../../core/services/pedido-service';
 import { PedidoResponse, EstadoPedido, MetodoPago } from '../../../core/models/pedido.model';
 import { ToastService } from '../../../core/services/toast-service';
@@ -33,7 +33,7 @@ export class PedidoDetallePage implements OnInit {
   pedidoId!: number;
 
   constructor() {
-    addIcons({arrowBack,receiptOutline,calendarOutline,timeOutline,personOutline,personCircleOutline,callOutline,locationOutline,cartOutline,cubeOutline,cardOutline,logoWhatsapp,documentTextOutline,cash,card,location,time,checkmarkCircle,closeCircle,car,person, phonePortrait});
+    addIcons({arrowBack,receiptOutline,calendarOutline,timeOutline,personOutline,personCircleOutline,callOutline,locationOutline,cartOutline,cubeOutline,cardOutline,logoWhatsapp,documentTextOutline,chatbubbleOutline,informationCircleOutline,cash,card,location,time,checkmarkCircle,closeCircle,car,person,phonePortrait});
   }
 
   ngOnInit() {
@@ -67,23 +67,27 @@ export class PedidoDetallePage implements OnInit {
     return colores[estado] || 'medium';
   }
 
-  getEstadoTexto(estado: EstadoPedido): string {
-    const textos = {
-      [EstadoPedido.ENTREGADO]: 'Entregado',
-      [EstadoPedido.EN_CAMINO]: 'En camino',
-      [EstadoPedido.CONFIRMADO]: 'Confirmado',
-      [EstadoPedido.PENDIENTE]: 'Pendiente',
-      [EstadoPedido.CANCELADO]: 'Cancelado'
-    };
-    return textos[estado] || estado;
-  }
+  getEstadoTexto(estado: string): string {
+  const estados: {[key: string]: string} = {
+    'PENDIENTE': 'Pendiente',
+    'CONFIRMADO': 'Confirmado',
+    'EN_PREPARACION': 'En preparación',
+    'LISTO': 'Listo para entrega',
+    'EN_CAMINO': 'En camino',
+    'ENTREGADO': 'Entregado',
+    'CANCELADO': 'Cancelado'
+  };
+  return estados[estado] || estado;
+}
 
   getMetodoPagoTexto(metodo: MetodoPago): string {
     const textos = {
       [MetodoPago.EFECTIVO]: 'Efectivo',
-      [MetodoPago.TRANSFERENCIA]: 'Transferencia',
       [MetodoPago.DAVIPLATA]: 'DaviPlata',
-      [MetodoPago.NEQUI]: 'Nequi'
+      [MetodoPago.NEQUI]: 'Nequi',
+      [MetodoPago.NU]: 'Nu',
+      [MetodoPago.BANCOLOMBIA]: 'Bancolombia'
+
     };
     return textos[metodo] || metodo;
   }
@@ -106,12 +110,39 @@ export class PedidoDetallePage implements OnInit {
     this.router.navigate(['/historial']);
   }
 
-  abrirWhatsApp() {
-    if (this.pedido?.urlWhatsApp) {
-      window.open(this.pedido.urlWhatsApp, '_blank');
-    }
-  }
+  async abrirWhatsApp() {
+  if (!this.pedido) return;
 
+  // Número del negocio (de la empresa)
+  const telefonoNegocio = '3212891040';
+
+  // Generar mensaje más apropiado para consulta
+  const mensaje = `Hola, soy ${this.pedido.cliente.nombre} (teléfono: ${this.pedido.cliente.telefono}).
+
+Quiero consultar sobre mi pedido #${this.pedido.id}
+
+Información del pedido:
+- Cliente: ${this.pedido.cliente.nombre}
+- Teléfono: ${this.pedido.cliente.telefono}
+- Método de pago: ${this.getMetodoPagoTexto(this.pedido.metodoPago)}
+- Total: ${this.formatearMoneda(this.pedido.total)}
+
+Productos:
+${this.pedido.items.map(item =>
+  `- ${item.producto.nombre} x${item.cantidad}: ${this.formatearMoneda(item.subtotal)}`
+).join('\n')}
+
+¿Podrían darme información sobre el estado de mi pedido?`;
+
+  // Codificar el mensaje para URL
+  const mensajeCodificado = encodeURIComponent(mensaje);
+
+  // Crear URL de WhatsApp
+  const urlWhatsApp = `https://wa.me/+57${telefonoNegocio}?text=${mensajeCodificado}`;
+
+  // Abrir WhatsApp
+  window.open(urlWhatsApp, '_blank');
+}
   // Métodos adicionales para el componente TypeScript
 getBadgeClass(estado: string): string {
   const estadoMap: { [key: string]: string } = {

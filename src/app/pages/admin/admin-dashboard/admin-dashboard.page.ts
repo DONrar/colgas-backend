@@ -1,25 +1,8 @@
 import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonButton,
-  IonIcon,
-  IonBadge,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonSpinner,
-  IonButtons,
-  ToastController
-} from '@ionic/angular/standalone';
+import { FormsModule } from '@angular/forms';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonIcon, IonBadge, IonGrid, IonRow, IonCol, IonSpinner, IonButtons, ToastController, IonToast, IonRange, IonChip, IonLabel, IonFabButton, IonFab, IonMenuButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   cube, receipt, statsChart, alertCircle,
@@ -28,18 +11,23 @@ import {
   serverOutline, barChart, checkmarkDoneOutline, trophy,
   navigate, alertCircleOutline, cubeOutline, pricetagsOutline,
   trendingUpOutline, flash, documentText, settings,
-  arrowForward, list, checkmarkDone, addCircle } from 'ionicons/icons';
+  arrowForward, list, checkmarkDone, addCircle, cash,
+  speedometer, logoUsd, save, card, refresh,
+  car} from 'ionicons/icons';
 import { PedidoService } from '../../../core/services/pedido-service';
 import { ProductoService } from '../../../core/services/producto-service';
+import { ConfiguracionService } from '../../../core/services/configuracion-service';
 import { EstadoPedido } from '../../../core/models/pedido.model';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.page.html',
   styleUrls: ['./admin-dashboard.page.scss'],
   standalone: true,
-  imports: [
+  imports: [ 
     CommonModule,
+    FormsModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -51,17 +39,14 @@ import { EstadoPedido } from '../../../core/models/pedido.model';
     IonButton,
     IonIcon,
     IonBadge,
-    IonGrid,
-    IonRow,
-    IonCol,
     IonSpinner,
     RouterLink,
-    IonButtons
-  ]
+    IonButtons,  IonMenuButton]
 })
 export class AdminDashboardPage implements OnInit {
   private pedidoService = inject(PedidoService);
   private productoService = inject(ProductoService);
+  private configuracionService = inject(ConfiguracionService);
   private toastCtrl = inject(ToastController);
   private router = inject(Router);
 
@@ -74,11 +59,16 @@ export class AdminDashboardPage implements OnInit {
   productosStockBajo = signal(0);
   totalProductos = signal(0);
   productosActivos = signal(0);
+  precioPorKm = 1500;
+  guardandoPrecio = signal(false);
 
   // Señales del sistema
   ultimaActualizacion = signal('Hace unos momentos');
   tiempoRespuesta = signal(120);
   systemStatus = signal('Operativo');
+  mostrarToast = signal(false);
+  mensajeToast = signal('');
+  toastColor = signal<'success' | 'warning' | 'danger'>('success');
 
   // Computadas
   alertas = computed(() => {
@@ -86,16 +76,15 @@ export class AdminDashboardPage implements OnInit {
   });
 
   valorTotalInventario = computed(() => {
-    // Valor estimado del inventario
     return this.totalProductos() * 50000;
   });
 
   constructor() {
-    addIcons({refreshOutline,statsChart,notificationsOutline,timeOutline,serverOutline,shieldCheckmarkOutline,alertCircle,arrowForward,alertCircleOutline,checkmarkCircle,bicycleOutline,barChart,checkmarkDone,navigate,checkmarkDoneOutline,trophy,list,cube,cubeOutline,pricetagsOutline,trendingUpOutline,flash,addCircle,receipt,documentText,settings,add});
+    addIcons({refreshOutline,statsChart,notificationsOutline,timeOutline,serverOutline,shieldCheckmarkOutline,alertCircle,arrowForward,alertCircleOutline,checkmarkCircle,barChart,checkmarkDone,navigate,checkmarkDoneOutline,trophy,list,cube,cubeOutline,pricetagsOutline,trendingUpOutline,flash,addCircle,receipt,documentText,settings,cash,speedometer,logoUsd,save,card,refresh,add, car, bicycleOutline});
   }
 
-  ngOnInit() {
-    this.cargarDatos();
+  async ngOnInit() {
+    await this.cargarDatos();
   }
 
   async cargarDatos() {
@@ -106,7 +95,8 @@ export class AdminDashboardPage implements OnInit {
       // Cargar datos en paralelo
       await Promise.all([
         this.cargarPedidos(),
-        this.cargarProductos()
+        this.cargarProductos(),
+        this.cargarPrecioPorKm()
       ]);
 
       this.tiempoRespuesta.set(Date.now() - inicio);
@@ -115,7 +105,7 @@ export class AdminDashboardPage implements OnInit {
 
     } catch (error) {
       console.error('Error cargando datos:', error);
-      this.showToast('Error al cargar datos del panel', 'warning');
+      this.mostrarMensaje('Error al cargar datos del panel', 'warning');
       this.systemStatus.set('Con errores');
     } finally {
       this.cargando.set(false);
@@ -125,10 +115,10 @@ export class AdminDashboardPage implements OnInit {
   async cargarPedidos() {
     try {
       const [pendientes, confirmados, enCamino, completados] = await Promise.all([
-        this.pedidoService.obtenerPorEstado(EstadoPedido.PENDIENTE).toPromise(),
-        this.pedidoService.obtenerPorEstado(EstadoPedido.CONFIRMADO).toPromise(),
-        this.pedidoService.obtenerPorEstado(EstadoPedido.EN_CAMINO).toPromise(),
-        this.pedidoService.obtenerPorEstado(EstadoPedido.ENTREGADO).toPromise()
+        firstValueFrom(this.pedidoService.obtenerPorEstado(EstadoPedido.PENDIENTE)),
+        firstValueFrom(this.pedidoService.obtenerPorEstado(EstadoPedido.CONFIRMADO)),
+        firstValueFrom(this.pedidoService.obtenerPorEstado(EstadoPedido.EN_CAMINO)),
+        firstValueFrom(this.pedidoService.obtenerPorEstado(EstadoPedido.ENTREGADO))
       ]);
 
       this.pedidosPendientes.set(pendientes?.length || 0);
@@ -155,7 +145,7 @@ export class AdminDashboardPage implements OnInit {
 
   async cargarProductos() {
     try {
-      const productos = await this.productoService.obtenerTodos().toPromise();
+      const productos = await firstValueFrom(this.productoService.obtenerTodos());
 
       if (productos) {
         this.totalProductos.set(productos.length);
@@ -173,9 +163,58 @@ export class AdminDashboardPage implements OnInit {
     }
   }
 
+  async cargarPrecioPorKm() {
+    try {
+      const precio = await firstValueFrom(this.configuracionService.getPrecioPorKm());
+      this.precioPorKm = precio;
+    } catch (error) {
+      console.error('Error cargando precio por km:', error);
+      this.precioPorKm = 1500; // Valor por defecto
+    }
+  }
+
+  async guardarPrecioPorKm() {
+    if (this.precioPorKm <= 0) {
+      this.mostrarMensaje('El precio por km debe ser mayor a 0', 'warning');
+      return;
+    }
+
+    this.guardandoPrecio.set(true);
+
+    try {
+      const config = {
+        clave: 'precio_por_km',
+        valor: this.precioPorKm.toString(),
+        descripcion: 'Precio por kilómetro para cálculos de viajes'
+      };
+
+      await firstValueFrom(this.configuracionService.guardarConfiguracion(config));
+      this.mostrarMensaje('Precio por km guardado correctamente', 'success');
+      this.actualizarEstado();
+
+    } catch (error) {
+      console.error('Error guardando precio por km:', error);
+      this.mostrarMensaje('Error al guardar el precio por km', 'danger');
+    } finally {
+      this.guardandoPrecio.set(false);
+    }
+  }
+
+  restablecerPrecioPorKm() {
+    this.precioPorKm = 1500;
+    this.mostrarMensaje('Precio restablecido al valor por defecto', 'success');
+  }
+
+  onPrecioPorKmChange(event: any) {
+    const value = event.detail?.value || this.precioPorKm;
+    if (value < 100) {
+      this.precioPorKm = 100;
+    }
+  }
+
   async refresh() {
     await this.cargarDatos();
-    this.showToast('Panel actualizado correctamente', 'success');
+    this.mostrarMensaje('Panel actualizado correctamente', 'success');
   }
 
   notificaciones() {
@@ -190,6 +229,10 @@ export class AdminDashboardPage implements OnInit {
     this.router.navigate(['/admin/productos']);
   }
 
+  formatearPrecio(valor: number): string {
+    return valor.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
+
   formatCurrency(value: number): string {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
@@ -199,13 +242,21 @@ export class AdminDashboardPage implements OnInit {
     }).format(value);
   }
 
-  async showToast(message: string, color: 'success' | 'warning' | 'danger' = 'success') {
-    const toast = await this.toastCtrl.create({
-      message,
-      duration: 2000,
-      color,
-      position: 'bottom'
-    });
-    await toast.present();
+  mostrarMensaje(mensaje: string, color: 'success' | 'warning' | 'danger') {
+    this.mensajeToast.set(mensaje);
+    this.toastColor.set(color);
+    this.mostrarToast.set(true);
+
+    setTimeout(() => {
+      this.cerrarToast();
+    }, 2000);
+  }
+
+  cerrarToast() {
+    this.mostrarToast.set(false);
+  }
+
+  actualizarEstado() {
+    this.ultimaActualizacion.set('Justo ahora');
   }
 }

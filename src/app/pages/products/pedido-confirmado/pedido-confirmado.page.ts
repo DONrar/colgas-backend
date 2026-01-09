@@ -44,7 +44,8 @@ import {
   list,
   callOutline,
   receiptOutline,
-  home
+  home,
+  checkmark
 } from 'ionicons/icons';
 import { PedidoService } from '../../../core/services/pedido-service';
 import { WhatsAppService } from '../../../core/services/whatsapp-service';
@@ -70,7 +71,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     IonCardTitle,
     IonCardContent,
     IonButton,
-    IonIcon, 
+    IonIcon,
     IonLabel,
     IonNote,
     IonSpinner,
@@ -116,7 +117,7 @@ export class PedidoConfirmadoPage implements OnInit {
   });
 
   constructor() {
-    addIcons({arrowBack,checkmarkCircle,shareOutline,timeOutline,cashOutline,documentText,personCircle,call,location,card,swapHorizontal,cart,arrowForward,logoWhatsapp,copyOutline,eyeOutline,informationCircle,addCircle,list,callOutline,receiptOutline,home});
+    addIcons({arrowBack,checkmarkCircle,shareOutline,checkmark,timeOutline,cashOutline,documentText,personCircle,call,location,card,swapHorizontal,cart,arrowForward,logoWhatsapp,copyOutline,eyeOutline,informationCircle,addCircle,list,callOutline,receiptOutline,home});
   }
 
   ngOnInit() {
@@ -237,9 +238,10 @@ export class PedidoConfirmadoPage implements OnInit {
   getBadgeClass(metodoPago: MetodoPago): string {
     const classes: Record<MetodoPago, string> = {
       [MetodoPago.EFECTIVO]: 'badge-success',
-      [MetodoPago.TRANSFERENCIA]: 'badge-primary',
       [MetodoPago.DAVIPLATA]: 'badge-info',
-      [MetodoPago.NEQUI]: 'badge-warning'
+      [MetodoPago.NEQUI]: 'badge-warning',
+      [MetodoPago.NU]: 'badge-secondary',
+      [MetodoPago.BANCOLOMBIA]: 'badge-primary'
     };
 
     return classes[metodoPago] || 'badge-primary';
@@ -248,9 +250,10 @@ export class PedidoConfirmadoPage implements OnInit {
   obtenerNombreMetodoPago(metodo: MetodoPago): string {
     const nombres: { [key in MetodoPago]: string } = {
       [MetodoPago.EFECTIVO]: 'Efectivo',
-      [MetodoPago.TRANSFERENCIA]: 'Transferencia Bancaria',
       [MetodoPago.DAVIPLATA]: 'Daviplata',
-      [MetodoPago.NEQUI]: 'Nequi'
+      [MetodoPago.NEQUI]: 'Nequi',
+      [MetodoPago.NU]: 'Nu',
+      [MetodoPago.BANCOLOMBIA]: 'Bancolombia'
     };
     return nombres[metodo] || metodo;
   }

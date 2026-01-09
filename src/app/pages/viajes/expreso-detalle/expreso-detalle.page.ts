@@ -5,12 +5,14 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonCard,
   IonCardHeader, IonCardTitle, IonCardContent, IonItem,
   IonLabel, IonIcon, IonButton, IonBadge, IonList,
-  IonText, IonChip, IonGrid, IonRow, IonCol, IonSpinner, IonButtons } from '@ionic/angular/standalone';
+  IonText, IonChip, IonGrid, IonRow, IonCol, IonSpinner, IonButtons
+} from '@ionic/angular/standalone';
 import { ActivatedRoute, Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
   arrowBack, navigate, car, time, speedometer,
-  checkmarkCircle, closeCircle, person, location, navigateOutline, calendarOutline, timeOutline, personOutline, personCircleOutline, callOutline, carSportOutline, speedometerOutline, cashOutline, locationOutline, playCircle, flag, logoWhatsapp, mapOutline, carOutline } from 'ionicons/icons';
+  checkmarkCircle, closeCircle, person, location, navigateOutline, calendarOutline, timeOutline, personOutline, personCircleOutline, callOutline, carSportOutline, speedometerOutline, cashOutline, locationOutline, playCircle, flag, logoWhatsapp, mapOutline, carOutline
+} from 'ionicons/icons';
 import { ExpresoService } from '../../../core/services/expreso-service';
 import { ExpresoResponse, EstadoExpreso } from '../../../core/models/expreso.model';
 import { ToastService } from '../../../core/services/toast-service';
@@ -22,7 +24,7 @@ import { ToastService } from '../../../core/services/toast-service';
   imports: [IonButtons, IonSpinner, IonBadge, IonCardHeader, IonCard, IonCardContent, IonCardTitle, IonButton, IonIcon, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class ExpresoDetallePage implements OnInit {
- private route = inject(ActivatedRoute);
+  private route = inject(ActivatedRoute);
   private router = inject(Router);
   private expresoService = inject(ExpresoService);
   private toastService = inject(ToastService);
@@ -32,7 +34,7 @@ export class ExpresoDetallePage implements OnInit {
   expresoId!: number;
 
   constructor() {
-    addIcons({arrowBack,navigateOutline,calendarOutline,timeOutline,personOutline,personCircleOutline,callOutline,carSportOutline,speedometerOutline,cashOutline,locationOutline,playCircle,flag,navigate,time,logoWhatsapp,mapOutline,carOutline,car,speedometer,checkmarkCircle,closeCircle,person,location});
+    addIcons({ arrowBack, navigateOutline, calendarOutline, timeOutline, personOutline, personCircleOutline, callOutline, carSportOutline, speedometerOutline, cashOutline, locationOutline, playCircle, flag, navigate, time, logoWhatsapp, mapOutline, carOutline, car, speedometer, checkmarkCircle, closeCircle, person, location });
   }
 
   ngOnInit() {
@@ -95,10 +97,23 @@ export class ExpresoDetallePage implements OnInit {
     this.router.navigate(['/historial']);
   }
 
+  // En expreso-detalle.page.ts, modifica el método abrirWhatsApp():
   abrirWhatsApp() {
-    if (this.expreso?.urlWhatsApp) {
-      window.open(this.expreso.urlWhatsApp, '_blank');
+    const numeroWhatsApp = '+573134509037';
+
+    let mensaje = `Consulta sobre pedido Express`;
+
+    if (this.expreso) {
+      mensaje += ` #${this.expreso.id}`;
+      mensaje += `\nCliente: ${this.expreso.cliente.nombre}`;
+      mensaje += `\nTeléfono: ${this.expreso.cliente.telefono}`;
+      mensaje += `\nEstado: ${this.getEstadoTexto(this.expreso.estado)}`;
     }
+
+    mensaje += `\n\nPor favor, proporcionar información sobre el estado de este pedido.`;
+
+    const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
   }
 
   abrirMapa() {
@@ -107,38 +122,37 @@ export class ExpresoDetallePage implements OnInit {
       window.open(url, '_blank');
     }
   }
-// Métodos adicionales para el componente TypeScript
-getBadgeClass(estado: string): string {
-  const estadoMap: { [key: string]: string } = {
-    'COMPLETADO': 'badge-success',
-    'EN_CURSO': 'badge-primary',
-    'ASIGNADO': 'badge-info',
-    'SOLICITADO': 'badge-warning',
-    'CANCELADO': 'badge-warning'
-  };
-  return estadoMap[estado] || 'badge-info';
-}
-
-
-formatearMoneda(valor: number): string {
-  return `$${valor.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
-}
-
-formatearHora(fecha: string): string {
-  return new Date(fecha).toLocaleTimeString('es-CO', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-
-formatearDuracion(minutos: number): string {
-  if (minutos < 60) {
-    return `${minutos} min`;
-  } else {
-    const horas = Math.floor(minutos / 60);
-    const mins = minutos % 60;
-    return mins > 0 ? `${horas}h ${mins}m` : `${horas}h`;
+  // Métodos adicionales para el componente TypeScript
+  getBadgeClass(estado: string): string {
+    const estadoMap: { [key: string]: string } = {
+      'COMPLETADO': 'badge-success',
+      'EN_CURSO': 'badge-primary',
+      'ASIGNADO': 'badge-info',
+      'SOLICITADO': 'badge-warning',
+      'CANCELADO': 'badge-warning'
+    };
+    return estadoMap[estado] || 'badge-info';
   }
-}
 
+
+  formatearMoneda(valor: number): string {
+    return `$${valor.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
+  }
+
+  formatearHora(fecha: string): string {
+    return new Date(fecha).toLocaleTimeString('es-CO', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  formatearDuracion(minutos: number): string {
+    if (minutos < 60) {
+      return `${minutos} min`;
+    } else {
+      const horas = Math.floor(minutos / 60);
+      const mins = minutos % 60;
+      return mins > 0 ? `${horas}h ${mins}m` : `${horas}h`;
+    }
+  }
 }

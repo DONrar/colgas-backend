@@ -27,6 +27,7 @@
         placeholder="Buscar dirección o lugar..."
         class="search-input"
         (focus)="onSearchFocus()"
+        (input)="onSearchInput($event)"
       />
       <ion-button
         *ngIf="searchQuery"
@@ -46,8 +47,8 @@
         (click)="selectPrediction(prediction)">
         <ion-icon name="location" class="suggestion-icon"></ion-icon>
         <div class="suggestion-text">
-          <div class="suggestion-main">{{ prediction.structured_formatting.main_text }}</div>
-          <div class="suggestion-secondary">{{ prediction.structured_formatting.secondary_text }}</div>
+          <div class="suggestion-main">{{ prediction.structured_formatting?.main_text || prediction.description }}</div>
+          <div class="suggestion-secondary">{{ prediction.structured_formatting?.secondary_text || '' }}</div>
         </div>
       </div>
     </div>
@@ -78,7 +79,7 @@
     </div>
   </div>
 
-  <!-- Footer -->
+  <!-- Footer con botones dinámicos -->
   <div class="map-footer" (click)="$event.stopPropagation()">
     <!-- Sin selección -->
     <div class="footer-state" *ngIf="!selectedLocation && !isLoading">

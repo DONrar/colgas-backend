@@ -42,19 +42,20 @@ export class ContactoPage {
   }
 
   async llamar() {
-    await Browser.open({ url: 'tel:+573235162298' });
+    const numeroTelefono = '+573212891040';
+    window.location.href = `tel:${numeroTelefono}`;
   }
 
   async abrirWhatsApp() {
-    await this.whatsappService.enviarMensaje('573235162298', 'Hola, estoy interesado en sus productos');
+    await this.whatsappService.enviarMensaje('573212891040', 'Hola, estoy interesado en sus productos');
   }
 
   async abrirWhatsAppExpresos() {
-    await this.whatsappService.enviarMensaje('573235162298', 'Hola, necesito un servicio de expreso');
+    await this.whatsappService.enviarMensaje('573134509037', 'Hola, necesito un servicio de expreso');
   }
 
   async abrirMapa() {
-    await Browser.open({ url: 'https://www.google.com/maps?q=4.6097,-74.0817' });
+    window.open('https://maps.app.goo.gl/nCVGqEYmPukv9Lw7A', '_system');
   }
 
   // Método para compartir contacto
@@ -62,8 +63,8 @@ export class ContactoPage {
     try {
       await Share.share({
         title: 'ColGas - Distribuidora',
-        text: 'Contacta a ColGas - Tu proveedor confiable de gas\n📞 Teléfono: +57 323 516 2298\n📍 Dirección: Calle 100 #15-20, Bogotá D.C.',
-        url: 'https://maps.google.com/?q=4.6097,-74.0817',
+        text: 'Contacta a ColGas - Cachipay - Tu proveedor confiable de gas\n📞 Teléfono: +573212891040\n📍 Dirección: Calle 5 #5-88, Barrio centro, Al respaldo del banco agrario',
+        url: 'https://maps.app.goo.gl/nCVGqEYmPukv9Lw7A',
         dialogTitle: 'Compartir contacto de ColGas'
       });
     } catch (error) {
@@ -85,18 +86,16 @@ export class ContactoPage {
 
   // Método para enviar email
   async enviarEmail() {
-    const email = 'ventas@colgas.com';
+    const email = 'expresmultisolucionescachipay@gmail.com';
     const asunto = 'Consulta - ColGas Distribuidora';
     const cuerpo = 'Hola, me gustaría obtener más información sobre sus productos y servicios.';
 
-    await Browser.open({
-      url: `mailto:${email}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`
-    });
+    window.location.href = `mailto:${email}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpo)}`;
   }
 
   // Método fallback para compartir (copiar al portapapeles)
   private async copiarAlPortapapeles() {
-    const texto = `ColGas - Distribuidora\n📞 Teléfono: +57 323 516 2298\n📍 Dirección: Calle 100 #15-20, Bogotá D.C.\n🕒 Horario: Lunes a Sábado 7:00 AM - 8:00 PM, Domingos 8:00 AM - 2:00 PM`;
+    const texto = `ColGas - Distribuidora\n📞 Teléfono: +573212891040\n📍 Dirección: Calle 5 #5-88, Barrio centro, Al respaldo del banco agrario\n🕒 Horario: Lunes a Sábado 7:00 AM - 8:00 PM, Domingos 8:00 AM - 2:00 PM`;
 
     try {
       if (navigator.clipboard) {
@@ -136,13 +135,13 @@ export class ContactoPage {
     // Lunes a Sábado: 7:00 - 20:00
     if (dia >= 1 && dia <= 6) {
       return (hora > 7 || (hora === 7 && minutos >= 0)) &&
-             (hora < 20 || (hora === 20 && minutos === 0));
+        (hora < 20 || (hora === 20 && minutos === 0));
     }
 
     // Domingo: 8:00 - 14:00
     if (dia === 0) {
       return (hora > 8 || (hora === 8 && minutos >= 0)) &&
-             (hora < 14 || (hora === 14 && minutos === 0));
+        (hora < 14 || (hora === 14 && minutos === 0));
     }
 
     return false;

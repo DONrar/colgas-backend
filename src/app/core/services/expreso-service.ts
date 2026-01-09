@@ -5,7 +5,8 @@ import {
   ExpresoCalculoRequest,
   ExpresoCalculo,
   ExpresoRequest,
-  ExpresoResponse
+  ExpresoResponse,
+  EstadoExpreso
 } from '../models/expreso.model';
 
 @Injectable({
@@ -28,5 +29,13 @@ export class ExpresoService {
 
   obtenerHistorial(telefono: string): Observable<ExpresoResponse[]> {
     return this.api.get<ExpresoResponse[]>(`/expresos/cliente/${telefono}`);
+  }
+
+  obtenerPorEstado(estado: EstadoExpreso): Observable<ExpresoResponse[]> {
+    return this.api.get<ExpresoResponse[]>(`/expresos/estado/${estado}`);
+  }
+
+  actualizarEstado(id: number, estado: EstadoExpreso): Observable<ExpresoResponse> {
+    return this.api.put<ExpresoResponse>(`/expresos/${id}/estado`, { estado });
   }
 }

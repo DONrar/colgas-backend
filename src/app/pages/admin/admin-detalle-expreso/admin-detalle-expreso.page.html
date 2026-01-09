@@ -1,0 +1,232 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/admin/expresos" style="--color: white;"></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="car-outline" style="color: #3B9797;"></ion-icon>
+      &nbsp;Detalle del Expreso
+    </ion-title>
+    <ion-buttons slot="end">
+      @if (expreso()?.urlWhatsApp) {
+        <ion-button (click)="abrirWhatsApp()" class="header-btn" fill="clear">
+          <ion-icon name="logo-whatsapp" style="color: #25D366;"></ion-icon>
+        </ion-button>
+      }
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="admin-detalle-expreso-page">
+  <div class="container">
+    @if (cargando()) {
+      <div class="spinner-container animated-fade-in">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando expreso...</p>
+      </div>
+    } @else if (expreso()) {
+      <!-- Estado del Expreso -->
+      <ion-card class="card-elevated estado-card">
+        <ion-card-header>
+          <div class="estado-header">
+            <div class="estado-info">
+              <ion-card-title>Expreso #{{ expreso()!.id }}</ion-card-title>
+              <p>{{ formatearFecha(expreso()!.fechaSolicitud) }}</p>
+            </div>
+            <ion-badge class="status-badge" [class]="getEstadoBadgeClass(expreso()!.estado)">
+              <ion-icon [name]="getIconoEstado(expreso()!.estado)"></ion-icon>
+              {{ getTextoEstado(expreso()!.estado) }}
+            </ion-badge>
+          </div>
+        </ion-card-header>
+
+        <ion-card-content>
+          @if (expreso()!.estado !== EstadoExpreso.COMPLETADO && expreso()!.estado !== EstadoExpreso.CANCELADO) {
+            <ion-button
+              expand="block"
+              class="btn-primary"
+              (click)="mostrarOpcionesEstado()"
+              [disabled]="actualizando()">
+              @if (actualizando()) {
+                <ion-spinner name="crescent" slot="start"></ion-spinner>
+                Actualizando...
+              } @else {
+                <ion-icon slot="start" name="arrow-forward"></ion-icon>
+                Cambiar Estado
+              }
+            </ion-button>
+          }
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Información del Cliente -->
+      <ion-card class="card-elevated cliente-card">
+        <ion-card-header>
+          <ion-card-title>Información del Cliente</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="cliente-info">
+            <div class="cliente-header">
+              <div class="cliente-avatar">
+                <ion-icon name="person"></ion-icon>
+              </div>
+              <div class="cliente-details">
+                <h3>{{ expreso()!.cliente.nombre }}</h3>
+                <p>Cliente del viaje</p>
+              </div>
+            </div>
+
+            <div class="cliente-meta">
+              <div class="meta-item">
+                <ion-icon name="call"></ion-icon>
+                <div class="meta-content">
+                  <h4>Teléfono</h4>
+                  <p>{{ expreso()!.cliente.telefono }}</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="botones-contacto">
+              <ion-button expand="block" class="btn-whatsapp" (click)="abrirWhatsApp()">
+                <ion-icon slot="start" name="logo-whatsapp"></ion-icon>
+                Contactar por WhatsApp
+              </ion-button>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Detalles del Viaje -->
+      <ion-card class="card-elevated viaje-card">
+        <ion-card-header>
+          <div class="viaje-header">
+            <h2>Detalles del Viaje</h2>
+            <ion-button fill="clear" size="small" (click)="abrirMapa()">
+              <ion-icon name="map" slot="start"></ion-icon>
+              Ver Ruta
+            </ion-button>
+          </div>
+        </ion-card-header>
+
+        <ion-card-content>
+          <!-- Origen -->
+          <div class="ubicacion-section">
+            <div class="ubicacion-header origen">
+              <div class="ubicacion-icon">
+                <ion-icon name="location"></ion-icon>
+              </div>
+              <div class="ubicacion-info">
+                <h3>Punto de Origen</h3>
+                <p>{{ expreso()!.direccionOrigen || 'Ubicación GPS' }}</p>
+                <span class="coordenadas">
+                  {{ expreso()!.latitudOrigen | number:'1.6-6' }},
+                  {{ expreso()!.longitudOrigen | number:'1.6-6' }}
+                </span>
+              </div>
+              <ion-button fill="clear" size="small" (click)="verMapaOrigen()">
+                <ion-icon name="map"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <div class="route-line"></div>
+
+          <!-- Destino -->
+          <div class="ubicacion-section">
+            <div class="ubicacion-header destino">
+              <div class="ubicacion-icon">
+                <ion-icon name="navigate"></ion-icon>
+              </div>
+              <div class="ubicacion-info">
+                <h3>Punto de Destino</h3>
+                <p>{{ expreso()!.direccionDestino || 'Ubicación GPS' }}</p>
+                <span class="coordenadas">
+                  {{ expreso()!.latitudDestino | number:'1.6-6' }},
+                  {{ expreso()!.longitudDestino | number:'1.6-6' }}
+                </span>
+              </div>
+              <ion-button fill="clear" size="small" (click)="verMapaDestino()">
+                <ion-icon name="map"></ion-icon>
+              </ion-button>
+            </div>
+          </div>
+
+          <!-- Estadísticas del Viaje -->
+          <div class="viaje-stats">
+            <div class="stat-card">
+              <ion-icon name="speedometer"></ion-icon>
+              <div class="stat-info">
+                <span class="stat-label">Distancia</span>
+                <span class="stat-value">{{ expreso()!.distanciaKm | number:'1.1-1' }} km</span>
+              </div>
+            </div>
+
+            @if (expreso()!.duracionMinutos) {
+              <div class="stat-card">
+                <ion-icon name="time-outline"></ion-icon>
+                <div class="stat-info">
+                  <span class="stat-label">Duración Est.</span>
+                  <span class="stat-value">{{ expreso()!.duracionMinutos }} min</span>
+                </div>
+              </div>
+            }
+
+            <div class="stat-card">
+              <ion-icon name="cash"></ion-icon>
+              <div class="stat-info">
+                <span class="stat-label">Precio/km</span>
+                <span class="stat-value">${{ expreso()!.precioPorKm | number:'1.0-0' }}</span>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Resumen de Pago -->
+      <ion-card class="card-elevated pago-card">
+        <ion-card-header>
+          <ion-card-title>Resumen de Pago</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="resumen-pago">
+            <div class="linea-pago">
+              <span>Distancia:</span>
+              <strong>{{ expreso()!.distanciaKm | number:'1.1-1' }} km</strong>
+            </div>
+
+            <div class="linea-pago">
+              <span>Precio por km:</span>
+              <strong>${{ expreso()!.precioPorKm | number:'1.0-0' }}</strong>
+            </div>
+
+            <div class="linea-pago total">
+              <span>TOTAL DEL VIAJE:</span>
+              <strong>${{ formatearPrecio(expreso()!.precioTotal) }}</strong>
+            </div>
+          </div>
+
+          <div class="quick-actions">
+            <div class="action-btn" (click)="abrirWhatsApp()">
+              <ion-icon name="logo-whatsapp"></ion-icon>
+              <span>WhatsApp</span>
+            </div>
+
+            <div class="action-btn" (click)="abrirMapa()">
+              <ion-icon name="map"></ion-icon>
+              <span>Ver Ruta</span>
+            </div>
+
+            @if (expreso()!.estado !== EstadoExpreso.COMPLETADO && expreso()!.estado !== EstadoExpreso.CANCELADO) {
+              <div class="action-btn" (click)="mostrarOpcionesEstado()">
+                <ion-icon name="sync"></ion-icon>
+                <span>Cambiar Estado</span>
+              </div>
+            }
+          </div>
+        </ion-card-content>
+      </ion-card>
+    }
+  </div>
+</ion-content>

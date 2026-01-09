@@ -29,39 +29,59 @@
       <ion-list class="menu-list">
         <ion-menu-toggle auto-hide="false">
           <!-- Dashboard -->
+
+
           <ion-item routerLink="/admin-dashboard" routerLinkActive="selected" detail="false" class="menu-item">
-            <div class="menu-icon dashboard" slot="start">
-              <ion-icon name="home-outline"></ion-icon>
+            <div class="menu-item-content">
+              <div class="menu-icon dashboard">
+                <ion-icon name="grid-outline"></ion-icon> <!-- Icono de producto/cubo -->
+              </div>
+              <ion-label>Panel de Control</ion-label>
             </div>
-            <ion-label>dashboard</ion-label>
           </ion-item>
 
+          <ion-item routerLink="/tabs/productos" routerLinkActive="selected" detail="false" class="menu-item">
+            <div class="menu-item-content">
+              <div class="menu-icon dashboard">
+                <ion-icon name="stats-chart-outline"></ion-icon> <!-- Icono de producto/cubo -->
+              </div>
+              <ion-label>Dashboard</ion-label>
+            </div>
+          </ion-item>
 
-          <!-- Clientes -->
-          <ion-item routerLink="/clientes" routerLinkActive="selected" detail="false" class="menu-item">
+          <!-- Productos -->
+          <ion-item routerLink="/admin/productos" routerLinkActive="selected" detail="false" class="menu-item">
             <div class="menu-item-content">
               <div class="menu-icon clients">
-                <ion-icon name="people-outline"></ion-icon>
+                <ion-icon name="cube-outline"></ion-icon> <!-- Icono de producto/cubo -->
               </div>
-              <ion-label>Clientes</ion-label>
+              <ion-label>Productos</ion-label>
             </div>
           </ion-item>
 
-          <!-- Búsqueda -->
-          <ion-item routerLink="/busqueda" routerLinkActive="selected" detail="false" class="menu-item">
+          <!-- Gestión de pedidos -->
+          <ion-item routerLink="/admin/pedidos" routerLinkActive="selected" detail="false" class="menu-item">
             <div class="menu-item-content">
               <div class="menu-icon search">
-                <ion-icon name="search-outline"></ion-icon>
+                <ion-icon name="clipboard-outline"></ion-icon> <!-- Icono de pedidos/clipboard -->
               </div>
-              <ion-label>Búsqueda</ion-label>
+              <ion-label>Gestión de pedidos</ion-label>
+            </div>
+          </ion-item>
+          <ion-item routerLink="/admin-lista-expreso" routerLinkActive="selected" detail="false" class="menu-item">
+            <div class="menu-item-content">
+              <div class="menu-icon dashboard">
+                <ion-icon name="car-outline" style="color: #3B9797;"></ion-icon>
+              </div>
+              <ion-label>Gestión de expresos</ion-label>
             </div>
           </ion-item>
 
           <!-- Configuración -->
-          <ion-item routerLink="/configuracion" routerLinkActive="selected" detail="false" class="menu-item">
+          <ion-item routerLink="/configuracion-admin" routerLinkActive="selected" detail="false" class="menu-item">
             <div class="menu-item-content">
               <div class="menu-icon settings">
-                <ion-icon name="settings-outline"></ion-icon>
+                <ion-icon name="settings-outline"></ion-icon> <!-- Este ya está correcto -->
               </div>
               <ion-label>Configuración</ion-label>
             </div>
@@ -75,7 +95,8 @@
           <ion-icon name="cube-outline"></ion-icon>
           <span>v1.0.0</span>
         </div>
-        <p class="footer-text">© 2025 Fiados App</p>
+        <p class="footer-text">2025 ColGas App</p>
+        <p class="footer-text">© Derechos Reservados al señor Camilo Andres Acosta Hernandez</p>
       </div>
     </ion-content>
   </ion-menu>

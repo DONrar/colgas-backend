@@ -195,7 +195,7 @@
       <div class="actions-container">
         <ion-button expand="block" class="btn-whatsapp" (click)="abrirWhatsApp()">
           <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
-          Contactar por WhatsApp
+          Consultar por mi pedido
         </ion-button>
 
         <ion-button expand="block" fill="outline" class="btn-secondary" (click)="volver()">
@@ -216,5 +216,16 @@
         </ion-button>
       </div>
     }
+
+    <div class="info-footer" *ngIf="pedido">
+  <div class="info-item">
+    <ion-icon name="chatbubble-outline" color="primary"></ion-icon>
+    <span>¿Dudas sobre tu pedido? Usa el botón de WhatsApp para consultar</span>
+  </div>
+  <div class="info-item">
+    <ion-icon name="information-circle-outline" color="medium"></ion-icon>
+    <span>El equipo de atención te responderá sobre el estado de tu pedido #{{pedido.id}}</span>
+  </div>
+</div>
   </div>
 </ion-content>

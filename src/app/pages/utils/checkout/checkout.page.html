@@ -80,7 +80,6 @@
                 [(ngModel)]="datosCliente.nombre"
                 name="nombre"
                 required
-                placeholder="Ingresa tu nombre completo"
                 class="premium-input">
               </ion-input>
               <div class="input-decoration"></div>
@@ -94,7 +93,6 @@
                 name="telefono"
                 type="tel"
                 required
-                placeholder="3235162298"
                 class="premium-input">
               </ion-input>
               <div class="input-decoration"></div>
@@ -125,7 +123,6 @@
                 [(ngModel)]="direccion"
                 name="direccion"
                 rows="3"
-                placeholder="Calle, carrera, número, barrio..."
                 class="premium-textarea">
               </ion-textarea>
               <div class="input-decoration"></div>
@@ -155,120 +152,276 @@
       </ion-card>
 
       <!-- Método de Pago -->
-      <ion-card class="premium-card card-elevated">
-        <ion-card-header class="card-header">
-          <div class="header-content">
-            <div class="header-icon warning">
-              <ion-icon name="card"></ion-icon>
-            </div>
-            <div>
-              <ion-card-title>Método de Pago</ion-card-title>
-              <ion-card-subtitle>Elige cómo quieres pagar</ion-card-subtitle>
-            </div>
+      <!-- Método de Pago -->
+<!-- Método de Pago -->
+<ion-card class="premium-card card-elevated">
+  <ion-card-header class="card-header">
+    <div class="header-content">
+      <div class="header-icon warning">
+        <ion-icon name="card"></ion-icon>
+      </div>
+      <div>
+        <ion-card-title>Método de Pago</ion-card-title>
+        <ion-card-subtitle>Elige cómo quieres pagar</ion-card-subtitle>
+      </div>
+    </div>
+  </ion-card-header>
+  <ion-card-content>
+    <div class="payment-methods">
+      <div class="payment-option"
+           [class.selected]="metodoPago === MetodoPago.EFECTIVO"
+           (click)="seleccionarMetodoPago(MetodoPago.EFECTIVO)">
+        <div class="payment-icon cash">
+          <ion-icon name="cash-outline"></ion-icon>
+        </div>
+        <div class="payment-info">
+          <h3>Efectivo</h3>
+          <p>Paga al recibir tu pedido</p>
+        </div>
+        <div class="payment-check">
+          <div class="check-circle" [class.checked]="metodoPago === MetodoPago.EFECTIVO">
+            <ion-icon name="checkmark"></ion-icon>
           </div>
-        </ion-card-header>
-        <ion-card-content>
-          <div class="payment-methods">
-            <div class="payment-option"
-                 [class.selected]="metodoPago === MetodoPago.EFECTIVO"
-                 (click)="seleccionarMetodoPago(MetodoPago.EFECTIVO)">
-              <div class="payment-icon cash">
-                <ion-icon name="cash-outline"></ion-icon>
-              </div>
-              <div class="payment-info">
-                <h3>Efectivo</h3>
-                <p>Paga al recibir tu pedido</p>
-              </div>
-              <div class="payment-check">
-                <div class="check-circle" [class.checked]="metodoPago === MetodoPago.EFECTIVO">
-                  <ion-icon name="checkmark"></ion-icon>
-                </div>
-              </div>
-            </div>
+        </div>
+      </div>
 
-            <div class="payment-option"
-                 [class.selected]="metodoPago === MetodoPago.TRANSFERENCIA"
-                 (click)="seleccionarMetodoPago(MetodoPago.TRANSFERENCIA)">
-              <div class="payment-icon transfer">
-                <ion-icon name="card-outline"></ion-icon>
-              </div>
-              <div class="payment-info">
-                <h3>Transferencia</h3>
-                <p>Bancolombia, Davivienda</p>
-              </div>
-              <div class="payment-check">
-                <div class="check-circle" [class.checked]="metodoPago === MetodoPago.TRANSFERENCIA">
-                  <ion-icon name="checkmark"></ion-icon>
-                </div>
-              </div>
-            </div>
+      <div class="payment-option"
+           [class.selected]="metodoPago === MetodoPago.DAVIPLATA"
+           (click)="seleccionarMetodoPago(MetodoPago.DAVIPLATA)">
+        <div class="payment-icon daviplata">
+          <ion-icon name="phone-portrait-outline"></ion-icon>
+        </div>
+        <div class="payment-info">
+          <h3>Daviplata</h3>
+          <p>Transferencia bancaria</p>
+        </div>
+        <div class="payment-check">
+          <div class="check-circle" [class.checked]="metodoPago === MetodoPago.DAVIPLATA">
+            <ion-icon name="checkmark"></ion-icon>
+          </div>
+        </div>
+      </div>
 
-            <div class="payment-option"
-                 [class.selected]="metodoPago === MetodoPago.DAVIPLATA"
-                 (click)="seleccionarMetodoPago(MetodoPago.DAVIPLATA)">
-              <div class="payment-icon daviplata">
-                <ion-icon name="phone-portrait-outline"></ion-icon>
-              </div>
-              <div class="payment-info">
-                <h3>Daviplata</h3>
-                <p>Pago por aplicación</p>
-              </div>
-              <div class="payment-check">
-                <div class="check-circle" [class.checked]="metodoPago === MetodoPago.DAVIPLATA">
-                  <ion-icon name="checkmark"></ion-icon>
-                </div>
-              </div>
-            </div>
+      <div class="payment-option"
+           [class.selected]="metodoPago === MetodoPago.NEQUI"
+           (click)="seleccionarMetodoPago(MetodoPago.NEQUI)">
+        <div class="payment-icon nequi">
+          <ion-icon name="phone-portrait-outline"></ion-icon>
+        </div>
+        <div class="payment-info">
+          <h3>Nequi</h3>
+          <p>Transferencia bancaria</p>
+        </div>
+        <div class="payment-check">
+          <div class="check-circle" [class.checked]="metodoPago === MetodoPago.NEQUI">
+            <ion-icon name="checkmark"></ion-icon>
+          </div>
+        </div>
+      </div>
 
-            <div class="payment-option"
-                 [class.selected]="metodoPago === MetodoPago.NEQUI"
-                 (click)="seleccionarMetodoPago(MetodoPago.NEQUI)">
-              <div class="payment-icon nequi">
-                <ion-icon name="phone-portrait-outline"></ion-icon>
-              </div>
-              <div class="payment-info">
-                <h3>Nequi</h3>
-                <p>Pago por aplicación</p>
-              </div>
-              <div class="payment-check">
-                <div class="check-circle" [class.checked]="metodoPago === MetodoPago.NEQUI">
-                  <ion-icon name="checkmark"></ion-icon>
-                </div>
-              </div>
-            </div>
+      <div class="payment-option"
+           [class.selected]="metodoPago === MetodoPago.BANCOLOMBIA"
+           (click)="seleccionarMetodoPago(MetodoPago.BANCOLOMBIA)">
+        <div class="payment-icon bancolombia">
+          <ion-icon name="phone-portrait-outline"></ion-icon>
+        </div>
+        <div class="payment-info">
+          <h3>Bancolombia</h3>
+          <p>Transferencia bancaria</p>
+        </div>
+        <div class="payment-check">
+          <div class="check-circle" [class.checked]="metodoPago === MetodoPago.BANCOLOMBIA">
+            <ion-icon name="checkmark"></ion-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Detalles de Pago en Efectivo -->
+    @if (metodoPago === MetodoPago.EFECTIVO) {
+      <div class="cash-payment-details">
+        <div class="input-wrapper" [class.valid]="pagaCon && pagaCon >= total()">
+          <label class="floating-label">¿Con cuánto vas a pagar?</label>
+          <ion-input
+            [(ngModel)]="pagaCon"
+            name="pagaCon"
+            type="number"
+            class="premium-input">
+          </ion-input>
+          <div class="input-decoration"></div>
+          <ion-icon name="cash-outline" class="input-icon"></ion-icon>
+        </div>
+
+        @if (pagaCon && pagaCon >= total()) {
+          <div class="change-message success">
+            <ion-icon name="checkmark-circle"></ion-icon>
+            <span>Vueltas: ${{ formatearPrecio(pagaCon - total()) }}</span>
+          </div>
+        } @else if (pagaCon) {
+          <div class="change-message error">
+            <ion-icon name="alert-circle"></ion-icon>
+            <span>El monto debe ser mayor o igual al total</span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Información de Transferencia Bancaria -->
+    @if (esPagoTransferencia()) {
+      <div class="bank-transfer-info" [@slideIn]>
+        <div class="transfer-header">
+          <ion-icon name="information-circle"></ion-icon>
+          <h4>Datos para transferencia</h4>
+        </div>
+
+        <!-- Selector de método de transferencia -->
+        <div class="transfer-method-selector">
+          <div class="method-option"
+               [class.active]="metodoTransferencia === 'llave'"
+               (click)="metodoTransferencia = 'llave'">
+            <ion-icon name="flash"></ion-icon>
+            <span>Transferencia rápida (Llave)</span>
+            <div class="badge-recommended">Recomendado</div>
+          </div>
+          <div class="method-option"
+               [class.active]="metodoTransferencia === 'cuenta'"
+               (click)="metodoTransferencia = 'cuenta'">
+            <ion-icon name="card"></ion-icon>
+            <span>Número de cuenta</span>
+          </div>
+        </div>
+
+        <div class="bank-details">
+          <div class="bank-logo">
+            <ion-icon [name]="getBankIcon()"></ion-icon>
+            <span>{{ getBankName() }}</span>
           </div>
 
-          @if (metodoPago === MetodoPago.EFECTIVO) {
-            <div class="cash-payment-details">
-              <div class="input-wrapper" [class.valid]="pagaCon && pagaCon >= total()">
-                <label class="floating-label">¿Con cuánto vas a pagar?</label>
-                <ion-input
-                  [(ngModel)]="pagaCon"
-                  name="pagaCon"
-                  type="number"
-                  placeholder="Ej: 100000"
-                  class="premium-input">
-                </ion-input>
-                <div class="input-decoration"></div>
-                <ion-icon name="cash-outline" class="input-icon"></ion-icon>
+          <!-- Opción: Transferencia por Llave -->
+          @if (metodoTransferencia === 'llave') {
+            <div class="account-info llave-info">
+              <div class="highlight-box">
+                <ion-icon name="flash" class="flash-icon"></ion-icon>
+                <div class="highlight-content">
+                  <h5>Transferencia instantánea</h5>
+                  <p>Usa Transfiya, Bre-b o cualquier app bancaria</p>
+                </div>
               </div>
 
-              @if (pagaCon && pagaCon >= total()) {
-                <div class="change-message success">
-                  <ion-icon name="checkmark-circle"></ion-icon>
-                  <span>Vueltas: ${{ formatearPrecio(pagaCon - total()) }}</span>
+              <div class="info-row featured">
+                <span class="info-label">
+                  <ion-icon name="key"></ion-icon>
+                  Llave (Celular):
+                </span>
+                <div class="llave-container">
+                  <span class="info-value llave-number">{{ datosBancarios[metodoPago].llave }}</span>
+                  <button class="copy-btn" (click)="copiarLlave()" [class.copied]="llaveCopiada">
+                    <ion-icon [name]="llaveCopiada ? 'checkmark-circle' : 'copy-outline'"></ion-icon>
+                    <span>{{ llaveCopiada ? '¡Copiado!' : 'Copiar' }}</span>
+                  </button>
                 </div>
-              } @else if (pagaCon) {
-                <div class="change-message error">
-                  <ion-icon name="alert-circle"></ion-icon>
-                  <span>El monto debe ser mayor o igual al total</span>
+              </div>
+
+              <div class="info-row">
+                <span class="info-label">Titular:</span>
+                <span class="info-value">{{ datosBancarios[metodoPago].titular }}</span>
+              </div>
+
+              <div class="info-row">
+                <span class="info-label">Banco:</span>
+                <span class="info-value">{{ datosBancarios[metodoPago].banco }}</span>
+              </div>
+
+              <div class="info-row">
+                <span class="info-label">Monto a transferir:</span>
+                <span class="info-value total-amount">${{ formatearPrecio(total()) }}</span>
+              </div>
+            </div>
+
+            <div class="transfer-instructions llave-instructions">
+              <div class="instruction-header">
+                <ion-icon name="list-outline"></ion-icon>
+                <h5>¿Cómo transferir con llave?</h5>
+              </div>
+              <ol class="instruction-list">
+                <li>Abre tu app bancaria (cualquier banco)</li>
+                <li>Busca "Bre-b" o "Transferencia por celular"</li>
+                <li>Copia el número de la llave con el botón de arriba</li>
+                <li>Pégalo como destino de la transferencia</li>
+                <li>Confirma el nombre: <strong>{{ datosBancarios[metodoPago].titular }}</strong></li>
+                <li>Transfiere exactamente <strong>${{ formatearPrecio(total()) }}</strong></li>
+                <li>¡Listo! Confirma tu pedido abajo</li>
+              </ol>
+
+              <div class="pro-tip">
+                <ion-icon name="bulb"></ion-icon>
+                <div>
+                  <strong>Tip:</strong> La transferencia es instantánea y sin costo adicional. Compatible con todos los bancos de Colombia.
                 </div>
-              }
+              </div>
             </div>
           }
-        </ion-card-content>
-      </ion-card>
 
+          <!-- Opción: Transferencia por Número de Cuenta -->
+          @if (metodoTransferencia === 'cuenta') {
+            <div class="account-info">
+              <div class="info-row">
+                <span class="info-label">Tipo de cuenta:</span>
+                <span class="info-value">{{ datosBancarios[metodoPago].tipoCuenta }}</span>
+              </div>
+
+              <div class="info-row featured">
+                <span class="info-label">Número de cuenta:</span>
+                <div class="account-number-container">
+                  <span class="info-value account-number">{{ datosBancarios[metodoPago].numeroCuenta }}</span>
+                  <button class="copy-btn" (click)="copiarNumeroCuenta()" [class.copied]="numeroCuentaCopiado">
+                    <ion-icon [name]="numeroCuentaCopiado ? 'checkmark-circle' : 'copy-outline'"></ion-icon>
+                    <span>{{ numeroCuentaCopiado ? '¡Copiado!' : 'Copiar' }}</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="info-row">
+                <span class="info-label">Titular:</span>
+                <span class="info-value">{{ datosBancarios[metodoPago].titular }}</span>
+              </div>
+
+              <div class="info-row">
+                <span class="info-label">Monto a transferir:</span>
+                <span class="info-value total-amount">${{ formatearPrecio(total()) }}</span>
+              </div>
+            </div>
+
+            <div class="transfer-instructions">
+              <div class="instruction-header">
+                <ion-icon name="list-outline"></ion-icon>
+                <h5>Instrucciones</h5>
+              </div>
+              <ol class="instruction-list">
+                <li>Abre tu app de {{ getBankName() }}</li>
+                <li>Selecciona "Enviar dinero" o "Transferir"</li>
+                <li>Ingresa el número de cuenta usando el botón copiar</li>
+                <li>Transfiere exactamente <strong>${{ formatearPrecio(total()) }}</strong></li>
+                <li>Confirma tu pedido abajo cuando completes el pago</li>
+              </ol>
+            </div>
+          }
+
+          <div class="transfer-note">
+            <ion-icon name="time-outline"></ion-icon>
+            <p>
+              @if (metodoTransferencia === 'llave') {
+                Tu pedido será procesado inmediatamente al confirmar la transferencia (máximo 5 minutos)
+              } @else {
+                Tu pedido será procesado una vez confirmemos la transferencia (máximo 15 minutos)
+              }
+            </p>
+          </div>
+        </div>
+      </div>
+    }
+  </ion-card-content>
+</ion-card>
       <!-- Resumen del Pedido -->
       <ion-card class="premium-card summary-card card-elevated">
         <ion-card-header class="card-header">

@@ -225,7 +225,7 @@ export class StartTripPagePage {
   }
 
   volver() {
-    this.router.navigate(['/historial']);
+    this.router.navigate(['/tabs/productos']);
   }
 
   async showAlert(header: string, message: string) {

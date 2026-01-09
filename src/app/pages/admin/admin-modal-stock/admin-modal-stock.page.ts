@@ -12,8 +12,7 @@ import {
   IonLabel,
   IonButtons,
   IonIcon,
-  ModalController
-} from '@ionic/angular/standalone';
+  ModalController, IonBackButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { close, add, remove } from 'ionicons/icons';
 import { ProductoService } from '../../../core/services/producto-service';
@@ -24,7 +23,7 @@ import { Producto } from '../../../core/models/producto.model';
   templateUrl: './admin-modal-stock.page.html',
   styleUrls: ['./admin-modal-stock.page.scss'],
   standalone: true,
-  imports: [   CommonModule,
+  imports: [ CommonModule,
     FormsModule,
     IonHeader,
     IonToolbar,

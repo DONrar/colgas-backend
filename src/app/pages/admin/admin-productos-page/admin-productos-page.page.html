@@ -1,123 +1,167 @@
 <ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Administrar Productos</ion-title>
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-back-button
+        defaultHref="/admin-dashboard"
+        text="Productos"
+        style="--color: white;">
+      </ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="cube" style="color: #3B9797;"></ion-icon>
+      &nbsp;Administrar Productos
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Nuevo Producto</ion-card-title>
-    </ion-card-header>
+<ion-content class="ion-padding" style="--background: #f8f9fa;">
+  <div class="container">
+    <ion-card class="card-elevated">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="add-circle"></ion-icon>
+          &nbsp;Nuevo Producto
+        </ion-card-title>
+      </ion-card-header>
 
-    <ion-card-content>
-      <form #productoForm="ngForm">
-        <!-- Nombre -->
-        <ion-item>
-          <ion-label position="floating">Nombre *</ion-label>
-          <ion-input
-            [(ngModel)]="producto.nombre"
-            name="nombre"
-            type="text"
-            required>
-          </ion-input>
-        </ion-item>
+      <ion-card-content>
+        <form #productoForm="ngForm">
+          <!-- Nombre -->
+          <ion-item lines="full">
+            <ion-label position="floating">
+              <ion-icon name="pricetag" slot="start"></ion-icon>
+              Nombre *
+            </ion-label>
+            <ion-input
+              [(ngModel)]="producto.nombre"
+              name="nombre"
+              type="text"
+              required
+              placeholder="Ingresa el nombre del producto">
+            </ion-input>
+          </ion-item>
 
-        <!-- Tipo -->
-        <ion-item>
-          <ion-label>Tipo *</ion-label>
-          <ion-select [(ngModel)]="producto.tipo" name="tipo">
-            @for (tipo of tipos; track tipo) {
-              <ion-select-option [value]="tipo">{{ tipo }}</ion-select-option>
+          <!-- Tipo -->
+          <ion-item lines="full">
+            <ion-label>
+              <ion-icon name="grid" slot="start"></ion-icon>
+              Tipo *
+            </ion-label>
+            <ion-select
+              [(ngModel)]="producto.tipo"
+              name="tipo"
+              interface="action-sheet">
+              @for (tipo of tipos; track tipo) {
+                <ion-select-option [value]="tipo">{{ tipo }}</ion-select-option>
+              }
+            </ion-select>
+          </ion-item>
+
+          <!-- Peso -->
+          <ion-item lines="full">
+            <ion-label position="floating">
+              <ion-icon name="scale" slot="start"></ion-icon>
+              Peso (ej: 10kg, 20lbs)
+            </ion-label>
+            <ion-input
+              [(ngModel)]="producto.peso"
+              name="peso"
+              type="text"
+              placeholder="Opcional">
+            </ion-input>
+          </ion-item>
+
+          <!-- Precio -->
+          <ion-item lines="full">
+            <ion-label position="floating">
+              <ion-icon name="cash" slot="start"></ion-icon>
+              Precio *
+            </ion-label>
+            <ion-input
+              [(ngModel)]="producto.precio"
+              name="precio"
+              type="number"
+              min="0"
+              step="0.01"
+              required
+              placeholder="0.00">
+            </ion-input>
+          </ion-item>
+
+          <!-- Stock -->
+          <ion-item lines="full">
+            <ion-label position="floating">
+              <ion-icon name="cube" slot="start"></ion-icon>
+              Stock *
+            </ion-label>
+            <ion-input
+              [(ngModel)]="producto.stock"
+              name="stock"
+              type="number"
+              min="0"
+              required
+              placeholder="0">
+            </ion-input>
+          </ion-item>
+
+          <!-- Descripción -->
+          <ion-item lines="full">
+            <ion-label position="floating">
+              <ion-icon name="document-text" slot="start"></ion-icon>
+              Descripción
+            </ion-label>
+            <ion-textarea
+              [(ngModel)]="producto.descripcion"
+              name="descripcion"
+              rows="4"
+              placeholder="Describe el producto (opcional)">
+            </ion-textarea>
+          </ion-item>
+
+          <!-- Imagen -->
+          <div class="imagen-section animated-fade-in">
+            <ion-button expand="block" fill="outline" (click)="fileInput.click()">
+              <ion-icon slot="start" name="image"></ion-icon>
+              Seleccionar Imagen
+            </ion-button>
+            <input
+              #fileInput
+              type="file"
+              accept="image/*"
+              style="display: none"
+              (change)="seleccionarImagen($event)">
+
+            @if (imagenPreview()) {
+              <div class="imagen-preview animated-fade-in">
+                <img [src]="imagenPreview()" alt="Vista previa de la imagen" />
+                <ion-button
+                  color="danger"
+                  size="small"
+                  fill="clear"
+                  (click)="eliminarImagen()">
+                  <ion-icon slot="icon-only" name="trash"></ion-icon>
+                </ion-button>
+              </div>
             }
-          </ion-select>
-        </ion-item>
+          </div>
 
-        <!-- Peso -->
-        <ion-item>
-          <ion-label position="floating">Peso (ej: 10kg, 20lbs)</ion-label>
-          <ion-input
-            [(ngModel)]="producto.peso"
-            name="peso"
-            type="text">
-          </ion-input>
-        </ion-item>
-
-        <!-- Precio -->
-        <ion-item>
-          <ion-label position="floating">Precio *</ion-label>
-          <ion-input
-            [(ngModel)]="producto.precio"
-            name="precio"
-            type="number"
-            min="0"
-            required>
-          </ion-input>
-        </ion-item>
-
-        <!-- Stock -->
-        <ion-item>
-          <ion-label position="floating">Stock *</ion-label>
-          <ion-input
-            [(ngModel)]="producto.stock"
-            name="stock"
-            type="number"
-            min="0"
-            required>
-          </ion-input>
-        </ion-item>
-
-        <!-- Descripción -->
-        <ion-item>
-          <ion-label position="floating">Descripción</ion-label>
-          <ion-textarea
-            [(ngModel)]="producto.descripcion"
-            name="descripcion"
-            rows="4">
-          </ion-textarea>
-        </ion-item>
-
-        <!-- Imagen -->
-        <div class="imagen-section">
-          <ion-button expand="block" (click)="fileInput.click()">
-            <ion-icon slot="start" name="image"></ion-icon>
-            Seleccionar Imagen
-          </ion-button>
-          <input
-            #fileInput
-            type="file"
-            accept="image/*"
-            style="display: none"
-            (change)="seleccionarImagen($event)">
-
-          @if (imagenPreview()) {
-            <div class="imagen-preview">
-              <img [src]="imagenPreview()" alt="Preview" />
-              <ion-button
-                color="danger"
-                size="small"
-                (click)="eliminarImagen()">
-                <ion-icon slot="icon-only" name="trash"></ion-icon>
-              </ion-button>
-            </div>
-          }
-        </div>
-
-        <!-- Botones -->
-        <div class="botones-container">
-          <ion-button
-            expand="block"
-            (click)="guardarProducto()"
-            [disabled]="guardando() || !productoForm.valid">
-            @if (guardando()) {
-              <ion-spinner name="crescent"></ion-spinner>
-            } @else {
-              <ion-icon slot="start" name="save"></ion-icon>
-              Guardar Producto
-            }
-          </ion-button>
-        </div>
-      </form>
-    </ion-card-content>
-  </ion-card>
+          <!-- Botones -->
+          <div class="botones-container animated-fade-in">
+            <ion-button
+              expand="block"
+              (click)="guardarProducto()"
+              [disabled]="guardando() || !productoForm.valid">
+              @if (guardando()) {
+                <ion-spinner name="crescent"></ion-spinner>
+                &nbsp;Guardando...
+              } @else {
+                <ion-icon slot="start" name="save"></ion-icon>
+                Guardar Producto
+              }
+            </ion-button>
+          </div>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

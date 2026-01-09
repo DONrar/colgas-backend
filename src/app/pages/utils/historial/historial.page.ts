@@ -5,16 +5,16 @@ import {
   IonHeader, IonToolbar, IonTitle, IonContent, IonSegment,
   IonSegmentButton, IonLabel, IonList, IonItem, IonCard,
   IonCardHeader, IonCardTitle, IonCardContent, IonButton,
-  IonIcon, IonNote, IonSpinner, IonText, IonInput, IonBadge, NavController
-} from '@ionic/angular/standalone';
+  IonIcon, IonNote, IonSpinner, IonText, IonInput, IonBadge, NavController, IonButtons } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { cart, car, search, timeOutline, searchOutline, cartOutline, cash, card, chevronForward, carOutline, navigate } from 'ionicons/icons';
+import { cart, car, search, timeOutline, searchOutline, cartOutline, cash, card, chevronForward, carOutline, navigate, arrowBack } from 'ionicons/icons';
 import { PedidoService } from '../../../core/services/pedido-service';
 import { ExpresoService } from '../../../core/services/expreso-service';
 import { ToastService } from '../../../core/services/toast-service';
 import { StorageService } from '../../../core/services/storage-service';
 import { PedidoResponse } from '../../../core/models/pedido.model';
 import { ExpresoResponse } from '../../../core/models/expreso.model';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -22,7 +22,7 @@ import { ExpresoResponse } from '../../../core/models/expreso.model';
   templateUrl: './historial.page.html',
   styleUrls: ['./historial.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, IonContent,
+  imports: [IonButtons, CommonModule, FormsModule, IonHeader, IonToolbar, IonTitle, IonContent,
     IonSegment, IonSegmentButton, IonLabel, IonItem, IonCard,
     IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonIcon,
     IonSpinner, IonInput, IonBadge]
@@ -33,6 +33,7 @@ export class HistorialPage implements OnInit {
   private toastService = inject(ToastService);
   private storageService = inject(StorageService);
   private navCtrl = inject(NavController);
+  private router = inject(Router);
 
   tipoSeleccionado = 'pedidos';
   telefono = '';
@@ -41,7 +42,7 @@ export class HistorialPage implements OnInit {
   expresos = signal<ExpresoResponse[]>([]);
 
   constructor() {
-    addIcons({ timeOutline, cart, car, searchOutline, search, cartOutline, cash, card, chevronForward, carOutline, navigate });
+    addIcons({arrowBack,timeOutline,cart,car,searchOutline,search,cartOutline,cash,card,chevronForward,carOutline,navigate});
   }
 
   ngOnInit() {
@@ -74,6 +75,9 @@ export class HistorialPage implements OnInit {
         error: () => { this.toastService.error('Error'); this.cargando.set(false); }
       });
     }
+  }
+  volver() {
+    this.router.navigate(['/tabs/productos']);
   }
 
   // Navegación a detalles

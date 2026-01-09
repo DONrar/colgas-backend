@@ -1,133 +1,283 @@
-<ion-header>
-  <ion-toolbar color="primary">
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin/productos"></ion-back-button>
+      <ion-back-button
+        defaultHref="/admin/productos"
+        style="--color: white;">
+      </ion-back-button>
     </ion-buttons>
-    <ion-title>Editar Producto</ion-title>
+
+    <ion-title>
+      <ion-icon name="create" style="color: #3B9797;"></ion-icon>
+      &nbsp;Editar Producto
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
+<ion-content [fullscreen]="true" class="ion-padding edit-product-page">
   @if (cargando()) {
-    <div class="spinner-container">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Cargando producto...</p>
+    <div class="loading-container animated-fade-in">
+      <div class="loading-spinner">
+        <ion-spinner name="crescent" style="--color: #3B9797;"></ion-spinner>
+      </div>
+      <div class="loading-content">
+        <h3>Cargando producto</h3>
+        <p>Estamos preparando la información...</p>
+      </div>
     </div>
   } @else {
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Información del Producto</ion-card-title>
-      </ion-card-header>
+    <div class="form-container">
+      <!-- Tarjeta 1: Información del Producto -->
+      <ion-card class="card-elevated edit-card">
+        <ion-card-header class="card-header-custom">
+          <div class="card-title-with-icon">
+            <div class="title-icon-container primary">
+              <ion-icon name="cube"></ion-icon>
+            </div>
+            <div class="title-content">
+              <ion-card-title>Información del Producto</ion-card-title>
+              <ion-card-subtitle>Actualiza los datos del producto</ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
 
-      <ion-card-content>
-        <form #productoForm="ngForm">
-          <!-- Nombre -->
-          <ion-item>
-            <ion-label position="floating">Nombre *</ion-label>
-            <ion-input
-              [(ngModel)]="producto.nombre"
-              name="nombre"
-              type="text"
-              required>
-            </ion-input>
-          </ion-item>
+        <ion-card-content>
+          <form #productoForm="ngForm" class="product-form">
+            <!-- Nombre -->
+            <div class="form-group">
+              <ion-item lines="none" class="form-item">
+                <ion-label position="stacked" class="form-label">
+                  <ion-icon name="pricetag" slot="start" class="form-icon"></ion-icon>
+                  Nombre *
+                </ion-label>
+                <ion-input
+                  [(ngModel)]="producto.nombre"
+                  name="nombre"
+                  type="text"
+                  required
+                  class="form-input"
+                  placeholder="Ingrese el nombre del producto">
+                </ion-input>
+              </ion-item>
+              <div class="form-hint">Ej: Pipeta para perros de 20kg</div>
+            </div>
 
-          <!-- Tipo -->
-          <ion-item>
-            <ion-label>Tipo *</ion-label>
-            <ion-select [(ngModel)]="producto.tipo" name="tipo">
-              @for (tipo of tipos; track tipo) {
-                <ion-select-option [value]="tipo">{{ tipo }}</ion-select-option>
-              }
-            </ion-select>
-          </ion-item>
+            <!-- Tipo -->
+            <div class="form-group">
+              <ion-item lines="none" class="form-item">
+                <ion-label position="stacked" class="form-label">
+                  <ion-icon name="grid" slot="start" class="form-icon"></ion-icon>
+                  Tipo *
+                </ion-label>
+                <ion-select
+                  [(ngModel)]="producto.tipo"
+                  name="tipo"
+                  interface="action-sheet"
+                  class="form-select"
+                  placeholder="Seleccione el tipo">
+                  @for (tipo of tipos; track tipo) {
+                    <ion-select-option [value]="tipo">
+                      <div class="select-option">
+                        <ion-icon [name]="getTipoIcon(tipo)" class="option-icon"></ion-icon>
+                        <span>{{ tipo }}</span>
+                      </div>
+                    </ion-select-option>
+                  }
+                </ion-select>
+              </ion-item>
+            </div>
 
-          <!-- Peso -->
-          <ion-item>
-            <ion-label position="floating">Peso (ej: 10kg, 20lbs)</ion-label>
-            <ion-input
-              [(ngModel)]="producto.peso"
-              name="peso"
-              type="text">
-            </ion-input>
-          </ion-item>
+            <!-- Peso -->
+            <div class="form-group">
+              <ion-item lines="none" class="form-item">
+                <ion-label position="stacked" class="form-label">
+                  <ion-icon name="scale" slot="start" class="form-icon"></ion-icon>
+                  Peso
+                </ion-label>
+                <ion-input
+                  [(ngModel)]="producto.peso"
+                  name="peso"
+                  type="text"
+                  class="form-input"
+                  placeholder="Ej: 10kg, 20lbs">
+                </ion-input>
+              </ion-item>
+              <div class="form-hint">Especifique la unidad de medida (kg, lbs, etc.)</div>
+            </div>
 
-          <!-- Precio -->
-          <ion-item>
-            <ion-label position="floating">Precio *</ion-label>
-            <ion-input
-              [(ngModel)]="producto.precio"
-              name="precio"
-              type="number"
-              min="0"
-              required>
-            </ion-input>
-          </ion-item>
+            <!-- Precio -->
+            <div class="form-group">
+              <ion-item lines="none" class="form-item">
+                <ion-label position="stacked" class="form-label">
+                  <ion-icon name="cash" slot="start" class="form-icon"></ion-icon>
+                  Precio *
+                </ion-label>
+                <ion-input
+                  [(ngModel)]="producto.precio"
+                  name="precio"
+                  type="number"
+                  min="0"
+                  required
+                  class="form-input"
+                  placeholder="0.00">
+                </ion-input>
+              </ion-item>
+              <div class="form-hint">Precio en la moneda local</div>
+            </div>
 
-          <!-- Stock -->
-          <ion-item>
-            <ion-label position="floating">Stock *</ion-label>
-            <ion-input
-              [(ngModel)]="producto.stock"
-              name="stock"
-              type="number"
-              min="0"
-              required>
-            </ion-input>
-          </ion-item>
+            <!-- Stock -->
+            <div class="form-group">
+              <ion-item lines="none" class="form-item">
+                <ion-label position="stacked" class="form-label">
+                  <ion-icon name="server" slot="start" class="form-icon"></ion-icon>
+                  Stock *
+                </ion-label>
+                <ion-input
+                  [(ngModel)]="producto.stock"
+                  name="stock"
+                  type="number"
+                  min="0"
+                  required
+                  class="form-input"
+                  placeholder="0">
+                </ion-input>
+              </ion-item>
+              <div class="form-hint">Cantidad disponible en inventario</div>
+            </div>
 
-          <!-- Descripción -->
-          <ion-item>
-            <ion-label position="floating">Descripción</ion-label>
-            <ion-textarea
-              [(ngModel)]="producto.descripcion"
-              name="descripcion"
-              rows="4">
-            </ion-textarea>
-          </ion-item>
+            <!-- Descripción -->
+            <div class="form-group">
+              <ion-item lines="none" class="form-item">
+                <ion-label position="stacked" class="form-label">
+                  <ion-icon name="document-text" slot="start" class="form-icon"></ion-icon>
+                  Descripción
+                </ion-label>
+                <ion-textarea
+                  [(ngModel)]="producto.descripcion"
+                  name="descripcion"
+                  rows="4"
+                  class="form-textarea"
+                  placeholder="Describa el producto detalladamente">
+                </ion-textarea>
+              </ion-item>
+              <div class="form-hint">Máximo 500 caracteres</div>
+            </div>
+          </form>
+        </ion-card-content>
+      </ion-card>
 
-          <!-- Imagen -->
-          <div class="imagen-section">
-            <ion-button expand="block" (click)="fileInput.click()">
-              <ion-icon slot="start" name="image"></ion-icon>
-              {{ imagenPreview() ? 'Cambiar Imagen' : 'Seleccionar Imagen' }}
-            </ion-button>
-            <input
-              #fileInput
-              type="file"
-              accept="image/*"
-              style="display: none"
-              (change)="seleccionarImagen($event)">
+      <!-- Separación entre tarjetas -->
+      <div class="card-spacer"></div>
 
-            @if (imagenPreview()) {
-              <div class="imagen-preview">
-                <img [src]="imagenPreview()" alt="Preview" />
+      <!-- Tarjeta 2: Imagen del Producto -->
+      <ion-card class="card-elevated edit-card">
+        <ion-card-header class="card-header-custom">
+          <div class="card-title-with-icon">
+            <div class="title-icon-container success">
+              <ion-icon name="image"></ion-icon>
+            </div>
+            <div class="title-content">
+              <ion-card-title>Imagen del Producto</ion-card-title>
+              <ion-card-subtitle>Selecciona o arrastra una imagen</ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="image-section">
+            <div class="image-upload-container">
+              <div class="upload-button-container">
                 <ion-button
-                  color="danger"
-                  size="small"
-                  (click)="eliminarImagen()">
-                  <ion-icon slot="icon-only" name="trash"></ion-icon>
+                  expand="block"
+                  class="upload-btn btn-secondary"
+                  (click)="fileInput.click()">
+                  <ion-icon slot="start" name="cloud-upload"></ion-icon>
+                  {{ imagenPreview() ? 'Cambiar Imagen' : 'Seleccionar Imagen' }}
                 </ion-button>
               </div>
-            }
-          </div>
 
-          <!-- Botones -->
-          <div class="botones-container">
-            <ion-button
-              expand="block"
-              (click)="actualizarProducto()"
-              [disabled]="guardando() || !productoForm.valid">
-              @if (guardando()) {
-                <ion-spinner name="crescent"></ion-spinner>
+              <input
+                #fileInput
+                type="file"
+                accept="image/*"
+                style="display: none"
+                (change)="seleccionarImagen($event)">
+
+              @if (imagenPreview()) {
+                <div class="image-preview-container animated-fade-in">
+                  <div class="image-preview">
+                    <img [src]="imagenPreview()" alt="Vista previa" class="preview-image" />
+                    <div class="preview-overlay">
+                      <div class="preview-actions">
+                        <ion-button
+                          fill="clear"
+                          color="light"
+                          class="action-btn view-btn"
+                          (click)="ampliarImagen()">
+                          <ion-icon name="expand" slot="icon-only"></ion-icon>
+                        </ion-button>
+                        <ion-button
+                          fill="clear"
+                          color="danger"
+                          class="action-btn delete-btn"
+                          (click)="eliminarImagen()">
+                          <ion-icon name="trash" slot="icon-only"></ion-icon>
+                        </ion-button>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="preview-info">
+                    <p class="preview-hint">Haz clic en la imagen para previsualizar</p>
+                    <p class="preview-size">Tamaño recomendado: 800x800px</p>
+                  </div>
+                </div>
               } @else {
-                <ion-icon slot="start" name="save"></ion-icon>
-                Actualizar Producto
+                <div class="image-placeholder">
+                  <div class="placeholder-content">
+                    <div class="placeholder-icon">
+                      <ion-icon name="image-outline"></ion-icon>
+                    </div>
+                    <p class="placeholder-text">No hay imagen seleccionada</p>
+                    <p class="placeholder-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+                    <div class="placeholder-details">
+                      <p>Formatos permitidos: JPG, PNG, WebP</p>
+                      <p>Tamaño máximo: 5MB</p>
+                    </div>
+                  </div>
+                </div>
               }
-            </ion-button>
+            </div>
           </div>
-        </form>
-      </ion-card-content>
-    </ion-card>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Botones de acción separados -->
+      <div class="action-section">
+        <div class="action-buttons">
+          <ion-button
+            expand="block"
+            class="btn-primary save-btn"
+            (click)="actualizarProducto()"
+            [disabled]="guardando() || !productoForm.valid">
+            @if (guardando()) {
+              <ion-spinner name="crescent" slot="start"></ion-spinner>
+              <span>Guardando...</span>
+            } @else {
+              <ion-icon slot="start" name="save"></ion-icon>
+              <span>Actualizar Producto</span>
+            }
+          </ion-button>
+
+          <ion-button
+            expand="block"
+            fill="outline"
+            class="btn-secondary cancel-btn"
+            [routerLink]="['/admin/productos']">
+            <ion-icon slot="start" name="close-circle"></ion-icon>
+            Cancelar
+          </ion-button>
+        </div>
+      </div>
+    </div>
   }
 </ion-content>

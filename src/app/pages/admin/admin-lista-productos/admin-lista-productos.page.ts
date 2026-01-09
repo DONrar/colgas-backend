@@ -2,31 +2,9 @@ import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonButton,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardContent,
-  IonIcon,
-  IonSpinner,
-  IonSearchbar,
-  IonChip,
-  IonLabel,
-  IonGrid,
-  IonRow,
-  IonCol,
-  AlertController,
-  IonRefresher,
-  IonRefresherContent,
-  ModalController
-} from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonIcon, IonSpinner, IonSearchbar, IonChip, IonLabel, IonGrid, IonRow, IonCol, AlertController, IonRefresher, IonRefresherContent, ModalController, IonFab, IonFabButton, IonBadge, IonButtons, IonMenuButton } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { add, create, trash, refresh, search, cube } from 'ionicons/icons';
+import { add, create, trash, refresh, search, cube, addCircle, searchOutline, closeCircle, warning, checkmarkCircle, scale, arrowBack } from 'ionicons/icons';
 import { AdminModalStockPage } from '../admin-modal-stock/admin-modal-stock.page';
 import { ProductoService } from '../../../core/services/producto-service';
 import { ToastService } from '../../../core/services/toast-service';
@@ -36,27 +14,20 @@ import { Producto } from '../../../core/models/producto.model';
   templateUrl: './admin-lista-productos.page.html',
   styleUrls: ['./admin-lista-productos.page.scss'],
   standalone: true,
-  imports: [CommonModule,
+  imports: [IonButtons, IonBadge, IonFabButton, IonFab, CommonModule,
     FormsModule,
     IonHeader,
     IonToolbar,
     IonTitle,
     IonContent,
     IonButton,
-    IonCard,
-    IonCardHeader,
-    IonCardTitle,
+    IonCard, 
     IonCardContent,
     IonIcon,
     IonSpinner,
     IonSearchbar,
-    IonChip,
-    IonLabel,
-    IonGrid,
-    IonRow,
-    IonCol,
     IonRefresher,
-    IonRefresherContent]
+    IonRefresherContent, IonMenuButton]
 })
 export class AdminListaProductosPage implements OnInit {
  private productoService = inject(ProductoService);
@@ -71,11 +42,15 @@ export class AdminListaProductosPage implements OnInit {
   textoBusqueda = signal('');
 
   constructor() {
-    addIcons({ add, create, trash, refresh, search, cube });
+    addIcons({arrowBack,cube,addCircle,searchOutline,closeCircle,warning,checkmarkCircle,scale,create,trash,add,refresh,search});
   }
 
   ngOnInit() {
     this.cargarProductos();
+  }
+
+  volver() {
+    this.router.navigate(['/admin-dashboard']);
   }
 
   cargarProductos() {
@@ -173,11 +148,6 @@ export class AdminListaProductosPage implements OnInit {
     });
   }
 
-  getColorStock(stock: number | undefined): string {
-    if (!stock || stock === 0) return 'danger';
-    if (stock <= 10) return 'warning';
-    return 'success';
-  }
 
   async abrirModalStock(producto: Producto) {
     const modal = await this.modalController.create({
@@ -195,4 +165,39 @@ export class AdminListaProductosPage implements OnInit {
       this.cargarProductos();
     }
   }
+  // Métodos para tipos de productos
+getTipoClass(tipo: string): string {
+  const tipoLower = tipo?.toLowerCase() || '';
+  if (tipoLower.includes('pipeta')) return 'pipeta';
+  if (tipoLower.includes('accesorio')) return 'accesorio';
+  if (tipoLower.includes('repuesto')) return 'repuesto';
+  return 'default';
+}
+
+getTipoIcon(tipo: string): string {
+  const tipoLower = tipo?.toLowerCase() || '';
+  if (tipoLower.includes('pipeta')) return 'flask';
+  if (tipoLower.includes('accesorio')) return 'construct';
+  if (tipoLower.includes('repuesto')) return 'hardware-chip';
+  return 'cube';
+}
+
+getTipoNombre(tipo: string): string {
+  const tipoLower = tipo?.toLowerCase() || '';
+  if (tipoLower.includes('pipeta')) return 'Pipeta';
+  if (tipoLower.includes('accesorio')) return 'Accesorio';
+  if (tipoLower.includes('repuesto')) return 'Repuesto';
+  return tipo || 'Producto';
+}
+
+formatearPrecio(precio: number): string {
+  return precio.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+getColorStock(stock?: number): string {
+  if (!stock && stock !== 0) return 'medium';
+  if (stock === 0) return 'danger';
+  if (stock <= 10) return 'warning';
+  return 'success';
+}
 }

@@ -1,0 +1,293 @@
+<ion-header [translucent]="true">
+  <!-- Header Principal -->
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="volver()" style="--color: white;">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+      <ion-menu-button auto-hide="false" style="--color: white;"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="car-outline" style="color: #3B9797;"></ion-icon>
+      &nbsp;Gestión de Expresos
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="handleRefreshManual()" class="header-btn">
+        <ion-icon name="refresh-outline" style="--color: white;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <!-- Estadísticas rápidas -->
+  <ion-toolbar style="--background: #16476A;">
+    <div class="quick-stats-container">
+      <div class="stat-item" (click)="cambiarEstadoManual(EstadoExpreso.SOLICITADO)">
+        <div class="stat-badge warning">
+          <ion-icon name="time-outline"></ion-icon>
+          <span class="stat-value">{{ estadisticas().solicitados }}</span>
+        </div>
+        <span class="stat-label">Solicitados</span>
+      </div>
+
+      <div class="stat-item" (click)="cambiarEstadoManual(EstadoExpreso.ASIGNADO)">
+        <div class="stat-badge primary">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span class="stat-value">{{ estadisticas().asignados }}</span>
+        </div>
+        <span class="stat-label">Asignados</span>
+      </div>
+
+      <div class="stat-item" (click)="cambiarEstadoManual(EstadoExpreso.EN_CURSO)">
+        <div class="stat-badge info">
+          <ion-icon name="car-outline"></ion-icon>
+          <span class="stat-value">{{ estadisticas().enCurso }}</span>
+        </div>
+        <span class="stat-label">En Curso</span>
+      </div>
+
+      <div class="stat-item" (click)="cambiarEstadoManual(EstadoExpreso.COMPLETADO)">
+        <div class="stat-badge success">
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+          <span class="stat-value">{{ estadisticas().completados }}</span>
+        </div>
+        <span class="stat-label">Completados</span>
+      </div>
+
+      <div class="stat-item total" (click)="cambiarEstadoManual('TODOS')">
+        <div class="stat-badge total-badge">
+          <ion-icon name="apps"></ion-icon>
+          <span class="stat-value">{{ totalExpresos() }}</span>
+        </div>
+        <span class="stat-label">Total</span>
+      </div>
+    </div>
+  </ion-toolbar>
+ 
+</ion-header>
+
+<ion-content [fullscreen]="true" class="expresos-page">
+  <!-- Refresher -->
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="arrow-down"
+      pullingText="Desliza para actualizar"
+      refreshingSpinner="circles"
+      style="--color: #3B9797;">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading State -->
+  @if (cargando()) {
+    <div class="loading-container animated-fade-in">
+      <div class="loading-content">
+        <div class="loading-spinner">
+          <ion-spinner name="crescent" style="--color: #3B9797;"></ion-spinner>
+        </div>
+        <h3>Cargando expresos</h3>
+        <p>Obteniendo información de viajes...</p>
+      </div>
+    </div>
+  }
+
+  <!-- Empty State -->
+  @else if (expresosFiltrados().length === 0) {
+    <div class="empty-container animated-fade-in">
+      <div class="empty-icon">
+        <ion-icon name="car-outline"></ion-icon>
+      </div>
+      <div class="empty-content">
+        <h2>No hay expresos {{ estadoSeleccionado() === 'TODOS' ? '' : 'en este estado' }}</h2>
+        <p>@if (estadoSeleccionado() === EstadoExpreso.SOLICITADO) {
+          Todos los expresos han sido asignados o procesados
+        } @else if (estadoSeleccionado() === EstadoExpreso.ASIGNADO) {
+          No hay expresos asignados pendientes
+        } @else if (estadoSeleccionado() === EstadoExpreso.EN_CURSO) {
+          No hay expresos en curso actualmente
+        } @else if (estadoSeleccionado() === EstadoExpreso.COMPLETADO) {
+          No hay expresos completados recientemente
+        } @else {
+          No se han registrado expresos aún
+        }</p>
+        @if (estadoSeleccionado() !== 'TODOS') {
+          <ion-button (click)="cambiarEstadoManual('TODOS')" fill="solid" class="btn-primary">
+            <ion-icon slot="start" name="eye"></ion-icon>
+            Ver todos los expresos
+          </ion-button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Grid de Expresos -->
+  @else {
+    <div class="container">
+      <div class="expresos-grid animated-fade-in">
+        @for (expreso of expresosFiltrados(); track expreso.id) {
+          <ion-card class="expreso-card card-elevated" [class]="getEstadoClass(expreso.estado)">
+            <!-- Header de estado -->
+            <div class="card-header">
+              <ion-badge class="status-badge" [class]="getEstadoBadgeClass(expreso.estado)">
+                <ion-icon [name]="getEstadoIcon(expreso.estado)"></ion-icon>
+                {{ getTextoEstado(expreso.estado) }}
+              </ion-badge>
+              <div class="expreso-id">
+                <span>Expreso #{{ expreso.id }}</span>
+              </div>
+            </div>
+
+            <!-- Información principal -->
+            <ion-card-content class="expreso-content">
+              <!-- Información del expreso -->
+              <div class="expreso-info">
+                <div class="expreso-meta">
+                  <div class="meta-item">
+                    <ion-icon name="calendar"></ion-icon>
+                    <span>{{ formatearFecha(expreso.fechaSolicitud) }}</span>
+                  </div>
+                  <div class="meta-item">
+                    <ion-icon name="time"></ion-icon>
+                    <span>{{ formatearHora(expreso.fechaSolicitud) }}</span>
+                  </div>
+                </div>
+
+                <!-- Cliente -->
+                <div class="customer-info">
+                  <h3 class="customer-name">
+                    <ion-icon name="person"></ion-icon>
+                    {{ expreso.cliente.nombre }}
+                  </h3>
+                  @if (expreso.cliente.telefono) {
+                    <p class="customer-phone">
+                      <ion-icon name="call"></ion-icon>
+                      {{ expreso.cliente.telefono }}
+                    </p>
+                  }
+                </div>
+
+                <!-- Información del viaje -->
+                <div class="trip-info">
+                  <div class="route-section">
+                    <div class="route-point origen">
+                      <div class="route-icon">
+                        <ion-icon name="location"></ion-icon>
+                      </div>
+                      <div class="route-details">
+                        <span class="route-label">Origen</span>
+                        <p class="route-address">{{ expreso.direccionOrigen || 'Ubicación GPS' }}</p>
+                      </div>
+                    </div>
+
+                    <div class="route-divider"></div>
+
+                    <div class="route-point destino">
+                      <div class="route-icon">
+                        <ion-icon name="navigate"></ion-icon>
+                      </div>
+                      <div class="route-details">
+                        <span class="route-label">Destino</span>
+                        <p class="route-address">{{ expreso.direccionDestino || 'Ubicación GPS' }}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Stats del viaje -->
+                  <div class="trip-stats">
+                    <div class="stat">
+                      <ion-icon name="speedometer"></ion-icon>
+                      <span>{{ expreso.distanciaKm | number:'1.1-1' }} km</span>
+                    </div>
+                    @if (expreso.duracionMinutos) {
+                      <div class="stat">
+                        <ion-icon name="time"></ion-icon>
+                        <span>{{ expreso.duracionMinutos }} min</span>
+                      </div>
+                    }
+                    <div class="stat price">
+                      <ion-icon name="card"></ion-icon>
+                      <span>${{ formatearPrecio(expreso.precioTotal) }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Total y acciones -->
+              <div class="expreso-actions">
+                <div class="total-section">
+                  <span class="total-label">Precio del viaje</span>
+                  <span class="total-amount">${{ formatearPrecio(expreso.precioTotal) }}</span>
+                </div>
+
+                <ion-button
+                  expand="block"
+                  class="btn-primary"
+                  (click)="verDetalle(expreso.id)">
+                  <ion-icon slot="start" name="eye"></ion-icon>
+                  Ver Detalle
+                </ion-button>
+
+                <div class="quick-actions">
+                  @if (expreso.estado === EstadoExpreso.SOLICITADO) {
+                    <ion-button
+                      fill="clear"
+                      class="btn-success"
+                      (click)="cambiarEstadoExpreso(expreso, EstadoExpreso.ASIGNADO)"
+                      [disabled]="actualizandoEstado() === expreso.id">
+                      <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+                      Asignar
+                    </ion-button>
+                  } @else if (expreso.estado === EstadoExpreso.ASIGNADO) {
+                    <ion-button
+                      fill="clear"
+                      class="btn-warning"
+                      (click)="cambiarEstadoExpreso(expreso, EstadoExpreso.EN_CURSO)"
+                      [disabled]="actualizandoEstado() === expreso.id">
+                      <ion-icon name="play-circle" slot="start"></ion-icon>
+                      Iniciar
+                    </ion-button>
+                  } @else if (expreso.estado === EstadoExpreso.EN_CURSO) {
+                    <ion-button
+                      fill="clear"
+                      class="btn-success"
+                      (click)="cambiarEstadoExpreso(expreso, EstadoExpreso.COMPLETADO)"
+                      [disabled]="actualizandoEstado() === expreso.id">
+                      <ion-icon name="checkmark-done" slot="start"></ion-icon>
+                      Completar
+                    </ion-button>
+                  }
+
+                  <ion-button fill="clear" class="btn-whatsapp" (click)="abrirWhatsApp(expreso)">
+                    <ion-icon name="logo-whatsapp" slot="start"></ion-icon>
+                    WhatsApp
+                  </ion-button>
+
+                  <ion-button fill="clear" class="btn-map" (click)="abrirMapa(expreso)">
+                    <ion-icon name="map" slot="start"></ion-icon>
+                    Ruta
+                  </ion-button>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- FAB para actualizar -->
+  @if (!cargando() && expresosFiltrados().length > 0) {
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="refresh-fab">
+      <ion-fab-button class="fab-primary" (click)="handleRefreshManual()">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
+
+  <!-- Toast -->
+  <ion-toast
+    [isOpen]="mostrarToast()"
+    [message]="mensajeToast()"
+    [duration]="2000"
+    [color]="toastColor()"
+    (didDismiss)="mostrarToast.set(false)">
+  </ion-toast>
+</ion-content>

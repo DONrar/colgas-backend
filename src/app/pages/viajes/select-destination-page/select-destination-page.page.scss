@@ -369,3 +369,22 @@
     --color: #3B9797;
   }
 }
+
+.map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  /* Añadir margen superior para los controles */
+  .gm-style-mtc,
+  .gm-svpc,
+  .gmnoprint {
+    margin-top: 70px !important; /* Ajusta según necesites */
+  }
+
+  /* Control de zoom específico */
+  .gmnoprint.gm-bundled-control.gm-bundled-control-on-bottom {
+    margin-top: 70px !important;
+    top: 70px !important;
+  }
+}

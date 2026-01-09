@@ -1,0 +1,475 @@
+.admin-detalle-expreso-page {
+  --background: #f5f7fa;
+}
+
+.container {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+// Spinner de carga
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  gap: 16px;
+
+  ion-spinner {
+    --color: #3B9797;
+    width: 48px;
+    height: 48px;
+  }
+
+  p {
+    color: #666;
+    font-size: 16px;
+  }
+}
+
+// Tarjetas generales
+.card-elevated {
+  margin: 0 0 16px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+
+  ion-card-header {
+    background: linear-gradient(135deg, #132440, #16476A);
+    color: white;
+    padding: 20px;
+
+    ion-card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+    }
+  }
+
+  ion-card-content {
+    padding: 20px;
+  }
+}
+
+// Estado del expreso
+.estado-card {
+  .estado-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .estado-info {
+      ion-card-title {
+        font-size: 20px;
+        margin-bottom: 4px;
+      }
+
+      p {
+        font-size: 14px;
+        opacity: 0.9;
+        margin: 0;
+      }
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 24px;
+      font-size: 14px;
+      font-weight: 600;
+
+      ion-icon {
+        font-size: 18px;
+      }
+
+      &.solicitado-badge {
+        background: rgba(255, 152, 0, 0.2);
+        color: #FF9800;
+        border: 2px solid #FF9800;
+      }
+
+      &.asignado-badge {
+        background: rgba(33, 150, 243, 0.2);
+        color: #2196F3;
+        border: 2px solid #2196F3;
+      }
+
+      &.en-curso-badge {
+        background: rgba(0, 188, 212, 0.2);
+        color: #00BCD4;
+        border: 2px solid #00BCD4;
+      }
+
+      &.completado-badge {
+        background: rgba(76, 175, 80, 0.2);
+        color: #4CAF50;
+        border: 2px solid #4CAF50;
+      }
+
+      &.cancelado-badge {
+        background: rgba(244, 67, 54, 0.2);
+        color: #F44336;
+        border: 2px solid #F44336;
+      }
+    }
+  }
+}
+
+// Cliente
+.cliente-card {
+  .cliente-info {
+    .cliente-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+
+      .cliente-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3B9797, #2E7D7D);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        ion-icon {
+          font-size: 32px;
+          color: white;
+        }
+      }
+
+      .cliente-details {
+        flex: 1;
+
+        h3 {
+          font-size: 18px;
+          font-weight: 700;
+          color: #132440;
+          margin: 0 0 4px;
+        }
+
+        p {
+          color: #666;
+          font-size: 14px;
+          margin: 0;
+        }
+      }
+    }
+
+    .cliente-meta {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+
+      .meta-item {
+        display: flex;
+        gap: 12px;
+        padding: 8px 0;
+
+        ion-icon {
+          font-size: 24px;
+          color: #3B9797;
+          flex-shrink: 0;
+        }
+
+        .meta-content {
+          flex: 1;
+
+          h4 {
+            font-size: 12px;
+            color: #999;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin: 0 0 4px;
+          }
+
+          p {
+            font-size: 15px;
+            color: #333;
+            margin: 0;
+            font-weight: 500;
+          }
+        }
+      }
+    }
+
+    .botones-contacto {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .btn-whatsapp {
+        --background: linear-gradient(135deg, #25D366, #1ebe57);
+        --border-radius: 12px;
+        font-weight: 600;
+      }
+
+      .btn-outline {
+        --border-color: #3B9797;
+        --color: #3B9797;
+        --border-radius: 12px;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Viaje
+.viaje-card {
+  .viaje-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      margin: 0;
+    }
+
+    ion-button {
+      --color: white;
+      --padding-start: 8px;
+      --padding-end: 8px;
+    }
+  }
+
+  .ubicacion-section {
+    margin-bottom: 16px;
+
+    .ubicacion-header {
+      display: flex;
+      gap: 16px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #f8f9fa;
+
+      .ubicacion-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        ion-icon {
+          font-size: 24px;
+          color: white;
+        }
+      }
+
+      &.origen .ubicacion-icon {
+        background: linear-gradient(135deg, #4CAF50, #388E3C);
+      }
+
+      &.destino .ubicacion-icon {
+        background: linear-gradient(135deg, #F44336, #D32F2F);
+      }
+
+      .ubicacion-info {
+        flex: 1;
+
+        h3 {
+          font-size: 14px;
+          font-weight: 700;
+          color: #132440;
+          margin: 0 0 4px;
+        }
+
+        p {
+          font-size: 15px;
+          color: #333;
+          margin: 0 0 6px;
+          line-height: 1.4;
+        }
+
+        .coordenadas {
+          font-size: 12px;
+          color: #999;
+          font-family: monospace;
+        }
+      }
+
+      ion-button {
+        --color: #3B9797;
+        align-self: center;
+      }
+    }
+  }
+
+  .route-line {
+    width: 3px;
+    height: 32px;
+    background: linear-gradient(to bottom, #4CAF50, #F44336);
+    margin: 8px 0 8px 40px;
+    border-radius: 2px;
+    opacity: 0.4;
+  }
+
+  .viaje-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+
+    .stat-card {
+      background: #f8f9fa;
+      padding: 16px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      ion-icon {
+        font-size: 28px;
+        color: #3B9797;
+        flex-shrink: 0;
+      }
+
+      .stat-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .stat-label {
+          font-size: 11px;
+          color: #999;
+          text-transform: uppercase;
+          font-weight: 600;
+        }
+
+        .stat-value {
+          font-size: 16px;
+          color: #132440;
+          font-weight: 700;
+        }
+      }
+    }
+  }
+}
+
+// Pago
+.pago-card {
+  .resumen-pago {
+    background: #f8f9fa;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+
+    .linea-pago {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+
+      &:not(:last-child) {
+        border-bottom: 1px dashed #e0e0e0;
+      }
+
+      span {
+        font-size: 14px;
+        color: #666;
+      }
+
+      strong {
+        font-size: 16px;
+        color: #333;
+      }
+
+      &.total {
+        padding-top: 16px;
+        margin-top: 8px;
+        border-top: 2px solid #3B9797;
+        border-bottom: none;
+
+        span {
+          font-size: 16px;
+          font-weight: 700;
+          color: #132440;
+        }
+
+        strong {
+          font-size: 24px;
+          font-weight: 700;
+          color: #4CAF50;
+        }
+      }
+    }
+  }
+
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 12px;
+
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 16px;
+      background: white;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:active {
+        transform: scale(0.95);
+      }
+
+      &:hover {
+        border-color: #3B9797;
+        background: #f8f9fa;
+      }
+
+      ion-icon {
+        font-size: 28px;
+        color: #3B9797;
+      }
+
+      span {
+        font-size: 12px;
+        color: #666;
+        font-weight: 600;
+        text-align: center;
+      }
+    }
+  }
+}
+
+// Botones
+.btn-primary {
+  --background: linear-gradient(135deg, #3B9797, #2E7D7D);
+  --background-hover: linear-gradient(135deg, #2E7D7D, #1D5C5C);
+  --border-radius: 12px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.5px;
+}
+
+// Animaciones
+.animated-fade-in {
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

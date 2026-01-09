@@ -1,27 +1,292 @@
-// admin-productos.page.scss
-.imagen-section {
-  margin: 20px 0;
+/* admin-productos-page.page.scss */
 
-  .imagen-preview {
-    position: relative;
-    margin-top: 15px;
-    text-align: center;
+/* Aplicar fondo general de la aplicación */
+ion-content {
+  --background: #f8f9fa;
+}
 
-    img {
-      max-width: 100%;
-      max-height: 300px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
 
-    ion-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
+/* Tarjeta del formulario */
+.card-elevated {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 16px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+  }
+}
+
+ion-card-header {
+  background: linear-gradient(135deg, #16476A 0%, #132440 100%);
+  color: white;
+  border-radius: 16px 16px 0 0;
+  padding: 20px 20px 16px;
+
+  ion-card-title {
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: white;
+
+    ion-icon {
+      font-size: 22px;
+      color: #3B9797;
     }
   }
 }
 
+ion-card-content {
+  padding: 24px;
+
+  /* Animación para los campos del formulario */
+  form {
+    animation: fadeIn 0.4s ease-out;
+  }
+}
+
+/* Estilos para los items del formulario */
+ion-item {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --border-color: rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+
+  &:focus-within {
+    --border-color: #16476A;
+    --box-shadow: 0 0 0 1px rgba(22, 71, 106, 0.2);
+    transform: translateY(-1px);
+  }
+
+  ion-label {
+    color: #132440;
+    font-weight: 500;
+    margin-bottom: 8px;
+    font-size: 14px;
+
+    &[position="floating"] {
+      transform: translateY(100%) scale(1);
+      margin-bottom: 0;
+    }
+  }
+
+  ion-input, ion-select, ion-textarea {
+    --background: rgba(59, 151, 151, 0.05);
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 12px;
+    --padding-bottom: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 16px;
+    min-height: 50px;
+    transition: all 0.3s ease;
+
+    &:focus-within {
+      border-color: #16476A;
+      box-shadow: 0 0 0 2px rgba(22, 71, 106, 0.1);
+    }
+  }
+
+  ion-select::part(text) {
+    color: #132440;
+  }
+
+  ion-textarea {
+    min-height: 100px;
+  }
+}
+
+/* Estado de validación */
+ion-item.item-has-focus {
+  --border-color: #16476A;
+}
+
+ion-item.item-invalid {
+  --border-color: #BF092F;
+
+  ion-label {
+    color: #BF092F;
+  }
+
+  ion-input, ion-select, ion-textarea {
+    border-color: #BF092F;
+    background: rgba(191, 9, 47, 0.05);
+  }
+}
+
+/* Sección de imagen */
+.imagen-section {
+  margin: 24px 0;
+  text-align: center;
+
+  ion-button {
+    --background: rgba(59, 151, 151, 0.1);
+    --background-activated: rgba(59, 151, 151, 0.2);
+    --background-hover: rgba(59, 151, 151, 0.15);
+    --color: #16476A;
+    --border-radius: 12px;
+    --box-shadow: 0 2px 8px rgba(59, 151, 151, 0.15);
+    height: 50px;
+    font-weight: 500;
+    margin-bottom: 20px;
+
+    ion-icon {
+      font-size: 20px;
+      margin-right: 8px;
+    }
+  }
+}
+
+.imagen-preview {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  ion-button {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    --background: rgba(191, 9, 47, 0.9);
+    --background-activated: #BF092F;
+    --background-hover: rgba(191, 9, 47, 1);
+    --color: white;
+    --border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    --padding-start: 0;
+    --padding-end: 0;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+/* Botones del formulario */
 .botones-container {
-  margin-top: 20px;
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+  ion-button {
+    --border-radius: 12px;
+    height: 56px;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 0;
+
+    ion-icon {
+      margin-right: 8px;
+      font-size: 20px;
+    }
+
+    ion-spinner {
+      margin-right: 8px;
+    }
+
+    &:not([disabled]) {
+      --background: linear-gradient(135deg, #16476A 0%, #3B9797 100%);
+      --background-activated: linear-gradient(135deg, #132440 0%, #16476A 100%);
+      --background-hover: linear-gradient(135deg, #3B9797 0%, #4ab3b3 100%);
+      --color: white;
+      --box-shadow: 0 4px 12px rgba(22, 71, 106, 0.3);
+    }
+
+    &[disabled] {
+      --background: #999;
+      --background-activated: #777;
+      --background-hover: #999;
+      opacity: 0.7;
+    }
+  }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  ion-card {
+    margin: 12px;
+  }
+
+  ion-card-header {
+    padding: 16px 16px 12px;
+
+    ion-card-title {
+      font-size: 18px;
+    }
+  }
+
+  ion-card-content {
+    padding: 16px;
+  }
+
+  ion-item {
+    margin-bottom: 16px;
+  }
+
+  .imagen-preview {
+    width: 150px;
+    height: 150px;
+  }
+
+  .botones-container {
+    margin-top: 24px;
+    padding-top: 16px;
+
+    ion-button {
+      height: 48px;
+      font-size: 15px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .imagen-preview {
+    width: 120px;
+    height: 120px;
+  }
+
+  ion-card-header {
+    text-align: center;
+  }
 }

@@ -1,117 +1,333 @@
-<ion-header>
-  <ion-toolbar color="primary">
-    <ion-title>Gestión de Pedidos</ion-title>
+<ion-header [translucent]="true">
+  <!-- Header Principal -->
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+       <ion-button (click)="volver()" style="--color: white;">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+      <ion-menu-button auto-hide="false" style="--color: white;"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="receipt" style="color: #3B9797;"></ion-icon>
+      &nbsp;Gestión de Pedidos
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="handleRefreshManual()" class="header-btn">
+        <ion-icon name="refresh-outline" style="--color: white;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 
   <!-- Estadísticas rápidas -->
-  <ion-toolbar>
-    <div class="stats-container">
-      <div class="stat-item">
-        <ion-badge color="warning">{{ estadisticas().pendientes }}</ion-badge>
-        <span>Pendientes</span>
+  <ion-toolbar style="--background: #16476A;">
+    <div class="quick-stats-container">
+      <div class="stat-item" (click)="cambiarEstadoManual(EstadoPedido.PENDIENTE)">
+        <div class="stat-badge warning">
+          <ion-icon name="time-outline"></ion-icon>
+          <span class="stat-value">{{ estadisticas().pendientes }}</span>
+        </div>
+        <span class="stat-label">Pendientes</span>
       </div>
-      <div class="stat-item">
-        <ion-badge color="primary">{{ estadisticas().confirmados }}</ion-badge>
-        <span>Confirmados</span>
+
+      <div class="stat-item" (click)="cambiarEstadoManual(EstadoPedido.CONFIRMADO)">
+        <div class="stat-badge primary">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <span class="stat-value">{{ estadisticas().confirmados }}</span>
+        </div>
+        <span class="stat-label">Confirmados</span>
       </div>
-      <div class="stat-item">
-        <ion-badge color="tertiary">{{ estadisticas().enCamino }}</ion-badge>
-        <span>En Camino</span>
+
+      <div class="stat-item" (click)="cambiarEstadoManual(EstadoPedido.EN_CAMINO)">
+        <div class="stat-badge info">
+          <ion-icon name="bicycle-outline"></ion-icon>
+          <span class="stat-value">{{ estadisticas().enCamino }}</span>
+        </div>
+        <span class="stat-label">En Camino</span>
       </div>
-      <div class="stat-item">
-        <ion-badge color="success">{{ estadisticas().entregados }}</ion-badge>
-        <span>Entregados</span>
+
+      <div class="stat-item" (click)="cambiarEstadoManual(EstadoPedido.ENTREGADO)">
+        <div class="stat-badge success">
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+          <span class="stat-value">{{ estadisticas().entregados }}</span>
+        </div>
+        <span class="stat-label">Entregados</span>
+      </div>
+
+      <div class="stat-item total" (click)="cambiarEstadoManual('TODOS')">
+        <div class="stat-badge total-badge">
+          <ion-icon name="apps"></ion-icon>
+          <span class="stat-value">{{ totalPedidos() }}</span>
+        </div>
+        <span class="stat-label">Total</span>
       </div>
     </div>
   </ion-toolbar>
 
-  <!-- Filtros -->
-  <ion-toolbar>
-    <ion-segment [value]="estadoSeleccionado()" (ionChange)="cambiarEstado($event)">
-      <ion-segment-button value="TODOS">
-        <ion-label>Todos</ion-label>
+  <!-- Filtros con segmentos -->
+  <ion-toolbar style="--background: #132440;">
+    <ion-segment
+      [value]="estadoSeleccionado()"
+      (ionChange)="cambiarEstado($event)"
+      style="--background: transparent;"
+      class="custom-segment">
+
+      <ion-segment-button value="TODOS" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="apps"></ion-icon>
+          <ion-label>Todos</ion-label>
+        </div>
       </ion-segment-button>
-      <ion-segment-button value="PENDIENTE">
-        <ion-label>Pendientes</ion-label>
+
+      <ion-segment-button [value]="EstadoPedido.PENDIENTE" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="time-outline"></ion-icon>
+          <ion-label>Pendientes</ion-label>
+        </div>
       </ion-segment-button>
-      <ion-segment-button value="CONFIRMADO">
-        <ion-label>Confirmados</ion-label>
+
+      <ion-segment-button [value]="EstadoPedido.CONFIRMADO" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <ion-label>Confirmados</ion-label>
+        </div>
       </ion-segment-button>
-      <ion-segment-button value="EN_CAMINO">
-        <ion-label>En Camino</ion-label>
+
+      <ion-segment-button [value]="EstadoPedido.EN_CAMINO" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="bicycle-outline"></ion-icon>
+          <ion-label>En Camino</ion-label>
+        </div>
       </ion-segment-button>
-      <ion-segment-button value="ENTREGADO">
-        <ion-label>Entregado</ion-label>
+
+      <ion-segment-button [value]="EstadoPedido.ENTREGADO" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+          <ion-label>Entregados</ion-label>
+        </div>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [fullscreen]="true" class="orders-page">
+  <!-- Refresher para actualizar -->
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
+    <ion-refresher-content
+      pullingIcon="arrow-down"
+      pullingText="Desliza para actualizar"
+      refreshingSpinner="circles"
+      style="--color: #3B9797;">
+    </ion-refresher-content>
   </ion-refresher>
 
+  <!-- Loading State -->
   @if (cargando()) {
-    <div class="spinner-container">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Cargando pedidos...</p>
+    <div class="loading-container animated-fade-in">
+      <div class="loading-content">
+        <div class="loading-spinner">
+          <ion-spinner name="crescent" style="--color: #3B9797;"></ion-spinner>
+        </div>
+        <h3>Cargando pedidos</h3>
+        <p>Obteniendo información de pedidos...</p>
+      </div>
     </div>
-  } @else if (pedidosFiltrados().length === 0) {
-    <div class="empty-state">
-      <ion-icon name="time-outline" size="large"></ion-icon>
-      <p>No hay pedidos {{ estadoSeleccionado() === 'TODOS' ? '' : 'en este estado' }}</p>
-    </div>
-  } @else {
-    <ion-grid>
-      <ion-row>
-        @for (pedido of pedidosFiltrados(); track pedido.id) {
-          <ion-col size="12" sizeMd="6" sizeLg="4">
-            <ion-card>
-              <ion-card-header>
-                <div class="pedido-header">
-                  <div>
-                    <ion-card-title>Pedido #{{ pedido.id }}</ion-card-title>
-                    <p class="fecha">{{ formatearFecha(pedido.fechaPedido) }}</p>
-                  </div>
-                  <ion-chip [color]="getColorEstado(pedido.estado)">
-                    <ion-label>{{ getTextoEstado(pedido.estado) }}</ion-label>
-                  </ion-chip>
-                </div>
-              </ion-card-header>
-
-              <ion-card-content>
-                <div class="pedido-info">
-                  <p><strong>Cliente:</strong> {{ pedido.cliente.nombre }}</p>
-                  <p><strong>Teléfono:</strong> {{ pedido.cliente.telefono }}</p>
-                  <p><strong>Productos:</strong> {{ pedido.items.length }} items</p>
-                  <p class="total"><strong>Total:</strong> ${{ pedido.total | number:'1.2-2' }}</p>
-                  <p><strong>Pago:</strong> {{ pedido.metodoPago }}</p>
-
-                  @if (pedido.pagaCon && pedido.vueltas) {
-                    <p class="vueltas">
-                      <strong>Paga con:</strong> ${{ pedido.pagaCon | number:'1.2-2' }}<br>
-                      <strong>Vueltas:</strong> ${{ pedido.vueltas | number:'1.2-2' }}
-                    </p>
-                  }
-
-                  @if (pedido.direccionEntrega) {
-                    <p class="direccion">
-                      <strong>Dirección:</strong><br>
-                      {{ pedido.direccionEntrega }}
-                    </p>
-                  }
-                </div>
-
-                <ion-button expand="block" (click)="verDetalle(pedido.id)">
-                  <ion-icon slot="start" name="eye"></ion-icon>
-                  Ver Detalle y Cambiar Estado
-                </ion-button>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        }
-      </ion-row>
-    </ion-grid>
   }
+
+  <!-- Empty State -->
+  @else if (pedidosFiltrados().length === 0) {
+    <div class="empty-container animated-fade-in">
+      <div class="empty-icon">
+        <ion-icon name="time-outline"></ion-icon>
+      </div>
+      <div class="empty-content">
+        <h2>No hay pedidos {{ estadoSeleccionado() === 'TODOS' ? '' : 'en este estado' }}</h2>
+        <p>@if (estadoSeleccionado() === EstadoPedido.PENDIENTE) {
+          Todos los pedidos están confirmados o procesados
+        } @else if (estadoSeleccionado() === EstadoPedido.CONFIRMADO) {
+          No hay pedidos confirmados pendientes
+        } @else if (estadoSeleccionado() === EstadoPedido.EN_CAMINO) {
+          No hay pedidos en camino actualmente
+        } @else if (estadoSeleccionado() === EstadoPedido.ENTREGADO) {
+          No hay pedidos entregados recientemente
+        } @else {
+          No se han registrado pedidos aún
+        }</p>
+        @if (estadoSeleccionado() !== 'TODOS') {
+          <ion-button (click)="cambiarEstadoManual('TODOS')" fill="solid" class="btn-primary">
+            <ion-icon slot="start" name="eye"></ion-icon>
+            Ver todos los pedidos
+          </ion-button>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Grid de Pedidos -->
+  @else {
+    <div class="container">
+      <div class="orders-grid animated-fade-in">
+        @for (pedido of pedidosFiltrados(); track pedido.id) {
+          <ion-card class="order-card card-elevated" [class]="getEstadoClass(pedido.estado)">
+            <!-- Header de estado -->
+            <div class="card-header">
+              <ion-badge class="status-badge" [class]="getEstadoBadgeClass(pedido.estado)">
+                <ion-icon [name]="getEstadoIcon(pedido.estado)"></ion-icon>
+                {{ getTextoEstado(pedido.estado) }}
+              </ion-badge>
+              <div class="order-id">
+                <span>Pedido #{{ pedido.id }}</span>
+              </div>
+            </div>
+
+            <!-- Información principal -->
+            <ion-card-content class="order-content">
+              <!-- Información del pedido -->
+              <div class="order-info">
+                <div class="order-meta">
+                  <div class="meta-item">
+                    <ion-icon name="calendar"></ion-icon>
+                    <span>{{ formatearFecha(pedido.fechaPedido) }}</span>
+                  </div>
+                  <div class="meta-item">
+                    <ion-icon name="time"></ion-icon>
+                    <span>{{ formatearHora(pedido.fechaPedido) }}</span>
+                  </div>
+                </div>
+
+                <!-- Cliente -->
+                <div class="customer-info">
+                  <h3 class="customer-name">
+                    <ion-icon name="person"></ion-icon>
+                    {{ pedido.cliente.nombre }}
+                  </h3>
+                  @if (pedido.cliente.telefono) {
+                    <p class="customer-phone">
+                      <ion-icon name="call"></ion-icon>
+                      {{ pedido.cliente.telefono }}
+                    </p>
+                  }
+                </div>
+
+                <!-- Productos -->
+                <div class="products-info">
+                  <div class="products-header">
+                    <ion-icon name="cube"></ion-icon>
+                    <span class="products-count">{{ pedido.items.length }} producto{{ pedido.items.length !== 1 ? 's' : '' }}</span>
+                  </div>
+                  @if (pedido.items.length > 0) {
+                    <div class="product-preview">
+                      @for (item of pedido.items.slice(0, 2); track $index) {
+                        <span class="product-chip">{{ item.producto.nombre }} ×{{ item.cantidad }}</span>
+                      }
+                      @if (pedido.items.length > 2) {
+                        <span class="more-chip">+{{ pedido.items.length - 2 }} más</span>
+                      }
+                    </div>
+                  }
+                </div>
+
+                <!-- Dirección (si existe) -->
+                @if (pedido.direccionEntrega) {
+                  <div class="address-info">
+                    <div class="address-header">
+                      <ion-icon name="location"></ion-icon>
+                      <span>Dirección de entrega</span>
+                    </div>
+                    <p class="address-text">{{ pedido.direccionEntrega }}</p>
+                  </div>
+                }
+
+                <!-- Método de pago -->
+                <div class="payment-info">
+                  <div class="payment-method">
+                    <ion-icon name="card"></ion-icon>
+                    <span>{{ getMetodoPagoTexto(pedido.metodoPago) }}</span>
+                  </div>
+                  @if (pedido.pagaCon && pedido.vueltas) {
+                    <div class="payment-details">
+                      <span class="payment-detail">
+                        <strong>Paga con:</strong> ${{ pedido.pagaCon | number:'1.0-0' }}
+                      </span>
+                      <span class="payment-detail vueltas">
+                        <strong>Vueltas:</strong> ${{ pedido.vueltas | number:'1.0-0' }}
+                      </span>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Total y acciones -->
+              <div class="order-actions">
+                <div class="total-section">
+                  <span class="total-label">Total del pedido</span>
+                  <span class="total-amount">${{ formatearPrecio(pedido.total) }}</span>
+                </div>
+
+                <ion-button
+                  expand="block"
+                  class="btn-primary"
+                  (click)="verDetalle(pedido.id!)">
+                  <ion-icon slot="start" name="eye"></ion-icon>
+                  Ver Detalle
+                </ion-button>
+
+                <div class="quick-actions">
+                  @if (pedido.estado === EstadoPedido.PENDIENTE) {
+                    <ion-button
+                      fill="clear"
+                      class="btn-success"
+                      (click)="cambiarEstadoPedido(pedido, EstadoPedido.CONFIRMADO)"
+                      [disabled]="actualizandoEstado() === pedido.id">
+                      <ion-icon name="checkmark-circle" slot="start"></ion-icon>
+                      Confirmar
+                    </ion-button>
+                  } @else if (pedido.estado === EstadoPedido.CONFIRMADO) {
+                    <ion-button
+                      fill="clear"
+                      class="btn-warning"
+                      (click)="cambiarEstadoPedido(pedido, EstadoPedido.EN_CAMINO)"
+                      [disabled]="actualizandoEstado() === pedido.id">
+                      <ion-icon name="bicycle" slot="start"></ion-icon>
+                      Enviar
+                    </ion-button>
+                  } @else if (pedido.estado === EstadoPedido.EN_CAMINO) {
+                    <ion-button
+                      fill="clear"
+                      class="btn-success"
+                      (click)="cambiarEstadoPedido(pedido, EstadoPedido.ENTREGADO)"
+                      [disabled]="actualizandoEstado() === pedido.id">
+                      <ion-icon name="checkmark-done" slot="start"></ion-icon>
+                      Entregar
+                    </ion-button>
+                  }
+                  <ion-button fill="clear" class="btn-text" (click)="verDetalle(pedido.id!)">
+                    Más opciones
+                    <ion-icon name="chevron-forward" slot="end"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- FAB para actualizar -->
+  @if (!cargando() && pedidosFiltrados().length > 0) {
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed" class="refresh-fab">
+      <ion-fab-button class="fab-primary" (click)="handleRefreshManual()">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+  }
+
+  <!-- Toast para mensajes -->
+  <ion-toast
+    [isOpen]="mostrarToast()"
+    [message]="mensajeToast()"
+    [duration]="2000"
+    [color]="toastColor()"
+    (didDismiss)="mostrarToast.set(false)">
+  </ion-toast>
 </ion-content>

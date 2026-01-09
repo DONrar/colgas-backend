@@ -18,10 +18,9 @@ import {
   IonCardTitle,
   IonCardContent,
   IonIcon,
-  IonSpinner
-} from '@ionic/angular/standalone';
+  IonSpinner, IonBackButton, IonButtons } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { image, save, trash } from 'ionicons/icons';
+import { image, save, trash, cube, addCircle, pricetag, grid, scale, cash, documentText } from 'ionicons/icons';
 import { ProductoService } from '../../../core/services/producto-service';
 import { ToastService } from '../../../core/services/toast-service';
 import { Producto, TipoProducto } from '../../../core/models/producto.model';
@@ -31,7 +30,7 @@ import { Producto, TipoProducto } from '../../../core/models/producto.model';
   templateUrl: './admin-productos-page.page.html',
   styleUrls: ['./admin-productos-page.page.scss'],
   standalone: true,
-  imports: [CommonModule,
+  imports: [IonButtons, IonBackButton, CommonModule,
     FormsModule,
     IonHeader,
     IonToolbar,
@@ -70,9 +69,9 @@ export class AdminProductosPagePage implements OnInit {
 
   tipos = ['PIPETA', 'ACCESORIO', 'REPUESTO'];
 
-  constructor() {
-    addIcons({ image, save, trash });
-  }
+ constructor() {
+  addIcons({cube,addCircle,pricetag,grid,scale,cash,documentText,image,trash,save});
+}
 
   ngOnInit() {}
 

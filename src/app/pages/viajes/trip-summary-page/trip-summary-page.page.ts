@@ -8,7 +8,7 @@ import {
   IonItem, IonLabel, IonCardContent, IonCardHeader, IonCardTitle,
   IonCard, IonButtons, IonSpinner, AlertController, ToastController
 } from '@ionic/angular/standalone';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { addIcons } from 'ionicons';
 import {
   arrowBack, receiptOutline, checkmarkDone, carSportOutline,
@@ -18,7 +18,8 @@ import {
   createOutline, bookmarkOutline, refreshOutline,
   cashOutline, speedometerOutline, calculatorOutline,
   shieldCheckmarkOutline, cardOutline, listOutline,
-  copyOutline, callOutline } from 'ionicons/icons';
+  copyOutline, callOutline
+} from 'ionicons/icons';
 import { Clipboard } from '@capacitor/clipboard';
 
 @Component({
@@ -28,9 +29,9 @@ import { Clipboard } from '@capacitor/clipboard';
   standalone: true,
   imports: [
     CommonModule, FormsModule,
-    IonButtons, IonCard, IonCardTitle, IonCardHeader, IonCardContent,
-     IonButton, IonIcon, IonContent, IonHeader,
-    IonTitle, IonToolbar, IonSpinner
+  IonButtons, IonCard, IonCardTitle, IonCardHeader, IonCardContent,
+  IonButton, IonIcon, IonContent, IonHeader,  // <-- ¡Aquí está IonIcon!
+  IonTitle, IonToolbar, IonSpinner, RouterLink
   ]
 })
 export class TripSummaryPagePage implements OnInit {
@@ -47,7 +48,7 @@ export class TripSummaryPagePage implements OnInit {
   endLocation: any = null;
 
   constructor() {
-    addIcons({arrowBack,receiptOutline,shareOutline,checkmarkDone, cashOutline,navigateOutline,timeOutline,calculatorOutline,pricetagOutline,checkmarkCircle,informationCircleOutline,locationOutline,playForward,flag,copyOutline,shieldCheckmarkOutline,cardOutline,createOutline,bookmarkOutline,closeCircle,listOutline,callOutline,alertCircleOutline,refreshOutline,carSportOutline,speedometerOutline});
+    addIcons({arrowBack,receiptOutline,shareOutline,checkmarkDone,navigateOutline,timeOutline,cashOutline,calculatorOutline,pricetagOutline,checkmarkCircle,informationCircleOutline,locationOutline,playForward,flag,copyOutline,shieldCheckmarkOutline,cardOutline,createOutline,closeCircle,listOutline,callOutline,alertCircleOutline,refreshOutline,bookmarkOutline,carSportOutline,speedometerOutline});
   }
 
   async ngOnInit() {
@@ -247,15 +248,15 @@ export class TripSummaryPagePage implements OnInit {
         const alert = await this.alertCtrl.create({
           header: '¡Viaje confirmado!',
           message: `Tu viaje ha sido solicitado exitosamente.\n\n` +
-                   `📋 Código: ${response.id || 'N/A'}\n` +
-                   `💰 Total: ${this.formatCurrency(this.tripInfo?.totalPrice || 0)}\n\n` +
-                   `¿Deseas contactar al conductor por WhatsApp?`,
+            `📋 Código: ${response.id || 'N/A'}\n` +
+            `💰 Total: ${this.formatCurrency(this.tripInfo?.totalPrice || 0)}\n\n` +
+            `¿Deseas contactar al conductor por WhatsApp?`,
           buttons: [
             {
               text: 'Ver detalles',
               role: 'cancel',
               handler: () => {
-                this.router.navigate(['/tabs/viajes', response.id]);
+                this.router.navigate(['/expreso-detalle', response.id]);
               }
             },
             {

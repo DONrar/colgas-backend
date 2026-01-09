@@ -70,10 +70,6 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/products/pedido-confirmado/pedido-confirmado.page').then(m => m.PedidoConfirmadoPage)
   },
   {
-    path: 'expresos',
-    loadComponent: () => import('./pages/viajes/expresos/expresos.page').then(m => m.ExpresosPage)
-  },
-  {
     path: 'expreso-confirmado',
     loadComponent: () => import('./pages/viajes/expreso-confirmado/expreso-confirmado.page').then(m => m.ExpresoConfirmadoPage)
   },
@@ -84,10 +80,6 @@ export const routes: Routes = [
   {
     path: 'contacto',
     loadComponent: () => import('./pages/utils/contacto/contacto.page').then(m => m.ContactoPage)
-  },
-  {
-    path: 'mapa-selector',
-    loadComponent: () => import('./pages/viajes/mapa-selector/mapa-selector.page').then(m => m.MapaSelectorPage)
   },
   {
     path: 'start-trip-page',
@@ -136,5 +128,17 @@ export const routes: Routes = [
   {
     path: 'admin-dashboard',
     loadComponent: () => import('./pages/admin/admin-dashboard/admin-dashboard.page').then( m => m.AdminDashboardPage)
+  },
+  {
+    path: 'configuracion-admin',
+    loadComponent: () => import('./pages/admin/configuracion-admin/configuracion-admin.page').then( m => m.ConfiguracionAdminPage)
+  },
+  {
+    path: 'admin-lista-expreso',
+    loadComponent: () => import('./pages/admin/admin-lista-expreso/admin-lista-expreso.page').then( m => m.AdminListaExpresoPage)
+  },
+  {
+    path: 'admin/expresos/detalle/:id',
+    loadComponent: () => import('./pages/admin/admin-detalle-expreso/admin-detalle-expreso.page').then( m => m.AdminDetalleExpresoPage)
   },
 ];

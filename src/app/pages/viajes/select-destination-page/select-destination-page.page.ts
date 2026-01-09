@@ -5,7 +5,7 @@ import {
   IonContent, IonHeader, IonTitle, IonToolbar, IonButton,
   IonIcon, IonButtons, IonSpinner
 } from '@ionic/angular/standalone';
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, NgZone, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { Platform, AlertController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
@@ -46,13 +46,22 @@ export class SelectDestinationPagePage implements OnInit {
   predictions: any[] = [];
   autocompleteService: any;
   placesService: any;
+  geocoder: any;
   searchTimeout: any;
+
+  // Para manejar la detección de cambios
+  private _selectionMade = false;
+  get selectionMade(): boolean {
+    return this._selectionMade;
+  }
 
   constructor(
     private router: Router,
     private platform: Platform,
     private locationService: GeoLocationService,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private ngZone: NgZone,
+    private cdRef: ChangeDetectorRef
   ) {
     addIcons({
       arrowBack, mapOutline, locateOutline, handLeft,
@@ -110,9 +119,10 @@ export class SelectDestinationPagePage implements OnInit {
     try {
       this.map = new google.maps.Map(this.mapElement.nativeElement, mapOptions);
 
-      // Inicializar servicios de búsqueda
+      // Inicializar servicios
       this.autocompleteService = new google.maps.places.AutocompleteService();
       this.placesService = new google.maps.places.PlacesService(this.map);
+      this.geocoder = new google.maps.Geocoder();
 
       // Marcador del punto de inicio
       new google.maps.Marker({
@@ -124,51 +134,64 @@ export class SelectDestinationPagePage implements OnInit {
         }
       });
 
-      // Listener para clicks en el mapa
-      this.map.addListener('click', (event: any) => {
-        this.placeMarkerAndGetAddress(event.latLng);
+      // Listener para clicks en el mapa - CORREGIDO
+      google.maps.event.addListener(this.map, 'click', (event: any) => {
+        this.ngZone.run(() => {
+          this.placeMarkerAndGetAddress(event.latLng);
+        });
       });
 
       // Configurar el input de búsqueda
       this.setupSearchInput();
 
+      // Cuando el mapa esté listo
       google.maps.event.addListenerOnce(this.map, 'idle', () => {
-        this.isLoading = false;
+        this.ngZone.run(() => {
+          this.isLoading = false;
+          this.cdRef.detectChanges();
+        });
       });
 
+      // Fallback timeout
       setTimeout(() => {
         if (this.isLoading) {
-          this.isLoading = false;
+          this.ngZone.run(() => {
+            this.isLoading = false;
+            this.cdRef.detectChanges();
+          });
         }
-      }, 2000);
+      }, 1000);
 
     } catch (error) {
       console.error('Error loading map:', error);
-      this.isLoading = false;
+      this.ngZone.run(() => {
+        this.isLoading = false;
+        this.cdRef.detectChanges();
+      });
       this.showAlert('Error', 'No se pudo cargar el mapa. Intenta nuevamente.');
     }
   }
 
   setupSearchInput() {
-    if (!this.searchInput) return;
+    // El input ahora está manejado por onSearchInput()
+  }
 
-    this.searchInput.nativeElement.addEventListener('input', (e: any) => {
-      this.searchQuery = e.target.value;
+  onSearchInput(event: any) {
+    this.searchQuery = event.target.value;
 
-      if (this.searchTimeout) {
-        clearTimeout(this.searchTimeout);
-      }
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
 
-      if (this.searchQuery.length < 3) {
-        this.predictions = [];
-        this.showSuggestions = false;
-        return;
-      }
+    if (this.searchQuery.length < 3) {
+      this.predictions = [];
+      this.showSuggestions = false;
+      return;
+    }
 
-      this.searchTimeout = setTimeout(() => {
-        this.searchPlaces(this.searchQuery);
-      }, 300);
-    });
+    this.searchTimeout = setTimeout(() => {
+      this.searchPlaces(this.searchQuery);
+    }, 300);
   }
 
   searchPlaces(query: string) {
@@ -180,20 +203,23 @@ export class SelectDestinationPagePage implements OnInit {
         this.startLocation.lat,
         this.startLocation.lng
       ),
-      radius: 50000, // 50km de radio
-      componentRestrictions: { country: 'co' } // Restringir a Colombia
+      radius: 50000,
+      componentRestrictions: { country: 'co' }
     };
 
     this.autocompleteService.getPlacePredictions(
       request,
       (predictions: any, status: any) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-          this.predictions = predictions;
-          this.showSuggestions = true;
-        } else {
-          this.predictions = [];
-          this.showSuggestions = true;
-        }
+        this.ngZone.run(() => {
+          if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+            this.predictions = predictions;
+            this.showSuggestions = true;
+          } else {
+            this.predictions = [];
+            this.showSuggestions = true;
+          }
+          this.cdRef.detectChanges();
+        });
       }
     );
   }
@@ -206,27 +232,31 @@ export class SelectDestinationPagePage implements OnInit {
     this.placesService.getDetails(
       { placeId: prediction.place_id },
       (place: any, status: any) => {
-        if (status === google.maps.places.PlacesServiceStatus.OK && place.geometry) {
-          const location = {
-            lat: place.geometry.location.lat(),
-            lng: place.geometry.location.lng()
-          };
+        this.ngZone.run(() => {
+          if (status === google.maps.places.PlacesServiceStatus.OK && place.geometry) {
+            const location = {
+              lat: place.geometry.location.lat(),
+              lng: place.geometry.location.lng()
+            };
 
-          this.selectedLocationName = place.name || prediction.description;
-          this.searchQuery = this.selectedLocationName;
+            this.selectedLocationName = place.name || prediction.description;
+            this.searchQuery = this.selectedLocationName;
 
-          // Centrar el mapa en la ubicación
-          this.map.setCenter(location);
-          this.map.setZoom(16);
+            // Centrar el mapa en la ubicación
+            this.map.setCenter(location);
+            this.map.setZoom(16);
 
-          // Colocar marcador
-          this.placeMarker(place.geometry.location);
+            // Colocar marcador
+            this.placeMarker(place.geometry.location);
 
-          this.isLoading = false;
-        } else {
-          this.isLoading = false;
-          this.showAlert('Error', 'No se pudo obtener la ubicación del lugar seleccionado');
-        }
+            this.isLoading = false;
+            this._selectionMade = true;
+          } else {
+            this.isLoading = false;
+            this.showAlert('Error', 'No se pudo obtener la ubicación del lugar seleccionado');
+          }
+          this.cdRef.detectChanges();
+        });
       }
     );
   }
@@ -235,12 +265,17 @@ export class SelectDestinationPagePage implements OnInit {
     this.placeMarker(location);
 
     // Obtener nombre del lugar usando Geocoding reverso
-    const geocoder = new google.maps.Geocoder();
-    geocoder.geocode({ location: location }, (results: any, status: any) => {
-      if (status === 'OK' && results[0]) {
-        this.selectedLocationName = results[0].formatted_address;
-        this.searchQuery = this.selectedLocationName;
-      }
+    this.geocoder.geocode({ location: location }, (results: any, status: any) => {
+      this.ngZone.run(() => {
+        if (status === 'OK' && results[0]) {
+          this.selectedLocationName = results[0].formatted_address;
+          this.searchQuery = this.selectedLocationName;
+        } else {
+          this.selectedLocationName = 'Destino seleccionado';
+        }
+        this._selectionMade = true;
+        this.cdRef.detectChanges();
+      });
     });
   }
 
@@ -281,13 +316,17 @@ export class SelectDestinationPagePage implements OnInit {
   }
 
   clearSelection() {
-    if (this.marker) {
-      this.marker.setMap(null);
-      this.marker = null;
-    }
-    this.selectedLocation = null;
-    this.selectedLocationName = '';
-    this.clearSearch();
+    this.ngZone.run(() => {
+      if (this.marker) {
+        this.marker.setMap(null);
+        this.marker = null;
+      }
+      this.selectedLocation = null;
+      this.selectedLocationName = '';
+      this._selectionMade = false;
+      this.clearSearch();
+      this.cdRef.detectChanges();
+    });
   }
 
   centerOnStartLocation() {

@@ -12,24 +12,15 @@ import {
   IonCardContent,
   IonButton,
   IonIcon,
-  IonChip,
-  IonLabel,
-  IonList,
-  IonItem,
   IonSpinner,
   IonButtons,
   IonBackButton,
-  IonGrid,
-  IonRow,
-  IonCol,
   AlertController,
-  ActionSheetController
-} from '@ionic/angular/standalone';
+  ActionSheetController, IonBadge } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   checkmarkCircle, closeCircle, arrowForward,
-  bicycleOutline, logoWhatsapp, timeOutline, location
-} from 'ionicons/icons';
+  bicycleOutline, logoWhatsapp, timeOutline, location, receipt, calendar, person, personCircle, call, map, cube, scale, cash, card, sync, print, informationCircle, ellipsisVertical, share } from 'ionicons/icons';
 import { PedidoService } from '../../../core/services/pedido-service';
 import { ToastService } from '../../../core/services/toast-service';
 import { PedidoResponse, EstadoPedido } from '../../../core/models/pedido.model';
@@ -40,7 +31,7 @@ import { ActionSheetButton } from '@ionic/angular';
   templateUrl: './admin-detalle-pedido.page.html',
   styleUrls: ['./admin-detalle-pedido.page.scss'],
   standalone: true,
-  imports: [CommonModule,
+  imports: [IonBadge, CommonModule,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -51,10 +42,6 @@ import { ActionSheetButton } from '@ionic/angular';
     IonCardContent,
     IonButton,
     IonIcon,
-    IonChip,
-    IonLabel,
-    IonList,
-    IonItem,
     IonSpinner,
     IonButtons,
     IonBackButton]
@@ -74,10 +61,7 @@ export class AdminDetallePedidoPage implements OnInit {
   EstadoPedido = EstadoPedido;
 
   constructor() {
-    addIcons({
-      checkmarkCircle, closeCircle, arrowForward,
-      bicycleOutline, logoWhatsapp, timeOutline, location
-    });
+    addIcons({receipt,logoWhatsapp,calendar,arrowForward,person,personCircle,call,location,map,cube,scale,cash,card,sync,print,informationCircle,ellipsisVertical,share,checkmarkCircle,closeCircle,bicycleOutline,timeOutline});
   }
 
   ngOnInit() {
@@ -188,9 +172,81 @@ export class AdminDetallePedidoPage implements OnInit {
 
   abrirWhatsApp() {
     const pedidoActual = this.pedido();
-    if (pedidoActual?.urlWhatsApp) {
-      window.open(pedidoActual.urlWhatsApp, '_blank');
+    if (!pedidoActual) return;
+
+    const telefono = this.formatearTelefonoWhatsApp(pedidoActual.cliente.telefono);
+    const mensaje = this.generarMensajeWhatsApp(pedidoActual);
+    const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
+    window.open(url, '_blank');
+  }
+
+  private formatearTelefonoWhatsApp(telefono: string): string {
+    // Eliminar espacios, guiones y paréntesis
+    let telefonoLimpio = telefono.replace(/[\s\-\(\)]/g, '');
+
+    // Si no tiene código de país, agregar +57 (Colombia)
+    if (!telefonoLimpio.startsWith('+')) {
+      if (telefonoLimpio.startsWith('57')) {
+        telefonoLimpio = '+' + telefonoLimpio;
+      } else {
+        telefonoLimpio = '+57' + telefonoLimpio;
+      }
     }
+
+    // Retornar sin el + para la URL de WhatsApp
+    return telefonoLimpio.replace('+', '');
+  }
+
+  private generarMensajeWhatsApp(pedido: PedidoResponse): string {
+    let mensaje = `¡Hola ${pedido.cliente.nombre}! 👋\n\n`;
+    mensaje += `Le escribimos respecto a su pedido #${pedido.id}.\n\n`;
+
+    switch (pedido.estado) {
+      case EstadoPedido.PENDIENTE:
+        mensaje += `Su pedido ha sido recibido y está pendiente de confirmación. En breve le confirmaremos la disponibilidad.\n`;
+        break;
+      case EstadoPedido.CONFIRMADO:
+        mensaje += `¡Su pedido ha sido confirmado! ✅\n`;
+        mensaje += `Estamos preparando su pedido para enviarlo a su dirección.\n`;
+        break;
+      case EstadoPedido.EN_CAMINO:
+        mensaje += `🚚 ¡Su pedido está en camino!\n`;
+        mensaje += `Nuestro repartidor se dirige a su ubicación. Por favor esté atento.\n`;
+        break;
+      case EstadoPedido.ENTREGADO:
+        mensaje += `Su pedido ha sido entregado exitosamente. ¡Gracias por su compra! 🙏\n`;
+        break;
+      default:
+        mensaje += `Estado actual: ${this.getTextoEstado(pedido.estado)}\n`;
+    }
+
+    // Agregar resumen de productos
+    mensaje += `\n📦 *Resumen del pedido:*\n`;
+    pedido.items.forEach(item => {
+      mensaje += `• ${item.cantidad}x ${item.producto.nombre}`;
+      if (item.producto.peso) {
+        mensaje += ` (${item.producto.peso})`;
+      }
+      mensaje += `\n`;
+    });
+
+    // Dirección de entrega
+    if (pedido.direccionEntrega) {
+      mensaje += `\n📍 Dirección: ${pedido.direccionEntrega}\n`;
+    }
+
+    // Total y método de pago
+    mensaje += `\n💰 Total: $${this.formatearPrecio(pedido.total)}\n`;
+    mensaje += `💳 Método de pago: ${pedido.metodoPago}\n`;
+
+    if (pedido.pagaCon && pedido.vueltas) {
+      mensaje += `💵 Paga con: $${this.formatearPrecio(pedido.pagaCon)}\n`;
+      mensaje += `🔄 Vueltas: $${this.formatearPrecio(pedido.vueltas)}\n`;
+    }
+
+    mensaje += `\n¿Tiene alguna pregunta o necesita información adicional?`;
+
+    return mensaje;
   }
 
   abrirMapa() {
@@ -245,4 +301,18 @@ export class AdminDetallePedidoPage implements OnInit {
     });
   }
 
+  getEstadoBadgeClass(estado: EstadoPedido): string {
+    switch (estado) {
+      case EstadoPedido.PENDIENTE: return 'pending-badge';
+      case EstadoPedido.CONFIRMADO: return 'confirmed-badge';
+      case EstadoPedido.EN_CAMINO: return 'en-camino-badge';
+      case EstadoPedido.ENTREGADO: return 'delivered-badge';
+      case EstadoPedido.CANCELADO: return 'canceled-badge';
+      default: return '';
+    }
+  }
+
+  formatearPrecio(precio: number): string {
+    return precio.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
 }

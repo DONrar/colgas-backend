@@ -1,7 +1,7 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   IonHeader,
   IonToolbar,
@@ -21,10 +21,9 @@ import {
   IonIcon,
   IonSpinner,
   IonBackButton,
-  IonButtons
-} from '@ionic/angular/standalone';
+  IonButtons, IonCardSubtitle } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { image, save, trash, arrowBack } from 'ionicons/icons';
+import { image, save, trash, arrowBack, create, cube, pricetag, grid, scale, cash, server, documentText, cloudUpload, imageOutline, closeCircle, expand } from 'ionicons/icons';
 import { ProductoService } from '../../../core/services/producto-service';
 import { ToastService } from '../../../core/services/toast-service';
 import { Producto, TipoProducto } from '../../../core/models/producto.model';
@@ -33,7 +32,7 @@ import { Producto, TipoProducto } from '../../../core/models/producto.model';
   templateUrl: './admin-editar-productos.page.html',
   styleUrls: ['./admin-editar-productos.page.scss'],
   standalone: true,
-  imports: [CommonModule,
+  imports: [IonCardSubtitle, CommonModule,
     FormsModule,
     IonHeader,
     IonToolbar,
@@ -53,7 +52,8 @@ import { Producto, TipoProducto } from '../../../core/models/producto.model';
     IonIcon,
     IonSpinner,
     IonBackButton,
-    IonButtons]
+    IonButtons,
+  RouterLink]
 })
 export class AdminEditarProductosPage implements OnInit {
 private productoService = inject(ProductoService);
@@ -70,7 +70,8 @@ private productoService = inject(ProductoService);
   tipos = ['PIPETA', 'ACCESORIO', 'REPUESTO'];
 
   constructor() {
-    addIcons({ image, save, trash, arrowBack });
+    addIcons({create, cube, pricetag, grid, scale, cash, server, documentText, image,
+          cloudUpload, trash, imageOutline, save, closeCircle, arrowBack, expand});
   }
 
   ngOnInit() {
@@ -178,4 +179,24 @@ private productoService = inject(ProductoService);
       }
     });
   }
+
+  getTipoIcon(tipo: string): string {
+  switch (tipo) {
+    case 'PIPETA':
+      return 'flask';
+    case 'ACCESORIO':
+      return 'construct';
+    case 'REPUESTO':
+      return 'hardware-chip';
+    default:
+      return 'cube';
+  }
+}
+ampliarImagen() {
+  if (this.imagenPreview()) {
+    // Implementa la lógica para ampliar la imagen
+    // Puedes usar un modal o un componente de visualización de imágenes
+    console.log('Ampliar imagen:', this.imagenPreview());
+  }
+}
 }

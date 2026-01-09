@@ -31,7 +31,7 @@ import { addIcons } from 'ionicons';
 import {
   location, cash, card, send, person, checkmark, personCircle,
   personOutline, callOutline, homeOutline, checkmarkCircle,
-  cashOutline, cardOutline, phonePortraitOutline, alertCircle, receipt, shieldCheckmark, time, headset, arrowBack, helpCircleOutline, personCircleOutline, locationOutline, checkmarkOutline, arrowForward } from 'ionicons/icons';
+  cashOutline, cardOutline, phonePortraitOutline, alertCircle, receipt, shieldCheckmark, time, headset, arrowBack, helpCircleOutline, personCircleOutline, locationOutline, checkmarkOutline, arrowForward, informationCircle, listOutline, timeOutline, flash, key, bulb } from 'ionicons/icons';
 import { CarritoService } from '../../../core/services/carrito-service';
 import { PedidoService } from '../../../core/services/pedido-service';
 import { UbicacionService } from '../../../core/services/ubicacion-service';
@@ -39,7 +39,17 @@ import { LoadingService } from '../../../core/services/loading-service';
 import { ToastService } from '../../../core/services/toast-service';
 import { StorageService } from '../../../core/services/storage-service';
 import { MetodoPago, PedidoRequest, ItemPedido } from '../../../core/models/pedido.model';
+import { trigger, transition, style, animate } from '@angular/animations';
+import { copy, copyOutline,   business } from 'ionicons/icons';
 
+// Agrega esta interface después de DatosCliente:
+interface DatosBancarios {
+  llave: string; // Número de celular para Transfiya
+  numeroCuenta: string;
+  tipoCuenta: string;
+  titular: string;
+  banco: string;
+}
 interface DatosCliente {
   nombre: string;
   telefono: string;
@@ -50,7 +60,7 @@ interface DatosCliente {
   templateUrl: './checkout.page.html',
   styleUrls: ['./checkout.page.scss'],
   standalone: true,
-  imports: [IonSpinner, IonToast,
+  imports: [IonToast,
     IonCardSubtitle,
     CommonModule,
     FormsModule,
@@ -67,7 +77,18 @@ interface DatosCliente {
     IonCardContent,
     IonIcon,
     IonFooter,
-    IonTextarea, IonButton]
+    IonTextarea],
+    animations: [
+    trigger('slideIn', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-20px)' }),
+        animate('300ms ease-out', style({ opacity: 1, transform: 'translateY(0)' }))
+      ]),
+      transition(':leave', [
+        animate('200ms ease-in', style({ opacity: 0, transform: 'translateY(-20px)' }))
+      ])
+    ])
+  ]
 })
 export class CheckoutPage implements OnInit {
   private carritoService = inject(CarritoService);
@@ -103,7 +124,7 @@ export class CheckoutPage implements OnInit {
   readonly MetodoPago = MetodoPago;
 
   constructor() {
-    addIcons({arrowBack,card,helpCircleOutline,personCircleOutline,locationOutline,cardOutline,checkmarkOutline,personCircle,personOutline,checkmarkCircle,callOutline,arrowForward,location,homeOutline,cashOutline,checkmark,phonePortraitOutline,alertCircle,receipt,person,shieldCheckmark,time,headset,send,cash});
+    addIcons({card,cashOutline,checkmark,phonePortraitOutline,checkmarkCircle,alertCircle,informationCircle,flash,key,listOutline,bulb,timeOutline,person,location,personCircle,personOutline,callOutline,homeOutline,receipt,shieldCheckmark,time,headset,send,arrowBack,helpCircleOutline,personCircleOutline,locationOutline,cardOutline,checkmarkOutline,arrowForward,cash});
   }
 
   ngOnInit() {
@@ -121,10 +142,17 @@ export class CheckoutPage implements OnInit {
   }
 
   // Agregar el método faltante para seleccionar método de pago
-  seleccionarMetodoPago(metodo: MetodoPago) {
-    this.metodoPago = metodo;
-  }
+  // Modifica el método seleccionarMetodoPago:
+seleccionarMetodoPago(metodo: MetodoPago) {
+  this.metodoPago = metodo;
+  this.numeroCuentaCopiado = false;
+  this.llaveCopiada = false;
+  this.metodoTransferencia = 'llave'; // Resetear a llave por defecto
 
+  if (metodo !== MetodoPago.EFECTIVO) {
+    this.pagaCon = null;
+  }
+}
   async obtenerUbicacion() {
     try {
       await this.loadingService.mostrar('Obteniendo ubicación...');
@@ -280,9 +308,10 @@ export class CheckoutPage implements OnInit {
   getMetodosPago(): { value: MetodoPago; label: string; icon: string }[] {
     return [
       { value: MetodoPago.EFECTIVO, label: 'Efectivo', icon: 'cash' },
-      { value: MetodoPago.TRANSFERENCIA, label: 'Transferencia', icon: 'card' },
       { value: MetodoPago.DAVIPLATA, label: 'DaviPlata', icon: 'phone-portrait' },
-      { value: MetodoPago.NEQUI, label: 'Nequi', icon: 'phone-portrait' }
+      { value: MetodoPago.NEQUI, label: 'Nequi', icon: 'phone-portrait' },
+      { value: MetodoPago.NU, label: 'Nu', icon: 'phone-portrait' },
+      { value: MetodoPago.BANCOLOMBIA, label: 'Bancolombia', icon: 'phone-portrait' }
     ];
   }
 
@@ -297,4 +326,132 @@ export class CheckoutPage implements OnInit {
       .filter(item => item.producto.id === undefined || item.producto.id === null)
       .map(item => item.producto.nombre);
   }
+// Agrega estas propiedades a la clase CheckoutPage:
+numeroCuentaCopiado = false;
+llaveCopiada = false;
+metodoTransferencia: 'llave' | 'cuenta' = 'llave'; // Por defecto usar llave
+
+datosBancarios: Record<MetodoPago, DatosBancarios> = {
+  [MetodoPago.DAVIPLATA]: {
+    llave: '3142985390', // ⚠️ CAMBIAR POR TU NÚMERO REAL
+    numeroCuenta: '3143889592 ',
+    tipoCuenta: 'Daviplata',
+    titular: 'Jesus Aragon', // ⚠️ CAMBIAR POR TU NOMBRE/EMPRESA
+    banco: 'Daviplata'
+  },
+  [MetodoPago.NEQUI]: {
+    llave: '3142985390 ', // ⚠️ CAMBIAR POR TU NÚMERO REAL
+    numeroCuenta: '3143889592 ',
+    tipoCuenta: 'Nequi',
+    titular: 'Jesus Aragon', // ⚠️ CAMBIAR POR TU NOMBRE/EMPRESA
+    banco: 'Nequi'
+  },
+  [MetodoPago.NU]: {
+    llave: '3142985390', // ⚠️ CAMBIAR POR TU NÚMERO REAL
+    numeroCuenta: '3143889592', // Número de cuenta real de Nu
+    tipoCuenta: 'Cuenta de Ahorros',
+    titular: 'TU EMPRESA SAS', // ⚠️ CAMBIAR POR TU NOMBRE/EMPRESA
+    banco: 'Nu Colombia'
+  },
+  [MetodoPago.BANCOLOMBIA]: {
+    llave: '3142985390', // ⚠️ CAMBIAR POR TU NÚMERO REAL
+    numeroCuenta: '37273956540',
+    tipoCuenta: 'Cuenta de Ahorros',
+    titular: 'Jesus Aragon', // ⚠️ CAMBIAR POR TU NOMBRE/EMPRESA
+    banco: 'Bancolombia'
+  },
+  [MetodoPago.EFECTIVO]: {
+    llave: '',
+    numeroCuenta: '',
+    tipoCuenta: '',
+    titular: '',
+    banco: ''
+  }
+};
+
+// Agrega estos métodos a la clase:
+
+esPagoTransferencia(): boolean {
+  return this.metodoPago === MetodoPago.DAVIPLATA ||
+         this.metodoPago === MetodoPago.NEQUI ||
+         this.metodoPago === MetodoPago.NU ||
+         this.metodoPago === MetodoPago.BANCOLOMBIA;
+}
+
+getBankName(): string {
+  return this.datosBancarios[this.metodoPago]?.banco || '';
+}
+
+getBankIcon(): string {
+  const iconMap: Record<MetodoPago, string> = {
+    [MetodoPago.DAVIPLATA]: 'phone-portrait',
+    [MetodoPago.NEQUI]: 'phone-portrait',
+    [MetodoPago.NU]: 'card',
+    [MetodoPago.BANCOLOMBIA]: 'business',
+    [MetodoPago.EFECTIVO]: 'cash'
+  };
+  return iconMap[this.metodoPago] || 'card';
+}
+
+async copiarLlave() {
+  const llave = this.datosBancarios[this.metodoPago].llave;
+
+  try {
+    await navigator.clipboard.writeText(llave);
+    this.llaveCopiada = true;
+    this.toastService.success('Número de celular copiado');
+
+    setTimeout(() => {
+      this.llaveCopiada = false;
+    }, 3000);
+  } catch (error) {
+    this.copiarTextoFallback(llave, () => {
+      this.llaveCopiada = true;
+      setTimeout(() => {
+        this.llaveCopiada = false;
+      }, 3000);
+    });
+  }
+}
+
+async copiarNumeroCuenta() {
+  const numeroCuenta = this.datosBancarios[this.metodoPago].numeroCuenta;
+
+  try {
+    await navigator.clipboard.writeText(numeroCuenta);
+    this.numeroCuentaCopiado = true;
+    this.toastService.success('Número de cuenta copiado');
+
+    setTimeout(() => {
+      this.numeroCuentaCopiado = false;
+    }, 3000);
+  } catch (error) {
+    this.copiarTextoFallback(numeroCuenta, () => {
+      this.numeroCuentaCopiado = true;
+      setTimeout(() => {
+        this.numeroCuentaCopiado = false;
+      }, 3000);
+    });
+  }
+}
+
+// Método auxiliar para copiar en navegadores que no soportan clipboard API
+private copiarTextoFallback(texto: string, onSuccess: () => void) {
+  const textArea = document.createElement('textarea');
+  textArea.value = texto;
+  textArea.style.position = 'fixed';
+  textArea.style.left = '-999999px';
+  document.body.appendChild(textArea);
+  textArea.select();
+
+  try {
+    document.execCommand('copy');
+    this.toastService.success('Copiado al portapapeles');
+    onSuccess();
+  } catch (err) {
+    this.toastService.error('No se pudo copiar. Cópialo manualmente');
+  }
+
+  document.body.removeChild(textArea);
+}
 }

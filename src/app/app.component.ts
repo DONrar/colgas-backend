@@ -4,13 +4,17 @@ import { IonApp, IonRouterOutlet, IonItem, IonLabel, IonIcon, IonMenuToggle, Ion
 import { MenuController } from '@ionic/angular';
 import { Capacitor } from '@capacitor/core';
 import { StatusBar, Style } from '@capacitor/status-bar';
+import { carOutline, clipboardOutline, gridOutline, statsChartOutline } from 'ionicons/icons';
+import { addIcons } from 'ionicons';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   imports: [IonButton, IonButtons, IonTitle, IonHeader, IonToolbar, IonList, IonContent, IonIcon, IonLabel, IonItem, IonApp, IonRouterOutlet, IonMenuToggle, IonMenu, RouterLink],
 })
 export class AppComponent {
-  constructor(private menuController: MenuController) {}
+  constructor(private menuController: MenuController) {
+    addIcons({gridOutline, statsChartOutline,clipboardOutline, carOutline});
+  }
 
   cerrarMenu() {
     this.menuController.close();
@@ -19,7 +23,6 @@ export class AppComponent {
   async ngOnInit() {
     if (Capacitor.getPlatform() === 'android') {
       try {
-        // 1) que la WebView NO quede debajo de la status bar
         await StatusBar.setOverlaysWebView({ overlay: false });
 
         // 2) color y estilo de iconos de la status bar (ajústalo a tu toolbar)

@@ -1,0 +1,137 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="header-btn">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+      <ion-button (click)="refresh()" class="header-btn">
+        <ion-icon name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="settings" style="color: #3B9797;"></ion-icon>
+      &nbsp;Configuración del Sistema
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="guardarTodo()" class="header-btn">
+        <ion-icon name="save"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="config-page">
+  <!-- Loading State -->
+  @if (cargando()) {
+    <div class="loading-container animated-fade-in">
+      <div class="loading-content">
+        <div class="loading-spinner">
+          <ion-spinner name="crescent" style="--color: #3B9797;"></ion-spinner>
+        </div>
+        <h3>Cargando configuración</h3>
+        <p>Obteniendo datos del sistema...</p>
+      </div>
+    </div>
+  }
+
+  @if (!cargando()) {
+    <div class="container">
+      <!-- Banner de Configuración -->
+      <div class="welcome-banner card-elevated">
+        <div class="welcome-content">
+          <h1>Configuración del Sistema</h1>
+          <p class="welcome-subtitle">Administre los ajustes del sistema ColGas</p>
+          <div class="welcome-stats">
+            <ion-chip class="stat-chip">
+              <ion-icon name="server-outline"></ion-icon>
+              <ion-label>Sistema: {{ systemStatus() }}</ion-label>
+            </ion-chip>
+            <ion-chip class="stat-chip">
+              <ion-icon name="time-outline"></ion-icon>
+              <ion-label>Actualizado: {{ ultimaActualizacion() }}</ion-label>
+            </ion-chip>
+            @if (modoMantenimiento) {
+              <ion-chip class="stat-chip warning">
+                <ion-icon name="alert-circle"></ion-icon>
+                <ion-label>Modo Mantenimiento</ion-label>
+              </ion-chip>
+            }
+          </div>
+        </div>
+        <div class="welcome-icon">
+          <div class="welcome-icon-circle">
+            <ion-icon name="cog"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tarifas y Precios -->
+      <ion-card class="card-elevated pricing-card">
+        <ion-card-header class="card-header">
+          <div class="card-title-with-icon">
+            <div class="title-icon primary">
+              <ion-icon name="cash"></ion-icon>
+            </div>
+            <ion-card-title>Tarifas y Precios</ion-card-title>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+          <!-- Precio por Kilómetro -->
+          <div class="config-section">
+            <div class="config-header">
+              <div class="config-icon">
+                <ion-icon name="speedometer"></ion-icon>
+              </div>
+              <div class="config-title">
+                <h3>Precio por Kilómetro</h3>
+                <p>Costo por km para cálculos de entrega</p>
+              </div>
+            </div>
+
+            <div class="config-control">
+              <div class="range-container">
+                <div class="range-header">
+                  <span class="range-label">Valor actual: ${{ formatearPrecio(precioPorKm) }}</span>
+                  <span class="range-min-max">$1,000 - $5,000</span>
+                </div>
+                <ion-range
+                  [(ngModel)]="precioPorKm"
+                  (ionChange)="onPrecioPorKmChange($event)"
+                  min="1000"
+                  max="5000"
+                  step="100"
+                  color="primary"
+                  class="custom-range">
+                  <ion-icon slot="start" name="logo-usd" color="primary"></ion-icon>
+                  <ion-icon slot="end" name="speedometer" color="primary"></ion-icon>
+                </ion-range>
+                <div class="range-value-display">
+                  <span class="value-label">${{ formatearPrecio(precioPorKm) }}</span>
+                  <ion-button size="small" fill="clear" class="btn-text" (click)="restablecerPrecioPorKm()">
+                    <ion-icon name="refresh" slot="start"></ion-icon>
+                    Restablecer
+                  </ion-button>
+                </div>
+              </div>
+
+              <ion-button expand="block" class="btn-primary" (click)="guardarPrecioPorKm()">
+                <ion-icon name="save" slot="start"></ion-icon>
+                Guardar Precio por KM
+              </ion-button>
+            </div>
+          </div>
+ 
+        </ion-card-content>
+      </ion-card>
+    </div>
+  }
+
+  <!-- Toast para mensajes -->
+  <ion-toast
+    [isOpen]="mostrarToast()"
+    [message]="mensajeToast()"
+    [duration]="2000"
+    [color]="toastColor()"
+    (didDismiss)="cerrarToast()">
+  </ion-toast>
+</ion-content>

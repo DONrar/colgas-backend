@@ -1,0 +1,607 @@
+.admin-detalle-pedido-page {
+  --background: #f8f9fa;
+}
+
+.container {
+  padding: 16px;
+  padding-bottom: 80px;
+}
+
+/* Header Styles */
+.header-btn {
+  --color: white;
+  --background: transparent;
+  --background-activated: rgba(255, 255, 255, 0.1);
+  --background-hover: rgba(255, 255, 255, 0.05);
+}
+
+/* Loading State */
+.spinner-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  padding: 20px;
+  text-align: center;
+
+  ion-spinner {
+    width: 48px;
+    height: 48px;
+    --color: #3B9797;
+    margin-bottom: 16px;
+  }
+
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 16px;
+  }
+}
+
+/* Cards Styling */
+ion-card {
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  margin-bottom: 20px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  }
+}
+
+ion-card-header {
+  padding: 20px 20px 0;
+}
+
+ion-card-title {
+  font-weight: 600;
+  color: #132440;
+  font-size: 18px;
+}
+
+ion-card-content {
+  padding: 20px;
+}
+
+/* Estado Header */
+.estado-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .estado-info {
+    flex: 1;
+
+    ion-card-title {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: #132440;
+    }
+
+    p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+    }
+  }
+}
+
+.estado-chip {
+  font-weight: 600;
+  font-size: 14px;
+  height: 32px;
+
+  ion-icon {
+    font-size: 16px;
+    margin-right: 6px;
+  }
+}
+
+/* Cliente Section */
+.cliente-info {
+  background: linear-gradient(135deg, rgba(22, 71, 106, 0.05) 0%, rgba(59, 151, 151, 0.05) 100%);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.cliente-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.cliente-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+  background: #16476A;
+
+  ion-icon {
+    font-size: 28px;
+    color: white;
+  }
+}
+
+.cliente-details {
+  flex: 1;
+
+  h3 {
+    margin: 0 0 4px 0;
+    color: #132440;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+  }
+}
+
+.cliente-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: white;
+  border-radius: 12px;
+
+  ion-icon {
+    color: #3B9797;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .meta-content {
+    flex: 1;
+
+    h4 {
+      margin: 0 0 4px 0;
+      color: #132440;
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    p {
+      margin: 0;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+  }
+}
+
+.botones-contacto {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Productos Section */
+.productos-container {
+  background: linear-gradient(135deg, rgba(59, 151, 151, 0.05) 0%, rgba(25, 118, 210, 0.05) 100%);
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.productos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h2 {
+    margin: 0;
+    color: #132440;
+    font-size: 20px;
+    font-weight: 600;
+  }
+}
+
+.productos-count {
+  background: #3B9797;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.productos-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.producto-item {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.producto-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.producto-placeholder {
+  width: 80px;
+  height: 80px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #16476A 0%, #3B9797 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  ion-icon {
+    font-size: 32px;
+    color: white;
+  }
+}
+
+.producto-content {
+  flex: 1;
+
+  h3 {
+    margin: 0 0 8px 0;
+    color: #132440;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+.producto-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.producto-chip {
+  background: rgba(22, 71, 106, 0.1);
+  color: #16476A;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.peso-chip {
+  background: rgba(59, 151, 151, 0.1);
+  color: #3B9797;
+  padding: 4px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.producto-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 8px;
+}
+
+.cantidad-info {
+  p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+
+    &.cantidad {
+      color: #132440;
+      font-weight: 600;
+    }
+  }
+}
+
+.precio-info {
+  text-align: right;
+
+  .precio-unitario {
+    margin: 0 0 4px 0;
+    color: #666;
+    font-size: 12px;
+  }
+
+  .subtotal {
+    margin: 0;
+    color: #132440;
+    font-size: 16px;
+    font-weight: 700;
+  }
+}
+
+/* Resumen de Pago */
+.resumen-pago {
+  background: linear-gradient(135deg, rgba(19, 36, 64, 0.05) 0%, rgba(22, 71, 106, 0.05) 100%);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.linea-pago {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  span {
+    color: #666;
+    font-size: 14px;
+  }
+
+  strong {
+    color: #132440;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  &.total {
+    margin-top: 12px;
+    padding-top: 16px;
+    border-top: 2px solid #3B9797;
+
+    span {
+      color: #132440;
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    strong {
+      color: #132440;
+      font-size: 24px;
+      font-weight: 700;
+    }
+  }
+}
+
+.metodo-pago {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+
+  ion-icon {
+    color: #3B9797;
+    font-size: 20px;
+  }
+
+  span {
+    color: #132440;
+    font-weight: 600;
+    font-size: 16px;
+  }
+}
+
+/* Button Styles */
+.btn-primary {
+  --background: #16476A;
+  --background-activated: #132440;
+  --background-hover: #3B9797;
+  --color: white;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+}
+
+.btn-success {
+  --background: #3B9797;
+  --background-activated: #2a7a7a;
+  --background-hover: #4ab3b3;
+  --color: white;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+}
+
+.btn-warning {
+  --background: #BF092F;
+  --background-activated: #a10727;
+  --background-hover: #d40a35;
+  --color: white;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+}
+
+.btn-outline {
+  --border-color: #16476A;
+  --color: #16476A;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+}
+
+.btn-text {
+  --color: #16476A;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.btn-whatsapp {
+  --background: #25D366;
+  --background-activated: #1DA851;
+  --background-hover: #2BE376;
+  --color: white;
+  --border-radius: 12px;
+  font-weight: 600;
+  height: 48px;
+}
+
+/* Estados Badge Colors */
+.estado-chip[color="warning"] {
+  --background: #BF092F;
+  --color: white;
+}
+
+.estado-chip[color="primary"] {
+  --background: #16476A;
+  --color: white;
+}
+
+.estado-chip[color="tertiary"] {
+  --background: #11998e;
+  --color: white;
+}
+
+.estado-chip[color="success"] {
+  --background: #3B9797;
+  --color: white;
+}
+
+.estado-chip[color="danger"] {
+  --background: #dc3545;
+  --color: white;
+}
+
+/* Status Badge Custom */
+.status-badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 6px 12px;
+  border-radius: 20px;
+
+  ion-icon {
+    font-size: 14px;
+    margin-right: 4px;
+  }
+}
+
+/* Acciones Rápidas */
+.quick-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex: 1;
+  min-width: 120px;
+
+  &:hover {
+    transform: translateY(-2px);
+    border-color: #3B9797;
+    box-shadow: 0 4px 12px rgba(59, 151, 151, 0.2);
+  }
+
+  ion-icon {
+    font-size: 20px;
+    color: #3B9797;
+  }
+
+  span {
+    color: #132440;
+    font-weight: 600;
+    font-size: 14px;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+
+  .estado-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .producto-item {
+    flex-direction: column;
+  }
+
+  .producto-image,
+  .producto-placeholder {
+    width: 100%;
+    height: 160px;
+  }
+
+  .quick-actions {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    min-width: 100%;
+  }
+
+  .cliente-header {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .producto-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .precio-info {
+    text-align: left;
+  }
+
+  .meta-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

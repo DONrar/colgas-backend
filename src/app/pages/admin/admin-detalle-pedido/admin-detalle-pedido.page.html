@@ -1,158 +1,222 @@
-<ion-header>
-  <ion-toolbar color="primary">
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/admin/pedidos"></ion-back-button>
+      <ion-back-button defaultHref="/admin/pedidos" style="--color: white;"></ion-back-button>
     </ion-buttons>
-    <ion-title>Detalle del Pedido</ion-title>
+    <ion-title>
+      <ion-icon name="receipt" style="color: #3B9797;"></ion-icon>
+      &nbsp;Detalle del Pedido
+    </ion-title>
+    <ion-buttons slot="end">
+      @if (pedido()?.urlWhatsApp) {
+        <ion-button (click)="abrirWhatsApp()" class="header-btn" fill="clear">
+          <ion-icon name="logo-whatsapp" style="color: #25D366;"></ion-icon>
+        </ion-button>
+      }
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  @if (cargando()) {
-    <div class="spinner-container">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Cargando pedido...</p>
-    </div>
-  } @else if (pedido()) {
-    <!-- Información del Estado -->
-    <ion-card>
-      <ion-card-header>
-        <div class="estado-header">
-          <div>
-            <ion-card-title>Pedido #{{ pedido()!.id }}</ion-card-title>
-            <p>{{ formatearFecha(pedido()!.fechaPedido) }}</p>
+<ion-content [fullscreen]="true" class="admin-detalle-pedido-page">
+  <div class="container">
+    @if (cargando()) {
+      <div class="spinner-container animated-fade-in">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando pedido...</p>
+      </div>
+    } @else if (pedido()) {
+      <!-- Información del Estado -->
+      <ion-card class="card-elevated estado-card">
+        <ion-card-header>
+          <div class="estado-header">
+            <div class="estado-info">
+              <ion-card-title>Pedido #{{ pedido()!.id }}</ion-card-title>
+              <p>{{ formatearFecha(pedido()!.fechaPedido) }}</p>
+            </div>
+            <ion-badge class="status-badge" [class]="getEstadoBadgeClass(pedido()!.estado)">
+              <ion-icon [name]="getIconoEstado(pedido()!.estado)"></ion-icon>
+              {{ getTextoEstado(pedido()!.estado) }}
+            </ion-badge>
           </div>
-          <ion-chip [color]="getColorEstado(pedido()!.estado)" class="estado-chip">
-            <ion-icon [name]="getIconoEstado(pedido()!.estado)"></ion-icon>
-            <ion-label>{{ getTextoEstado(pedido()!.estado) }}</ion-label>
-          </ion-chip>
-        </div>
-      </ion-card-header>
+        </ion-card-header>
 
-      <ion-card-content>
-        @if (pedido()!.estado !== EstadoPedido.ENTREGADO && pedido()!.estado !== EstadoPedido.CANCELADO) {
-          <ion-button
-            expand="block"
-            (click)="mostrarOpcionesEstado()"
-            [disabled]="actualizando()">
-            @if (actualizando()) {
-              <ion-spinner name="crescent"></ion-spinner>
-            } @else {
-              <ion-icon slot="start" name="arrow-forward"></ion-icon>
-              Cambiar Estado
-            }
-          </ion-button>
-        }
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Información del Cliente -->
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Cliente</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-list>
-          <ion-item>
-            <ion-label>
-              <h3>Nombre</h3>
-              <p>{{ pedido()!.cliente.nombre }}</p>
-            </ion-label>
-          </ion-item>
-          <ion-item>
-            <ion-label>
-              <h3>Teléfono</h3>
-              <p>{{ pedido()!.cliente.telefono }}</p>
-            </ion-label>
-          </ion-item>
-          @if (pedido()!.direccionEntrega) {
-            <ion-item>
-              <ion-label>
-                <h3>Dirección de Entrega</h3>
-                <p>{{ pedido()!.direccionEntrega }}</p>
-              </ion-label>
-            </ion-item>
-          }
-        </ion-list>
-
-        <div class="botones-contacto">
-          <ion-button expand="block" (click)="abrirWhatsApp()">
-            <ion-icon slot="start" name="logo-whatsapp"></ion-icon>
-            Contactar por WhatsApp
-          </ion-button>
-          @if (pedido()!.latitud && pedido()!.longitud) {
-            <ion-button expand="block" fill="outline" (click)="abrirMapa()">
-              <ion-icon slot="start" name="location"></ion-icon>
-              Ver en Mapa
+        <ion-card-content>
+          @if (pedido()!.estado !== EstadoPedido.ENTREGADO && pedido()!.estado !== EstadoPedido.CANCELADO) {
+            <ion-button
+              expand="block"
+              class="btn-primary"
+              (click)="mostrarOpcionesEstado()"
+              [disabled]="actualizando()">
+              @if (actualizando()) {
+                <ion-spinner name="crescent" slot="start"></ion-spinner>
+                Actualizando...
+              } @else {
+                <ion-icon slot="start" name="arrow-forward"></ion-icon>
+                Cambiar Estado
+              }
             </ion-button>
           }
-        </div>
-      </ion-card-content>
-    </ion-card>
+        </ion-card-content>
+      </ion-card>
 
-    <!-- Productos -->
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Productos ({{ pedido()!.items.length }})</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <ion-list>
-          @for (item of pedido()!.items; track item.id) {
-            <ion-item>
-              <div class="item-producto">
-                @if (item.producto.imagen) {
-                  <img [src]="item.producto.imagen" alt="{{ item.producto.nombre }}" />
-                }
-                <div class="item-info">
-                  <h3>{{ item.producto.nombre }}</h3>
-                  <p>{{ item.producto.tipo }}</p>
-                  @if (item.producto.peso) {
-                    <p class="peso">{{ item.producto.peso }}</p>
-                  }
-                  <p class="cantidad">Cantidad: {{ item.cantidad }}</p>
-                  <p class="precio">
-                    ${{ item.precioUnitario | number:'1.2-2' }} c/u
-                  </p>
-                  <p class="subtotal">
-                    <strong>Subtotal: ${{ item.subtotal | number:'1.2-2' }}</strong>
-                  </p>
+      <!-- Información del Cliente -->
+      <ion-card class="card-elevated cliente-card">
+        <ion-card-header>
+          <ion-card-title>Información del Cliente</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="cliente-info">
+            <div class="cliente-header">
+              <div class="cliente-avatar">
+                <ion-icon name="person"></ion-icon>
+              </div>
+              <div class="cliente-details">
+                <h3>{{ pedido()!.cliente.nombre }}</h3>
+                <p>Cliente del pedido</p>
+              </div>
+            </div>
+
+            <div class="cliente-meta">
+              <div class="meta-item">
+                <ion-icon name="call"></ion-icon>
+                <div class="meta-content">
+                  <h4>Teléfono</h4>
+                  <p>{{ pedido()!.cliente.telefono }}</p>
                 </div>
               </div>
-            </ion-item>
-          }
-        </ion-list>
-      </ion-card-content>
-    </ion-card>
 
-    <!-- Resumen de Pago -->
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Resumen de Pago</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <div class="resumen-pago">
-          <div class="linea-pago">
-            <span>Método de Pago:</span>
-            <strong>{{ pedido()!.metodoPago }}</strong>
+              @if (pedido()!.direccionEntrega) {
+                <div class="meta-item">
+                  <ion-icon name="location"></ion-icon>
+                  <div class="meta-content">
+                    <h4>Dirección de Entrega</h4>
+                    <p>{{ pedido()!.direccionEntrega }}</p>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="botones-contacto">
+              <ion-button expand="block" class="btn-whatsapp" (click)="abrirWhatsApp()">
+                <ion-icon slot="start" name="logo-whatsapp"></ion-icon>
+                Contactar por WhatsApp
+              </ion-button>
+
+              @if (pedido()!.latitud && pedido()!.longitud) {
+                <ion-button expand="block" fill="outline" class="btn-outline" (click)="abrirMapa()">
+                  <ion-icon slot="start" name="map"></ion-icon>
+                  Ver en Mapa
+                </ion-button>
+              }
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Productos -->
+      <ion-card class="card-elevated productos-card">
+        <ion-card-header>
+          <div class="productos-header">
+            <h2>Productos del Pedido</h2>
+            <span class="productos-count">{{ pedido()!.items.length }} items</span>
+          </div>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="productos-container">
+            <div class="productos-list">
+              @for (item of pedido()!.items; track item.id) {
+                <div class="producto-item">
+                  @if (item.producto.imagen) {
+                    <div class="producto-image">
+                      <img [src]="item.producto.imagen" alt="{{ item.producto.nombre }}" />
+                    </div>
+                  } @else {
+                    <div class="producto-placeholder">
+                      <ion-icon name="cube"></ion-icon>
+                    </div>
+                  }
+
+                  <div class="producto-content">
+                    <h3>{{ item.producto.nombre }}</h3>
+
+                    <div class="producto-meta">
+                      <span class="producto-chip">{{ item.producto.tipo }}</span>
+                      @if (item.producto.peso) {
+                        <span class="peso-chip">{{ item.producto.peso }}</span>
+                      }
+                    </div>
+
+                    <div class="producto-details">
+                      <div class="cantidad-info">
+                        <p class="cantidad">Cantidad: {{ item.cantidad }}</p>
+                        <p class="precio-unitario">${{ item.precioUnitario | number:'1.0-0' }} c/u</p>
+                      </div>
+
+                      <div class="precio-info">
+                        <p class="subtotal">${{ item.subtotal | number:'1.0-0' }}</p>
+                        <p class="precio-label">Subtotal</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Resumen de Pago -->
+      <ion-card class="card-elevated pago-card">
+        <ion-card-header>
+          <ion-card-title>Resumen de Pago</ion-card-title>
+        </ion-card-header>
+
+        <ion-card-content>
+          <div class="resumen-pago">
+            <div class="metodo-pago">
+              <ion-icon name="card"></ion-icon>
+              <span>Método: {{ pedido()!.metodoPago }}</span>
+            </div>
+
+            @if (pedido()!.pagaCon) {
+              <div class="linea-pago">
+                <span>Paga con:</span>
+                <strong>${{ pedido()!.pagaCon | number:'1.0-0' }}</strong>
+              </div>
+              <div class="linea-pago">
+                <span>Vueltas:</span>
+                <strong class="vueltas">${{ pedido()!.vueltas | number:'1.0-0' }}</strong>
+              </div>
+            }
+
+            <div class="linea-pago total">
+              <span>TOTAL A PAGAR:</span>
+              <strong>${{ pedido()!.total | number:'1.0-0' }}</strong>
+            </div>
           </div>
 
-          @if (pedido()!.pagaCon) {
-            <div class="linea-pago">
-              <span>Paga con:</span>
-              <strong>${{ pedido()!.pagaCon | number:'1.2-2' }}</strong>
+          <div class="quick-actions">
+            <div class="action-btn" (click)="abrirWhatsApp()">
+              <ion-icon name="logo-whatsapp"></ion-icon>
+              <span>WhatsApp</span>
             </div>
-            <div class="linea-pago">
-              <span>Vueltas:</span>
-              <strong>${{ pedido()!.vueltas | number:'1.2-2' }}</strong>
-            </div>
-          }
 
-          <div class="linea-pago total">
-            <span>TOTAL:</span>
-            <strong>${{ pedido()!.total | number:'1.2-2' }}</strong>
+            @if (pedido()!.latitud && pedido()!.longitud) {
+              <div class="action-btn" (click)="abrirMapa()">
+                <ion-icon name="map"></ion-icon>
+                <span>Ver Mapa</span>
+              </div>
+            }
+
+            <div class="action-btn" (click)="mostrarOpcionesEstado()">
+              <ion-icon name="sync"></ion-icon>
+              <span>Cambiar Estado</span>
+            </div>
           </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
-  }
+        </ion-card-content>
+      </ion-card>
+    }
+  </div>
 </ion-content>

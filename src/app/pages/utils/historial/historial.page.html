@@ -1,5 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-button (click)="volver()" style="--color: white;">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
     <ion-title>
       <ion-icon name="time-outline" style="color: #3B9797;"></ion-icon>
       &nbsp;Historial
@@ -45,7 +50,7 @@
             labelPlacement="stacked"
             [(ngModel)]="telefono"
             type="tel"
-            placeholder="323 516 2298"
+            placeholder="3212891040"
             class="custom-input">
           </ion-input>
         </ion-item>

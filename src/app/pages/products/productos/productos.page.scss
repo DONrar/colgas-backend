@@ -13,15 +13,18 @@
   position: relative;
   display: flex;
   align-items: center;
+  ion-icon {
+    font-size: 22px;
+  }
 }
 
 .header-badge {
   position: absolute;
   top: -8px;
-  right: -8px;
+  right: -10px;
   font-size: 10px;
   min-width: 18px;
-  height: 18px;
+  height: 16px;
   --background: #BF092F;
 }
 
@@ -502,11 +505,11 @@
 
 .fab-badge {
   position: absolute;
-  top: -8px;
+  top: -13px;
   right: -8px;
   font-size: 10px;
   min-width: 20px;
-  height: 20px;
+  height: 15px;
   --background: #132440;
 }
 
@@ -514,6 +517,12 @@
   --background: #BF092F;
   --background-activated: #132440;
   --background-hover: #16476A;
+}
+
+.cart-fab {
+  ion-icon {
+    font-size: 22px;
+  }
 }
 
 /* Animaciones */

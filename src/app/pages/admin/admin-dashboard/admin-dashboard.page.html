@@ -1,6 +1,9 @@
 <ion-header [translucent]="true">
   <ion-toolbar style="--background: #132440; --color: white;">
     <ion-buttons slot="start">
+      <ion-menu-button auto-hide="false" style="--color: white;"></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons slot="start">
       <ion-button (click)="refresh()" style="--color: white;">
         <ion-icon name="refresh-outline"></ion-icon>
       </ion-button>
@@ -24,7 +27,7 @@
   <!-- Loading State -->
   @if (cargando()) {
     <div class="loading-container">
-      <div class="loading-spinner">
+      <div class="loading-spinner">x
         <ion-spinner name="crescent"></ion-spinner>
         <p>Cargando datos del panel...</p>
       </div>
@@ -144,7 +147,7 @@
         <ion-card class="card-elevated summary-card">
           <ion-card-content>
             <div class="summary-item">
-              <div class="summary-icon-container info">
+              <div class="summary-icon-container primary">
                 <ion-icon name="bicycle-outline"></ion-icon>
               </div>
               <div class="summary-text">
@@ -333,6 +336,16 @@
               </div>
             </ion-button>
 
+            <ion-button class="quick-action-btn" [routerLink]="['/admin-lista-expreso']">
+              <div class="action-icon-container primary ">
+                <ion-icon name="car"></ion-icon>
+              </div>
+              <div class="action-content">
+                <h4>Gestionar Expresos</h4>
+                <p>Ver todos los Expresos</p>
+              </div>
+            </ion-button>
+
             <ion-button class="quick-action-btn" [routerLink]="['/admin/productos']">
               <div class="action-icon-container warning">
                 <ion-icon name="cube"></ion-icon>
@@ -343,28 +356,20 @@
               </div>
             </ion-button>
 
-            <ion-button class="quick-action-btn" [routerLink]="['/admin/reportes']">
-              <div class="action-icon-container info">
-                <ion-icon name="document-text"></ion-icon>
-              </div>
-              <div class="action-content">
-                <h4>Reportes</h4>
-                <p>Ver estadísticas</p>
-              </div>
-            </ion-button>
-
-            <ion-button class="quick-action-btn" [routerLink]="['/admin/configuracion']">
+            <ion-button class="quick-action-btn" [routerLink]="['/configuracion-admin']">
               <div class="action-icon-container primary">
                 <ion-icon name="settings"></ion-icon>
               </div>
               <div class="action-content">
                 <h4>Configuración</h4>
-                <p>Ajustes del sistema</p>
+                <p>Configuracion precio del Kilometro</p>
               </div>
             </ion-button>
           </div>
         </ion-card-content>
       </ion-card>
+
+
 
       <!-- Información del Sistema -->
       <div class="system-info">

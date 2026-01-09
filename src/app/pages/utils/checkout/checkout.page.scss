@@ -1024,3 +1024,531 @@ ion-card-title, ion-card-subtitle, .step-label, .floating-label {
   color: #bbb !important;
   font-weight: 400;
 }
+
+
+// ============================================
+// PARTE 3: ESTILOS SCSS (checkout.page.scss)
+// ============================================
+// Agrega estos estilos al final de tu archivo SCSS existente:
+
+// Información de transferencia bancaria
+.bank-transfer-info {
+  margin-top: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 16px;
+  padding: 20px;
+  border: 2px solid #dee2e6;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.transfer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #dee2e6;
+
+  ion-icon {
+    font-size: 28px;
+    color: #3B9797;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: #2d3748;
+  }
+}
+
+// Selector de método de transferencia
+.transfer-method-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+
+  .method-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 12px;
+    background: white;
+    border: 2px solid #dee2e6;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+
+    ion-icon {
+      font-size: 28px;
+      color: #6c757d;
+      transition: all 0.3s ease;
+    }
+
+    span {
+      font-size: 13px;
+      font-weight: 600;
+      color: #6c757d;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .badge-recommended {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+      animation: pulse 2s infinite;
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    &.active {
+      background: linear-gradient(135deg, #3B9797 0%, #2d7a7a 100%);
+      border-color: #3B9797;
+      box-shadow: 0 4px 16px rgba(59, 151, 151, 0.3);
+
+      ion-icon {
+        color: white;
+        transform: scale(1.1);
+      }
+
+      span {
+        color: white;
+      }
+
+      .badge-recommended {
+        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+      }
+    }
+  }
+}
+
+.bank-details {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.bank-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: linear-gradient(135deg, #3B9797 0%, #2d7a7a 100%);
+  border-radius: 10px;
+  color: white;
+
+  ion-icon {
+    font-size: 32px;
+  }
+
+  span {
+    font-size: 20px;
+    font-weight: 700;
+  }
+}
+
+// Destacar info de llave
+.highlight-box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+  border-radius: 10px;
+  border-left: 4px solid #28a745;
+  margin-bottom: 20px;
+
+  .flash-icon {
+    font-size: 32px;
+    color: #28a745;
+    animation: flash 2s infinite;
+  }
+
+  .highlight-content {
+    h5 {
+      margin: 0 0 4px 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #155724;
+    }
+
+    p {
+      margin: 0;
+      font-size: 13px;
+      color: #155724;
+    }
+  }
+}
+
+.account-info {
+  margin-bottom: 20px;
+
+  &.llave-info {
+    .info-row.featured {
+      background: linear-gradient(135deg, #fff3cd 0%, #ffe9a6 100%);
+      padding: 16px;
+      border-radius: 10px;
+      border: 2px solid #ffc107;
+      margin-bottom: 16px;
+
+      .info-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+        font-weight: 700;
+        color: #856404;
+
+        ion-icon {
+          font-size: 20px;
+        }
+      }
+
+      .llave-number {
+        font-size: 20px;
+        color: #856404;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid #e9ecef;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    &.featured {
+      background: #f8f9fa;
+      padding: 16px;
+      border-radius: 10px;
+      margin-bottom: 12px;
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-size: 14px;
+      color: #6c757d;
+      font-weight: 500;
+    }
+
+    .info-value {
+      font-size: 15px;
+      color: #2d3748;
+      font-weight: 600;
+
+      &.account-number {
+        font-family: 'Courier New', monospace;
+        letter-spacing: 1px;
+        font-size: 16px;
+      }
+
+      &.llave-number {
+        font-family: 'Courier New', monospace;
+        letter-spacing: 1px;
+        font-size: 18px;
+      }
+
+      &.total-amount {
+        color: #3B9797;
+        font-size: 20px;
+      }
+    }
+
+    .account-number-container,
+    .llave-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+  }
+}
+
+.copy-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #3B9797;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+
+  ion-icon {
+    font-size: 18px;
+  }
+
+  &:hover {
+    background: #2d7a7a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 151, 151, 0.3);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &.copied {
+    background: #28a745;
+    animation: pulse 0.5s ease;
+
+    ion-icon {
+      animation: checkmark 0.5s ease;
+    }
+  }
+}
+
+.transfer-instructions {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f8f9fa;
+  border-radius: 10px;
+  border-left: 4px solid #3B9797;
+
+  &.llave-instructions {
+    border-left-color: #28a745;
+  }
+
+  .instruction-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+
+    ion-icon {
+      font-size: 20px;
+      color: #3B9797;
+    }
+
+    h5 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #2d3748;
+    }
+  }
+
+  .instruction-list {
+    margin: 0;
+    padding-left: 20px;
+    color: #495057;
+
+    li {
+      margin-bottom: 8px;
+      font-size: 14px;
+      line-height: 1.6;
+
+      strong {
+        color: #3B9797;
+        font-weight: 700;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  .pro-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 15px;
+    padding: 12px;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-radius: 8px;
+    border-left: 3px solid #ffc107;
+
+    ion-icon {
+      font-size: 22px;
+      color: #856404;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    div {
+      font-size: 13px;
+      color: #856404;
+      line-height: 1.5;
+
+      strong {
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+.transfer-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 15px;
+  padding: 12px;
+  background: #d1ecf1;
+  border-radius: 8px;
+  border-left: 3px solid #17a2b8;
+
+  ion-icon {
+    font-size: 20px;
+    color: #0c5460;
+    margin-top: 2px;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    font-size: 13px;
+    color: #0c5460;
+    line-height: 1.5;
+  }
+}
+
+// Animaciones
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes checkmark {
+  0% {
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.2) rotate(180deg);
+  }
+  100% {
+    transform: scale(1) rotate(360deg);
+  }
+}
+
+@keyframes flash {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+// Mejoras en los iconos de métodos de pago
+.payment-icon {
+  &.daviplata {
+    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+  }
+
+  &.nequi {
+    background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+  }
+
+  &.nu {
+    background: linear-gradient(135deg, #8e44ad 0%, #6c3483 100%);
+  }
+
+  &.bancolombia {
+    background: linear-gradient(135deg, #f39c12 0%, #d68910 100%);
+  }
+}
+
+// Responsive
+@media (max-width: 576px) {
+  .bank-transfer-info {
+    padding: 15px;
+  }
+
+  .transfer-method-selector {
+    grid-template-columns: 1fr;
+
+    .method-option {
+      flex-direction: row;
+      justify-content: flex-start;
+      text-align: left;
+
+      span {
+        text-align: left;
+      }
+    }
+  }
+
+  .account-info .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+
+    .account-number-container,
+    .llave-container {
+      width: 100%;
+      flex-direction: column;
+      align-items: stretch;
+
+      .copy-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    &.featured {
+      .llave-container {
+        gap: 12px;
+      }
+    }
+  }
+
+  .bank-logo {
+    span {
+      font-size: 18px;
+    }
+  }
+
+  .transfer-instructions .instruction-list {
+    font-size: 13px;
+  }
+
+  .highlight-box {
+    flex-direction: column;
+    text-align: center;
+  }
+}

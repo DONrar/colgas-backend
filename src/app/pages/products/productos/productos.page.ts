@@ -26,8 +26,7 @@ interface FiltroRapido {
   templateUrl: './productos.page.html',
   styleUrls: ['./productos.page.scss'],
   standalone: true,
-  imports: [
-    IonBackButton,
+  imports: [ 
     IonButtons,
     IonRefresherContent,
     IonRefresher,

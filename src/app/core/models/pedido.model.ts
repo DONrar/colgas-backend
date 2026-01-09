@@ -2,10 +2,11 @@ import { Cliente } from "./cliente.models";
 import { Producto } from "./producto.model";
 
 export enum MetodoPago {
-  EFECTIVO = 'EFECTIVO',
-  TRANSFERENCIA = 'TRANSFERENCIA',
+  EFECTIVO = 'EFECTIVO', 
   DAVIPLATA = 'DAVIPLATA',
-  NEQUI = 'NEQUI'
+  NEQUI = 'NEQUI',
+  NU = 'NU',
+  BANCOLOMBIA = 'BANCOLOMBIA'
 }
 
 export enum EstadoPedido {
