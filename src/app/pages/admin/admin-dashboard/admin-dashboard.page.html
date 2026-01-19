@@ -13,11 +13,9 @@
       &nbsp;Panel de Control
     </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="notificaciones()" style="--color: white;">
-        <ion-icon name="notifications-outline"></ion-icon>
-        @if (alertas() > 0) {
-          <ion-badge class="notification-badge">{{ alertas() }}</ion-badge>
-        }
+      <!-- Botón Cerrar Sesión -->
+      <ion-button (click)="confirmarCerrarSesion()" style="--color: #BF092F;">
+        <ion-icon name="log-out-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -271,18 +269,6 @@
                 <span class="inventory-status">Necesitan reposición</span>
               </div>
             </div>
-
-            <div class="inventory-item">
-              <div class="inventory-icon-container warning">
-                <ion-icon name="pricetags-outline"></ion-icon>
-              </div>
-              <div class="inventory-content">
-                <h3>Valor Total</h3>
-                <p class="inventory-value">{{ formatCurrency(valorTotalInventario()) }}</p>
-                <span class="inventory-status">Valor en inventario</span>
-              </div>
-            </div>
-
             <div class="inventory-item">
               <div class="inventory-icon-container info">
                 <ion-icon name="trending-up-outline"></ion-icon>

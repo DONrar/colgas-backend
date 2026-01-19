@@ -59,7 +59,7 @@
                   placeholder="Ingrese el nombre del producto">
                 </ion-input>
               </ion-item>
-              <div class="form-hint">Ej: Pipeta para perros de 20kg</div>
+              <div class="form-hint">Ej: Pipeta de 20LB</div>
             </div>
 
             <!-- Tipo -->
@@ -105,27 +105,29 @@
               <div class="form-hint">Especifique la unidad de medida (kg, lbs, etc.)</div>
             </div>
 
-            <!-- Precio -->
+            <!-- Precio - CORREGIDO: usar type="text" con inputmode="numeric" -->
             <div class="form-group">
               <ion-item lines="none" class="form-item">
                 <ion-label position="stacked" class="form-label">
                   <ion-icon name="cash" slot="start" class="form-icon"></ion-icon>
-                  Precio *
+                  Precio (COP) *
                 </ion-label>
                 <ion-input
                   [(ngModel)]="producto.precio"
                   name="precio"
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
                   required
                   class="form-input"
-                  placeholder="0.00">
+                  placeholder="0"
+                  (ionBlur)="normalizarPrecio()">
                 </ion-input>
               </ion-item>
-              <div class="form-hint">Precio en la moneda local</div>
+              <div class="form-hint">Precio en pesos colombianos (sin decimales)</div>
             </div>
 
-            <!-- Stock -->
+            <!-- Stock - CORREGIDO: usar type="text" con inputmode="numeric" -->
             <div class="form-group">
               <ion-item lines="none" class="form-item">
                 <ion-label position="stacked" class="form-label">
@@ -135,11 +137,13 @@
                 <ion-input
                   [(ngModel)]="producto.stock"
                   name="stock"
-                  type="number"
-                  min="0"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="[0-9]*"
                   required
                   class="form-input"
-                  placeholder="0">
+                  placeholder="0"
+                  (ionBlur)="normalizarStock()">
                 </ion-input>
               </ion-item>
               <div class="form-hint">Cantidad disponible en inventario</div>

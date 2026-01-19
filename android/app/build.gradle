@@ -23,7 +23,7 @@ android {
 
   applicationVariants.all { variant ->
     variant.outputs.all { output ->
-      def appName = "ColgasApp"
+      def appName = "RappiGas Admin"
 
       outputFileName = "${appName}.apk"
     }

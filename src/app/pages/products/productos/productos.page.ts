@@ -26,7 +26,7 @@ interface FiltroRapido {
   templateUrl: './productos.page.html',
   styleUrls: ['./productos.page.scss'],
   standalone: true,
-  imports: [ 
+  imports: [
     IonButtons,
     IonRefresherContent,
     IonRefresher,
@@ -253,7 +253,7 @@ export class ProductosPage implements OnInit {
   // Métodos de utilidad
   getTipoIcon(tipo: string): string {
     const iconos: { [key: string]: string } = {
-      'PIPETA': 'flask',
+      'PIPETA': 'flame',
       'ACCESORIO': 'construct',
       'REPUESTO': 'hardware-chip',
       'TODOS': 'apps'

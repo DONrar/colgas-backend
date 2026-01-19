@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/Auth.guard';
 
 export const routes: Routes = [
   {
@@ -83,62 +84,82 @@ export const routes: Routes = [
   },
   {
     path: 'start-trip-page',
-    loadComponent: () => import('./pages/viajes/start-trip-page/start-trip-page.page').then( m => m.StartTripPagePage)
+    loadComponent: () => import('./pages/viajes/start-trip-page/start-trip-page.page').then(m => m.StartTripPagePage)
   },
   {
     path: 'select-destination-page',
-    loadComponent: () => import('./pages/viajes/select-destination-page/select-destination-page.page').then( m => m.SelectDestinationPagePage)
+    loadComponent: () => import('./pages/viajes/select-destination-page/select-destination-page.page').then(m => m.SelectDestinationPagePage)
   },
   {
     path: 'trip-summary-page',
-    loadComponent: () => import('./pages/viajes/trip-summary-page/trip-summary-page.page').then( m => m.TripSummaryPagePage)
+    loadComponent: () => import('./pages/viajes/trip-summary-page/trip-summary-page.page').then(m => m.TripSummaryPagePage)
   },
   {
     path: 'expreso-detalle/:id',
-    loadComponent: () => import('./pages/viajes/expreso-detalle/expreso-detalle.page').then( m => m.ExpresoDetallePage)
+    loadComponent: () => import('./pages/viajes/expreso-detalle/expreso-detalle.page').then(m => m.ExpresoDetallePage)
   },
   {
     path: 'pedido-detalle/:id',
-    loadComponent: () => import('./pages/products/pedido-detalle/pedido-detalle.page').then( m => m.PedidoDetallePage)
+    loadComponent: () => import('./pages/products/pedido-detalle/pedido-detalle.page').then(m => m.PedidoDetallePage)
   },
   {
-    path: 'admin/productos/crear',
-    loadComponent: () => import('./pages/admin/admin-productos-page/admin-productos-page.page').then( m => m.AdminProductosPagePage)
+    path: 'admin-login',
+    loadComponent: () => import('./pages/admin/admin-login/admin-login.page').then(m => m.AdminLoginPage)
+  },
+  {
+    path: 'logout-button',
+    loadComponent: () => import('./pages/admin/logout-button/logout-button.page').then(m => m.LogoutButtonComponent)
+  },
+  // ========== RUTAS ADMIN (PROTEGIDAS) ==========
+  {
+    path: 'admin-dashboard',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/admin/admin-dashboard/admin-dashboard.page').then(m => m.AdminDashboardPage)
   },
   {
     path: 'admin/productos',
-    loadComponent: () => import('./pages/admin/admin-lista-productos/admin-lista-productos.page').then( m => m.AdminListaProductosPage)
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/admin/admin-lista-productos/admin-lista-productos.page').then(m => m.AdminListaProductosPage)
   },
   {
-    path: 'admin-modal-stock',
-    loadComponent: () => import('./pages/admin/admin-modal-stock/admin-modal-stock.page').then( m => m.AdminModalStockPage)
+    path: 'admin/productos/crear',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/admin/admin-productos-page/admin-productos-page.page').then(m => m.AdminProductosPagePage)
   },
   {
     path: 'admin/productos/editar/:id',
-    loadComponent: () => import('./pages/admin/admin-editar-productos/admin-editar-productos.page').then( m => m.AdminEditarProductosPage)
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/admin/admin-editar-productos/admin-editar-productos.page').then(m => m.AdminEditarProductosPage)
+  },
+  {
+    path: 'admin-modal-stock',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/admin/admin-modal-stock/admin-modal-stock.page').then(m => m.AdminModalStockPage)
   },
   {
     path: 'admin/pedidos',
-    loadComponent: () => import('./pages/admin/admin-lista-pedidos/admin-lista-pedidos.page').then( m => m.AdminListaPedidosPage)
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/admin/admin-lista-pedidos/admin-lista-pedidos.page').then(m => m.AdminListaPedidosPage)
   },
   {
     path: 'admin/pedidos/detalle/:id',
+    canActivate: [authGuard],
     loadComponent: () => import('./pages/admin/admin-detalle-pedido/admin-detalle-pedido.page').then(m => m.AdminDetallePedidoPage)
   },
   {
-    path: 'admin-dashboard',
-    loadComponent: () => import('./pages/admin/admin-dashboard/admin-dashboard.page').then( m => m.AdminDashboardPage)
-  },
-  {
-    path: 'configuracion-admin',
-    loadComponent: () => import('./pages/admin/configuracion-admin/configuracion-admin.page').then( m => m.ConfiguracionAdminPage)
-  },
-  {
     path: 'admin-lista-expreso',
-    loadComponent: () => import('./pages/admin/admin-lista-expreso/admin-lista-expreso.page').then( m => m.AdminListaExpresoPage)
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/admin/admin-lista-expreso/admin-lista-expreso.page').then(m => m.AdminListaExpresoPage)
   },
   {
     path: 'admin/expresos/detalle/:id',
-    loadComponent: () => import('./pages/admin/admin-detalle-expreso/admin-detalle-expreso.page').then( m => m.AdminDetalleExpresoPage)
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/admin/admin-detalle-expreso/admin-detalle-expreso.page').then(m => m.AdminDetalleExpresoPage)
   },
+  {
+    path: 'configuracion-admin',
+    canActivate: [authGuard],
+    loadComponent: () => import('./pages/admin/configuracion-admin/configuracion-admin.page').then(m => m.ConfiguracionAdminPage)
+  },
+
 ];

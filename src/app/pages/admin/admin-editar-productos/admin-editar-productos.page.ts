@@ -21,18 +21,40 @@ import {
   IonIcon,
   IonSpinner,
   IonBackButton,
-  IonButtons, IonCardSubtitle } from '@ionic/angular/standalone';
+  IonButtons,
+  IonCardSubtitle
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { image, save, trash, arrowBack, create, cube, pricetag, grid, scale, cash, server, documentText, cloudUpload, imageOutline, closeCircle, expand } from 'ionicons/icons';
+import {
+  image,
+  save,
+  trash,
+  arrowBack,
+  create,
+  cube,
+  pricetag,
+  grid,
+  scale,
+  cash,
+  server,
+  documentText,
+  cloudUpload,
+  imageOutline,
+  closeCircle,
+  expand
+} from 'ionicons/icons';
 import { ProductoService } from '../../../core/services/producto-service';
 import { ToastService } from '../../../core/services/toast-service';
 import { Producto, TipoProducto } from '../../../core/models/producto.model';
+
 @Component({
   selector: 'app-admin-editar-productos',
   templateUrl: './admin-editar-productos.page.html',
   styleUrls: ['./admin-editar-productos.page.scss'],
   standalone: true,
-  imports: [IonCardSubtitle, CommonModule,
+  imports: [
+    IonCardSubtitle,
+    CommonModule,
     FormsModule,
     IonHeader,
     IonToolbar,
@@ -53,10 +75,11 @@ import { Producto, TipoProducto } from '../../../core/models/producto.model';
     IonSpinner,
     IonBackButton,
     IonButtons,
-  RouterLink]
+    RouterLink
+  ]
 })
 export class AdminEditarProductosPage implements OnInit {
-private productoService = inject(ProductoService);
+  private productoService = inject(ProductoService);
   private toastService = inject(ToastService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
@@ -70,14 +93,30 @@ private productoService = inject(ProductoService);
   tipos = ['PIPETA', 'ACCESORIO', 'REPUESTO'];
 
   constructor() {
-    addIcons({create, cube, pricetag, grid, scale, cash, server, documentText, image,
-          cloudUpload, trash, imageOutline, save, closeCircle, arrowBack, expand});
+    addIcons({
+      create,
+      cube,
+      pricetag,
+      grid,
+      scale,
+      cash,
+      server,
+      documentText,
+      image,
+      cloudUpload,
+      trash,
+      imageOutline,
+      save,
+      closeCircle,
+      arrowBack,
+      expand
+    });
   }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      this.productoId = parseInt(id);
+      this.productoId = parseInt(id, 10);
       this.cargarProducto(this.productoId);
     }
   }
@@ -86,7 +125,15 @@ private productoService = inject(ProductoService);
     this.cargando.set(true);
     this.productoService.obtenerPorId(id).subscribe({
       next: (producto) => {
-        this.producto = producto;
+        this.producto = { ...producto };
+        // Asegurar que el precio sea un entero al cargar
+        if (this.producto.precio !== undefined && this.producto.precio !== null) {
+          this.producto.precio = this.convertirAEntero(this.producto.precio);
+        }
+        // Asegurar que el stock sea un entero al cargar
+        if (this.producto.stock !== undefined && this.producto.stock !== null) {
+          this.producto.stock = this.convertirAEntero(this.producto.stock);
+        }
         if (producto.imagen) {
           this.imagenPreview.set(producto.imagen);
         }
@@ -99,6 +146,41 @@ private productoService = inject(ProductoService);
         this.router.navigate(['/admin/productos']);
       }
     });
+  }
+
+  /**
+   * Convierte cualquier valor a un entero de forma segura
+   * Evita problemas de punto flotante de JavaScript
+   */
+  private convertirAEntero(valor: any): number {
+    if (valor === undefined || valor === null || valor === '') {
+      return 0;
+    }
+    // Convertir a string, eliminar caracteres no numéricos (excepto signo negativo al inicio)
+    const valorString = String(valor).replace(/[^0-9-]/g, '').replace(/(?!^)-/g, '');
+    const resultado = parseInt(valorString, 10);
+    return isNaN(resultado) ? 0 : resultado;
+  }
+
+  /**
+   * Normaliza el precio cuando el input pierde el foco
+   * Asegura que siempre sea un entero válido
+   */
+  normalizarPrecio() {
+    if (this.producto.precio !== undefined) {
+      this.producto.precio = this.convertirAEntero(this.producto.precio);
+    }
+  }
+
+  /**
+   * Normaliza el stock cuando el input pierde el foco
+   * Asegura que siempre sea un entero válido y no negativo
+   */
+  normalizarStock() {
+    if (this.producto.stock !== undefined) {
+      const stockEntero = this.convertirAEntero(this.producto.stock);
+      this.producto.stock = Math.max(0, stockEntero); // No permitir valores negativos
+    }
   }
 
   async seleccionarImagen(event: any) {
@@ -138,14 +220,19 @@ private productoService = inject(ProductoService);
       this.toastService.error('El nombre es obligatorio');
       return false;
     }
-    if (!this.producto.precio || this.producto.precio <= 0) {
+
+    const precioValidado = this.convertirAEntero(this.producto.precio);
+    if (precioValidado <= 0) {
       this.toastService.error('El precio debe ser mayor a 0');
       return false;
     }
-    if (this.producto.stock === undefined || this.producto.stock < 0) {
+
+    const stockValidado = this.convertirAEntero(this.producto.stock);
+    if (stockValidado < 0) {
       this.toastService.error('El stock no puede ser negativo');
       return false;
     }
+
     return true;
   }
 
@@ -154,17 +241,23 @@ private productoService = inject(ProductoService);
 
     this.guardando.set(true);
 
+    // Conversión robusta a enteros - evita problemas de punto flotante
+    const precioEntero = this.convertirAEntero(this.producto.precio);
+    const stockEntero = this.convertirAEntero(this.producto.stock);
+
     const productoActualizado: Producto = {
       id: this.productoId,
-      nombre: this.producto.nombre!,
+      nombre: this.producto.nombre!.trim(),
       tipo: this.producto.tipo!,
-      precio: this.producto.precio!,
-      stock: this.producto.stock ?? 0,
-      descripcion: this.producto.descripcion,
-      peso: this.producto.peso,
+      precio: precioEntero,
+      stock: stockEntero,
+      descripcion: this.producto.descripcion?.trim(),
+      peso: this.producto.peso?.trim(),
       imagen: this.producto.imagen,
       activo: true
     };
+
+    console.log('Enviando producto con precio:', precioEntero, 'y stock:', stockEntero);
 
     this.productoService.actualizar(this.productoId, productoActualizado).subscribe({
       next: () => {
@@ -181,22 +274,23 @@ private productoService = inject(ProductoService);
   }
 
   getTipoIcon(tipo: string): string {
-  switch (tipo) {
-    case 'PIPETA':
-      return 'flask';
-    case 'ACCESORIO':
-      return 'construct';
-    case 'REPUESTO':
-      return 'hardware-chip';
-    default:
-      return 'cube';
+    switch (tipo) {
+      case 'PIPETA':
+        return 'flask';
+      case 'ACCESORIO':
+        return 'construct';
+      case 'REPUESTO':
+        return 'hardware-chip';
+      default:
+        return 'cube';
+    }
   }
-}
-ampliarImagen() {
-  if (this.imagenPreview()) {
-    // Implementa la lógica para ampliar la imagen
-    // Puedes usar un modal o un componente de visualización de imágenes
-    console.log('Ampliar imagen:', this.imagenPreview());
+
+  ampliarImagen() {
+    if (this.imagenPreview()) {
+      // Implementa la lógica para ampliar la imagen
+      // Puedes usar un modal o un componente de visualización de imágenes
+      console.log('Ampliar imagen:', this.imagenPreview());
+    }
   }
-}
 }

@@ -4,10 +4,12 @@
       <ion-toolbar style="--background: #132440; --color: white;">
         <ion-title>Navegación</ion-title>
         <ion-buttons slot="end">
-          <ion-button fill="clear" (click)="cerrarMenu()">
-            <ion-icon name="close-outline" style="--color: white;"></ion-icon>
-          </ion-button>
-
+          <!-- Usar ion-menu-toggle en lugar de menuController.close() -->
+          <ion-menu-toggle auto-hide="false">
+            <ion-button fill="clear">
+              <ion-icon name="close-outline" style="color: white;"></ion-icon>
+            </ion-button>
+          </ion-menu-toggle>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -29,12 +31,10 @@
       <ion-list class="menu-list">
         <ion-menu-toggle auto-hide="false">
           <!-- Dashboard -->
-
-
           <ion-item routerLink="/admin-dashboard" routerLinkActive="selected" detail="false" class="menu-item">
             <div class="menu-item-content">
               <div class="menu-icon dashboard">
-                <ion-icon name="grid-outline"></ion-icon> <!-- Icono de producto/cubo -->
+                <ion-icon name="grid-outline"></ion-icon>
               </div>
               <ion-label>Panel de Control</ion-label>
             </div>
@@ -43,7 +43,7 @@
           <ion-item routerLink="/tabs/productos" routerLinkActive="selected" detail="false" class="menu-item">
             <div class="menu-item-content">
               <div class="menu-icon dashboard">
-                <ion-icon name="stats-chart-outline"></ion-icon> <!-- Icono de producto/cubo -->
+                <ion-icon name="stats-chart-outline"></ion-icon>
               </div>
               <ion-label>Dashboard</ion-label>
             </div>
@@ -53,7 +53,7 @@
           <ion-item routerLink="/admin/productos" routerLinkActive="selected" detail="false" class="menu-item">
             <div class="menu-item-content">
               <div class="menu-icon clients">
-                <ion-icon name="cube-outline"></ion-icon> <!-- Icono de producto/cubo -->
+                <ion-icon name="cube-outline"></ion-icon>
               </div>
               <ion-label>Productos</ion-label>
             </div>
@@ -63,11 +63,12 @@
           <ion-item routerLink="/admin/pedidos" routerLinkActive="selected" detail="false" class="menu-item">
             <div class="menu-item-content">
               <div class="menu-icon search">
-                <ion-icon name="clipboard-outline"></ion-icon> <!-- Icono de pedidos/clipboard -->
+                <ion-icon name="clipboard-outline"></ion-icon>
               </div>
               <ion-label>Gestión de pedidos</ion-label>
             </div>
           </ion-item>
+
           <ion-item routerLink="/admin-lista-expreso" routerLinkActive="selected" detail="false" class="menu-item">
             <div class="menu-item-content">
               <div class="menu-icon dashboard">
@@ -81,7 +82,7 @@
           <ion-item routerLink="/configuracion-admin" routerLinkActive="selected" detail="false" class="menu-item">
             <div class="menu-item-content">
               <div class="menu-icon settings">
-                <ion-icon name="settings-outline"></ion-icon> <!-- Este ya está correcto -->
+                <ion-icon name="settings-outline"></ion-icon>
               </div>
               <ion-label>Configuración</ion-label>
             </div>
@@ -93,7 +94,7 @@
       <div class="menu-footer">
         <div class="app-version">
           <ion-icon name="cube-outline"></ion-icon>
-          <span>v1.0.0</span>
+          <span>v 27.13.6</span>
         </div>
         <p class="footer-text">2025 ColGas App</p>
         <p class="footer-text">© Derechos Reservados al señor Camilo Andres Acosta Hernandez</p>

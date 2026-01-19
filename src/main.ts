@@ -4,7 +4,7 @@ import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalo
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app/app.routes';
 import { AppComponent } from './app/app.component';
-import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { addIcons } from 'ionicons';
 import {
   homeOutline,
@@ -15,6 +15,7 @@ import {
   closeOutline,
   cubeOutline,
 } from 'ionicons/icons';
+import { authInterceptor } from './app/core/Auth.interceptor';
 
 // Si usas un guard SSR tipo "if (typeof window !== 'undefined')", pon esto dentro del guard.
 addIcons({
@@ -31,7 +32,9 @@ bootstrapApplication(AppComponent, {
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular(),
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(),
+    provideHttpClient(
+      withInterceptors([authInterceptor])
+    ),
     provideAnimations(),
   ],
 });

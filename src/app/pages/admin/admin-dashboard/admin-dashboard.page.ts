@@ -2,7 +2,7 @@ import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonIcon, IonBadge, IonGrid, IonRow, IonCol, IonSpinner, IonButtons, ToastController, IonToast, IonRange, IonChip, IonLabel, IonFabButton, IonFab, IonMenuButton } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonIcon, IonBadge, IonSpinner, IonButtons, ToastController, IonMenuButton, AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   cube, receipt, statsChart, alertCircle,
@@ -13,10 +13,12 @@ import {
   trendingUpOutline, flash, documentText, settings,
   arrowForward, list, checkmarkDone, addCircle, cash,
   speedometer, logoUsd, save, card, refresh,
-  car} from 'ionicons/icons';
+  car, logOutOutline, personCircleOutline
+} from 'ionicons/icons';
 import { PedidoService } from '../../../core/services/pedido-service';
 import { ProductoService } from '../../../core/services/producto-service';
 import { ConfiguracionService } from '../../../core/services/configuracion-service';
+import { AuthService } from '../../../core/services/AuthService ';
 import { EstadoPedido } from '../../../core/models/pedido.model';
 import { firstValueFrom } from 'rxjs';
 
@@ -25,7 +27,7 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './admin-dashboard.page.html',
   styleUrls: ['./admin-dashboard.page.scss'],
   standalone: true,
-  imports: [ 
+  imports: [
     CommonModule,
     FormsModule,
     IonHeader,
@@ -41,14 +43,21 @@ import { firstValueFrom } from 'rxjs';
     IonBadge,
     IonSpinner,
     RouterLink,
-    IonButtons,  IonMenuButton]
+    IonButtons,
+    IonMenuButton
+  ]
 })
 export class AdminDashboardPage implements OnInit {
   private pedidoService = inject(PedidoService);
   private productoService = inject(ProductoService);
   private configuracionService = inject(ConfiguracionService);
+  private authService = inject(AuthService);
+  private alertCtrl = inject(AlertController);
   private toastCtrl = inject(ToastController);
   private router = inject(Router);
+
+  // Usuario actual
+  nombreUsuario = signal('');
 
   // Señales principales
   cargando = signal(true);
@@ -80,7 +89,21 @@ export class AdminDashboardPage implements OnInit {
   });
 
   constructor() {
-    addIcons({refreshOutline,statsChart,notificationsOutline,timeOutline,serverOutline,shieldCheckmarkOutline,alertCircle,arrowForward,alertCircleOutline,checkmarkCircle,barChart,checkmarkDone,navigate,checkmarkDoneOutline,trophy,list,cube,cubeOutline,pricetagsOutline,trendingUpOutline,flash,addCircle,receipt,documentText,settings,cash,speedometer,logoUsd,save,card,refresh,add, car, bicycleOutline});
+    addIcons({
+      refreshOutline, statsChart, notificationsOutline, timeOutline,
+      serverOutline, shieldCheckmarkOutline, alertCircle, arrowForward,
+      alertCircleOutline, checkmarkCircle, barChart, checkmarkDone,
+      navigate, checkmarkDoneOutline, trophy, list, cube, cubeOutline,
+      pricetagsOutline, trendingUpOutline, flash, addCircle, receipt,
+      documentText, settings, cash, speedometer, logoUsd, save, card,
+      refresh, add, car, bicycleOutline, logOutOutline, personCircleOutline
+    });
+
+    // Obtener nombre del usuario logueado
+    const user = this.authService.getCurrentUser();
+    if (user) {
+      this.nombreUsuario.set(user.nombre);
+    }
   }
 
   async ngOnInit() {
@@ -92,7 +115,6 @@ export class AdminDashboardPage implements OnInit {
     const inicio = Date.now();
 
     try {
-      // Cargar datos en paralelo
       await Promise.all([
         this.cargarPedidos(),
         this.cargarProductos(),
@@ -125,7 +147,6 @@ export class AdminDashboardPage implements OnInit {
       this.pedidosConfirmados.set(confirmados?.length || 0);
       this.pedidosEnCamino.set(enCamino?.length || 0);
 
-      // Completados (últimos 30 días)
       if (completados) {
         const treintaDiasAtras = new Date();
         treintaDiasAtras.setDate(treintaDiasAtras.getDate() - 30);
@@ -149,12 +170,8 @@ export class AdminDashboardPage implements OnInit {
 
       if (productos) {
         this.totalProductos.set(productos.length);
-
-        // Contar productos con stock bajo
         const stockBajo = productos.filter(p => (p.stock ?? 0) <= 10).length;
         this.productosStockBajo.set(stockBajo);
-
-        // Contar productos activos
         const activos = productos.filter(p => p.activo !== false).length;
         this.productosActivos.set(activos);
       }
@@ -169,7 +186,7 @@ export class AdminDashboardPage implements OnInit {
       this.precioPorKm = precio;
     } catch (error) {
       console.error('Error cargando precio por km:', error);
-      this.precioPorKm = 1500; // Valor por defecto
+      this.precioPorKm = 1500;
     }
   }
 
@@ -227,6 +244,44 @@ export class AdminDashboardPage implements OnInit {
 
   irAProductos() {
     this.router.navigate(['/admin/productos']);
+  }
+
+  // ========== CERRAR SESIÓN ==========
+  async confirmarCerrarSesion() {
+    const alert = await this.alertCtrl.create({
+      header: 'Cerrar Sesión',
+      message: '¿Estás seguro que deseas cerrar sesión?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          cssClass: 'secondary'
+        },
+        {
+          text: 'Cerrar Sesión',
+          role: 'confirm',
+          cssClass: 'danger',
+          handler: () => {
+            this.cerrarSesion();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  cerrarSesion() {
+    this.authService.logout().subscribe({
+      next: () => {
+        this.mostrarMensaje('Sesión cerrada correctamente', 'success');
+        this.router.navigate(['/admin-login']);
+      },
+      error: () => {
+        // Aunque falle en el servidor, limpiar localmente
+        this.router.navigate(['/admin-login']);
+      }
+    });
   }
 
   formatearPrecio(valor: number): string {
