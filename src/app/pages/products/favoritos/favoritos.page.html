@@ -1,0 +1,275 @@
+<ion-header [translucent]="true">
+  <ion-toolbar style="--background: #132440; --color: white;">
+    <ion-buttons slot="start">
+      <ion-menu-button auto-hide="false" style="--color: white;"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>
+      <ion-icon name="heart" style="color: #BF092F;"></ion-icon>
+      &nbsp;Mis Favoritos
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="irAlCarrito()" style="--color: white;" [disabled]="cantidadCarrito() === 0">
+        <div class="cart-indicator">
+          <ion-icon name="cart"></ion-icon>
+          @if (cantidadCarrito() > 0) {
+            <ion-badge class="header-badge">{{ cantidadCarrito() }}</ion-badge>
+          }
+        </div>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="favoritos-page">
+  <!-- Refresher -->
+  <ion-refresher slot="fixed" (ionRefresh)="refrescar($event)">
+    <ion-refresher-content
+      pullingIcon="arrow-down"
+      pullingText="Desliza para actualizar"
+      refreshingSpinner="circles"
+      style="--color: #BF092F;">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <div class="container">
+    <!-- Estado vacío -->
+    @if (favoritos().length === 0) {
+      <div class="empty-container animated-fade-in">
+        <div class="empty-icon">
+          <ion-icon name="heart-outline"></ion-icon>
+        </div>
+        <div class="empty-content">
+          <h2>No tienes favoritos</h2>
+          <p>Explora nuestros productos y guarda los que más te gusten para encontrarlos fácilmente.</p>
+          <ion-button (click)="irAProductos()" fill="solid" class="btn-primary">
+            <ion-icon slot="start" name="flame"></ion-icon>
+            Explorar productos
+          </ion-button>
+        </div>
+      </div>
+    } @else {
+      <!-- Header con contador y acciones -->
+      <div class="favoritos-header animated-fade-in">
+        <div class="header-info">
+          <h2>{{ favoritos().length }} {{ favoritos().length === 1 ? 'producto guardado' : 'productos guardados' }}</h2>
+          <p>Tus productos favoritos en un solo lugar</p>
+        </div>
+        <ion-button fill="clear" class="clear-btn" (click)="confirmarLimpiarFavoritos()">
+          <ion-icon slot="start" name="trash-outline"></ion-icon>
+          Limpiar
+        </ion-button>
+      </div>
+
+      <!-- Lista de favoritos -->
+      <div class="favoritos-list animated-fade-in">
+        @for (producto of favoritos(); track producto.id) {
+          <ion-card class="favorito-card"
+                   [class.no-stock]="producto.stock === 0"
+                   [class.low-stock]="producto.stock !== undefined && producto.stock !== null && producto.stock <= 10 && producto.stock > 0">
+
+            <!-- Imagen -->
+            <div class="favorito-image-container" (click)="abrirModalDetalle(producto)">
+              @if (producto.imagen) {
+                <img [src]="producto.imagen" [alt]="producto.nombre" class="favorito-image" loading="lazy" />
+              } @else {
+                <div class="favorito-placeholder">
+                  <ion-icon [name]="getTipoIcon(producto.tipo)"></ion-icon>
+                </div>
+              }
+
+              <!-- Badge de estado -->
+              @if (producto.stock === 0) {
+                <ion-badge class="status-badge out-of-stock">Agotado</ion-badge>
+              } @else if (producto.stock !== undefined && producto.stock <= 10) {
+                <ion-badge class="status-badge low-stock">Últimas {{ producto.stock }}</ion-badge>
+              }
+            </div>
+
+            <!-- Contenido -->
+            <div class="favorito-content">
+              <div class="favorito-info" (click)="abrirModalDetalle(producto)">
+                <span class="favorito-tipo" [ngClass]="producto.tipo?.toLowerCase()">
+                  {{ getTipoNombre(producto.tipo) }}
+                </span>
+                <h3 class="favorito-nombre">{{ producto.nombre }}</h3>
+                @if (producto.descripcion) {
+                  <p class="favorito-descripcion">{{ producto.descripcion }}</p>
+                }
+                <div class="favorito-precio">
+                  <span class="precio">${{ formatearPrecio(producto.precio) }}</span>
+                  @if (producto.stock !== undefined && producto.stock !== null && producto.stock > 0) {
+                    <span class="stock-text">
+                      <ion-icon name="checkmark-circle" class="stock-icon"></ion-icon>
+                      {{ producto.stock }} disponibles
+                    </span>
+                  }
+                </div>
+              </div>
+
+              <!-- Acciones -->
+              <div class="favorito-actions">
+                <ion-button
+                  expand="block"
+                  class="btn-agregar"
+                  [disabled]="producto.stock === 0"
+                  (click)="agregarAlCarrito(producto)">
+                  <ion-icon slot="start" [name]="producto.stock === 0 ? 'close-circle' : 'cart'"></ion-icon>
+                  {{ producto.stock === 0 ? 'Sin stock' : 'Agregar' }}
+                </ion-button>
+
+                <ion-button
+                  fill="outline"
+                  class="btn-eliminar"
+                  (click)="eliminarFavorito(producto)">
+                  <ion-icon slot="icon-only" name="heart-dislike"></ion-icon>
+                </ion-button>
+              </div>
+            </div>
+          </ion-card>
+        }
+      </div>
+
+      <!-- Botón flotante para agregar todos al carrito -->
+      @if (productosDisponibles().length > 0) {
+        <div class="add-all-container animated-fade-in">
+          <ion-button expand="block" class="btn-add-all" (click)="agregarTodosAlCarrito()">
+            <ion-icon slot="start" name="cart"></ion-icon>
+            Agregar todos al carrito ({{ productosDisponibles().length }})
+          </ion-button>
+        </div>
+      }
+    }
+  </div>
+
+  <!-- Modal de detalle del producto -->
+  <ion-modal [isOpen]="mostrarModalDetalle" (didDismiss)="cerrarModalDetalle()" class="product-detail-modal">
+    <ng-template>
+      @if (productoSeleccionado) {
+        <ion-header>
+          <ion-toolbar style="--background: #132440; --color: white;">
+            <ion-title>Detalle del Producto</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="cerrarModalDetalle()" style="--color: white;">
+                <ion-icon name="close"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content class="modal-content">
+          <!-- Imagen del producto -->
+          <div class="modal-image-container">
+            @if (productoSeleccionado.imagen) {
+              <img [src]="productoSeleccionado.imagen" [alt]="productoSeleccionado.nombre" class="modal-product-image" />
+            } @else {
+              <div class="modal-placeholder-image">
+                <div class="modal-placeholder-icon" [ngClass]="productoSeleccionado.tipo?.toLowerCase()">
+                  <ion-icon [name]="getTipoIcon(productoSeleccionado.tipo)"></ion-icon>
+                </div>
+              </div>
+            }
+
+            <!-- Badges de estado -->
+            <div class="modal-badges">
+              @if (productoSeleccionado.stock === 0) {
+                <ion-badge class="modal-badge out-of-stock">
+                  <ion-icon name="close-circle"></ion-icon>
+                  Agotado
+                </ion-badge>
+              } @else if (productoSeleccionado.stock !== undefined && productoSeleccionado.stock <= 10) {
+                <ion-badge class="modal-badge low-stock">
+                  <ion-icon name="warning"></ion-icon>
+                  Últimas {{ productoSeleccionado.stock }} unidades
+                </ion-badge>
+              }
+            </div>
+          </div>
+
+          <!-- Información del producto -->
+          <div class="modal-product-info">
+            <!-- Tipo de producto -->
+            <div class="modal-type-badge" [ngClass]="productoSeleccionado.tipo?.toLowerCase()">
+              <ion-icon [name]="getTipoIcon(productoSeleccionado.tipo)"></ion-icon>
+              <span>{{ getTipoNombre(productoSeleccionado.tipo) }}</span>
+            </div>
+
+            <!-- Nombre -->
+            <h1 class="modal-product-name">{{ productoSeleccionado.nombre }}</h1>
+
+            <!-- Precio -->
+            <div class="modal-price-section">
+              <span class="modal-price">${{ formatearPrecio(productoSeleccionado.precio) }}</span>
+              @if (productoSeleccionado.stock !== undefined && productoSeleccionado.stock !== null) {
+                <div class="modal-stock-info">
+                  <ion-icon
+                    [name]="productoSeleccionado.stock > 10 ? 'checkmark-circle' : productoSeleccionado.stock > 0 ? 'time' : 'close-circle'"
+                    [ngClass]="{'in-stock': productoSeleccionado.stock > 10, 'low-stock': productoSeleccionado.stock <= 10 && productoSeleccionado.stock > 0, 'no-stock': productoSeleccionado.stock === 0}">
+                  </ion-icon>
+                  <span>{{ productoSeleccionado.stock }} disponibles</span>
+                </div>
+              }
+            </div>
+
+            <!-- Peso si existe -->
+            @if (productoSeleccionado.peso) {
+              <div class="modal-weight">
+                <ion-icon name="scale"></ion-icon>
+                <span>Peso: {{ productoSeleccionado.peso }}</span>
+              </div>
+            }
+
+            <!-- Descripción completa -->
+            <div class="modal-description-section">
+              <h3>Descripción</h3>
+              <p class="modal-description">
+                {{ productoSeleccionado.descripcion || 'Este producto no tiene descripción disponible.' }}
+              </p>
+            </div>
+
+            <!-- Botón de eliminar de favoritos -->
+            <ion-button
+              fill="outline"
+              expand="block"
+              class="modal-favorite-btn"
+              (click)="eliminarFavoritoDesdeModal()">
+              <ion-icon slot="start" name="heart-dislike"></ion-icon>
+              Eliminar de favoritos
+            </ion-button>
+          </div>
+        </ion-content>
+
+        <!-- Footer con botón de agregar al carrito -->
+        <ion-footer class="modal-footer">
+          <ion-toolbar style="--background: white; --padding-start: 16px; --padding-end: 16px;">
+            <ion-button
+              expand="block"
+              class="modal-add-cart-btn"
+              (click)="agregarAlCarritoDesdeModal()"
+              [disabled]="productoSeleccionado.stock === 0">
+              <ion-icon slot="start" [name]="productoSeleccionado.stock === 0 ? 'close-circle' : 'cart'"></ion-icon>
+              {{ productoSeleccionado.stock === 0 ? 'Sin stock disponible' : 'Agregar al carrito - $' + formatearPrecio(productoSeleccionado.precio) }}
+            </ion-button>
+          </ion-toolbar>
+        </ion-footer>
+      }
+    </ng-template>
+  </ion-modal>
+
+  <!-- Alert de confirmación -->
+  <ion-alert
+    [isOpen]="mostrarAlertLimpiar"
+    header="Limpiar favoritos"
+    message="¿Estás seguro de que quieres eliminar todos los productos de tus favoritos?"
+    [buttons]="alertButtons"
+    (didDismiss)="mostrarAlertLimpiar = false">
+  </ion-alert>
+
+  <!-- Toast -->
+  <ion-toast
+    [isOpen]="mostrarToast"
+    [message]="mensajeToast"
+    [duration]="2000"
+    (didDismiss)="mostrarToast = false"
+    [style]="'--background: ' + colorToast + '; --color: white;'">
+  </ion-toast>
+</ion-content>

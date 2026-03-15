@@ -161,5 +161,9 @@ export const routes: Routes = [
     canActivate: [authGuard],
     loadComponent: () => import('./pages/admin/configuracion-admin/configuracion-admin.page').then(m => m.ConfiguracionAdminPage)
   },
+  {
+    path: 'favoritos',
+    loadComponent: () => import('./pages/products/favoritos/favoritos.page').then( m => m.FavoritosPage)
+  },
 
 ];

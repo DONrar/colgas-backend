@@ -4,7 +4,6 @@
       <ion-toolbar style="--background: #132440; --color: white;">
         <ion-title>Navegación</ion-title>
         <ion-buttons slot="end">
-          <!-- Usar ion-menu-toggle en lugar de menuController.close() -->
           <ion-menu-toggle auto-hide="false">
             <ion-button fill="clear">
               <ion-icon name="close-outline" style="color: white;"></ion-icon>
@@ -57,6 +56,36 @@
               </div>
               <ion-label>Productos</ion-label>
             </div>
+          </ion-item>
+
+          <!-- ✅ FAVORITOS - NUEVO -->
+          <ion-item routerLink="/favoritos" routerLinkActive="selected" detail="false" class="menu-item">
+            <div class="menu-item-content">
+              <div class="menu-icon favorites">
+                <ion-icon name="heart" style="color: #BF092F;"></ion-icon>
+              </div>
+              <ion-label>Mis Favoritos</ion-label>
+            </div>
+            @if (cantidadFavoritos() > 0) {
+              <ion-badge slot="end" class="menu-badge favorites-badge">
+                {{ cantidadFavoritos() }}
+              </ion-badge>
+            }
+          </ion-item>
+
+          <!-- ✅ CARRITO - OPCIONAL (si quieres agregarlo al menú) -->
+          <ion-item routerLink="/carrito" routerLinkActive="selected" detail="false" class="menu-item">
+            <div class="menu-item-content">
+              <div class="menu-icon cart">
+                <ion-icon name="cart-outline" style="color: #3B9797;"></ion-icon>
+              </div>
+              <ion-label>Mi Carrito</ion-label>
+            </div>
+            @if (cantidadCarrito() > 0) {
+              <ion-badge slot="end" class="menu-badge cart-badge">
+                {{ cantidadCarrito() }}
+              </ion-badge>
+            }
           </ion-item>
 
           <!-- Gestión de pedidos -->

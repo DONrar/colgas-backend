@@ -1,16 +1,17 @@
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonSegment, IonSegmentButton, IonLabel, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonIcon, IonBadge, IonSearchbar, IonFab, IonFabButton, IonSpinner, IonText, IonToast, IonChip, IonRefresher, IonRefresherContent, IonButtons, IonBackButton, IonMenuButton } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonSegment, IonSegmentButton, IonLabel, IonGrid, IonRow, IonCol, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonButton, IonIcon, IonBadge, IonSearchbar, IonFab, IonFabButton, IonSpinner, IonText, IonToast, IonChip, IonRefresher, IonRefresherContent, IonButtons, IonBackButton, IonMenuButton, IonModal, IonFooter } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import {
   add, cart, search, flame, apps, flask, construct,
   hardwareChip, searchOutline, refresh, closeCircle,
   warning, eye, scale, heart, heartOutline,
-  checkmarkCircle, time, navigate
+  checkmarkCircle, time, navigate, close
 } from 'ionicons/icons';
 import { ProductoService } from '../../../core/services/producto-service';
 import { CarritoService } from '../../../core/services/carrito-service';
+import { FavoritosService } from '../../../core/services/favoritos-service';
 import { ToastService } from '../../../core/services/toast-service';
 import { Producto, TipoProducto } from '../../../core/models/producto.model';
 import { FormsModule } from '@angular/forms';
@@ -50,12 +51,15 @@ interface FiltroRapido {
     IonFabButton,
     IonSpinner,
     FormsModule,
-    IonMenuButton
+    IonMenuButton,
+    IonModal,
+    IonFooter
 ]
 })
 export class ProductosPage implements OnInit {
   private productoService = inject(ProductoService);
   private carritoService = inject(CarritoService);
+  private favoritosService = inject(FavoritosService);
   private toastService = inject(ToastService);
   private router = inject(Router);
 
@@ -70,8 +74,9 @@ export class ProductosPage implements OnInit {
   mostrarToast = false;
   mensajeToast = '';
 
-  // Favoritos (simulado - en una app real usarías un servicio)
-  productosFavoritos = signal<Set<number>>(new Set());
+  // Propiedades para el modal de detalle
+  mostrarModalDetalle = false;
+  productoSeleccionado: Producto | null = null;
 
   // Filtros rápidos simplificados
   filtrosRapidos: FiltroRapido[] = [
@@ -89,7 +94,7 @@ export class ProductosPage implements OnInit {
       flame, cart, apps, flask, construct, hardwareChip,
       searchOutline, refresh, closeCircle, warning,
       eye, scale, add, search, heart, heartOutline,
-      checkmarkCircle, time, navigate
+      checkmarkCircle, time, navigate, close
     });
   }
 
@@ -212,42 +217,37 @@ export class ProductosPage implements OnInit {
     this.mostrarMensaje('Filtros reiniciados');
   }
 
+  // Métodos del modal de detalle
+  abrirModalDetalle(producto: Producto) {
+    this.productoSeleccionado = producto;
+    this.mostrarModalDetalle = true;
+  }
+
+  cerrarModalDetalle() {
+    this.mostrarModalDetalle = false;
+    this.productoSeleccionado = null;
+  }
+
+  agregarAlCarritoDesdeModal() {
+    if (this.productoSeleccionado) {
+      this.agregarAlCarrito(this.productoSeleccionado);
+      this.cerrarModalDetalle();
+    }
+  }
+
   // Métodos de navegación y acciones
   verDetalleProducto(producto: Producto) {
-    // Verificamos que el producto tenga ID
-    if (!producto.id) {
-      this.mostrarMensaje('Error: Producto sin ID');
-      return;
-    }
-
-    this.mostrarMensaje(`Vista previa de ${producto.nombre}`);
-    console.log('Ver detalle del producto:', producto);
+    // Ahora abre el modal en lugar de solo mostrar un mensaje
+    this.abrirModalDetalle(producto);
   }
 
   toggleFavorito(producto: Producto) {
-    // Verificamos que el producto tenga ID
-    if (!producto.id) {
-      this.mostrarMensaje('Error: No se puede agregar a favoritos un producto sin ID');
-      return;
-    }
-
-    const favoritos = new Set(this.productosFavoritos());
-
-    if (favoritos.has(producto.id)) {
-      favoritos.delete(producto.id);
-      this.mostrarMensaje(`${producto.nombre} removido de favoritos`);
-    } else {
-      favoritos.add(producto.id);
-      this.mostrarMensaje(`${producto.nombre} agregado a favoritos`);
-    }
-
-    this.productosFavoritos.set(favoritos);
+    const resultado = this.favoritosService.toggleFavorito(producto);
+    this.mostrarMensaje(resultado.mensaje);
   }
 
   esFavorito(productoId: number | undefined): boolean {
-    // Si no hay ID, no es favorito
-    if (!productoId) return false;
-    return this.productosFavoritos().has(productoId);
+    return this.favoritosService.esFavorito(productoId);
   }
 
   // Métodos de utilidad

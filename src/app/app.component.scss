@@ -1,0 +1,48 @@
+/* ============================================
+   ESTILOS ADICIONALES PARA app.component.scss
+   Agregar estos estilos a tu archivo existente
+   ============================================ */
+
+/* Badges del menú */
+.menu-badge {
+  font-size: 11px;
+  font-weight: 600;
+  min-width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.favorites-badge {
+  --background: #BF092F;
+  --color: white;
+}
+
+.cart-badge {
+  --background: #3B9797;
+  --color: white;
+}
+
+/* Efecto hover en items con badge */
+.menu-item {
+  ion-badge {
+    transition: transform 0.2s ease;
+  }
+
+  &:hover ion-badge {
+    transform: scale(1.1);
+  }
+}
+
+/* Icono de favoritos con animación sutil */
+.menu-icon.favorites {
+  ion-icon {
+    transition: transform 0.3s ease;
+  }
+}
+
+.menu-item:hover .menu-icon.favorites ion-icon {
+  transform: scale(1.15);
+}

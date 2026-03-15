@@ -172,7 +172,7 @@
                 <ion-button
                   fill="clear"
                   class="quick-action-btn"
-                  (click)="verDetalleProducto(producto)">
+                  (click)="abrirModalDetalle(producto)">
                   <ion-icon name="eye"></ion-icon>
                 </ion-button>
 
@@ -192,7 +192,7 @@
             <ion-card-content class="product-content">
               <!-- Información del producto -->
               <div class="product-info">
-                <h3 class="product-name" (click)="verDetalleProducto(producto)">{{ producto.nombre }}</h3>
+                <h3 class="product-name" (click)="abrirModalDetalle(producto)">{{ producto.nombre }}</h3>
 
                 @if (producto.descripcion) {
                   <p class="product-description">{{ producto.descripcion }}</p>
@@ -262,6 +262,124 @@
       </ion-fab-button>
     </ion-fab>
   }
+
+  <!-- Modal de detalle del producto -->
+  <ion-modal [isOpen]="mostrarModalDetalle" (didDismiss)="cerrarModalDetalle()" class="product-detail-modal">
+    <ng-template>
+      @if (productoSeleccionado) {
+        <ion-header>
+          <ion-toolbar style="--background: #132440; --color: white;">
+            <ion-title>Detalle del Producto</ion-title>
+            <ion-buttons slot="end">
+              <ion-button (click)="cerrarModalDetalle()" style="--color: white;">
+                <ion-icon name="close"></ion-icon>
+              </ion-button>
+            </ion-buttons>
+          </ion-toolbar>
+        </ion-header>
+
+        <ion-content class="modal-content">
+          <!-- Imagen del producto -->
+          <div class="modal-image-container">
+            @if (productoSeleccionado.imagen) {
+              <img [src]="productoSeleccionado.imagen" [alt]="productoSeleccionado.nombre" class="modal-product-image" />
+            } @else {
+              <div class="modal-placeholder-image">
+                <div class="modal-placeholder-icon" [ngClass]="productoSeleccionado.tipo?.toLowerCase()">
+                  <ion-icon [name]="getTipoIcon(productoSeleccionado.tipo)"></ion-icon>
+                </div>
+              </div>
+            }
+
+            <!-- Badges de estado -->
+            <div class="modal-badges">
+              @if (productoSeleccionado.stock === 0) {
+                <ion-badge class="modal-badge out-of-stock">
+                  <ion-icon name="close-circle"></ion-icon>
+                  Agotado
+                </ion-badge>
+              } @else if (productoSeleccionado.stock !== undefined && productoSeleccionado.stock <= 10) {
+                <ion-badge class="modal-badge low-stock">
+                  <ion-icon name="warning"></ion-icon>
+                  Últimas {{ productoSeleccionado.stock }} unidades
+                </ion-badge>
+              }
+            </div>
+          </div>
+
+          <!-- Información del producto -->
+          <div class="modal-product-info">
+            <!-- Tipo de producto -->
+            <div class="modal-type-badge" [ngClass]="productoSeleccionado.tipo?.toLowerCase()">
+              <ion-icon [name]="getTipoIcon(productoSeleccionado.tipo)"></ion-icon>
+              <span>{{ getTipoNombre(productoSeleccionado.tipo) }}</span>
+            </div>
+
+            <!-- Nombre -->
+            <h1 class="modal-product-name">{{ productoSeleccionado.nombre }}</h1>
+
+            <!-- Precio -->
+            <div class="modal-price-section">
+              <span class="modal-price">${{ formatearPrecio(productoSeleccionado.precio) }}</span>
+              @if (productoSeleccionado.stock !== undefined && productoSeleccionado.stock !== null) {
+                <div class="modal-stock-info">
+                  <ion-icon
+                    [name]="productoSeleccionado.stock > 10 ? 'checkmark-circle' : productoSeleccionado.stock > 0 ? 'time' : 'close-circle'"
+                    [ngClass]="{'in-stock': productoSeleccionado.stock > 10, 'low-stock': productoSeleccionado.stock <= 10 && productoSeleccionado.stock > 0, 'no-stock': productoSeleccionado.stock === 0}">
+                  </ion-icon>
+                  <span>{{ productoSeleccionado.stock }} disponibles</span>
+                </div>
+              }
+            </div>
+
+            <!-- Peso si existe -->
+            @if (productoSeleccionado.peso) {
+              <div class="modal-weight">
+                <ion-icon name="scale"></ion-icon>
+                <span>Peso: {{ productoSeleccionado.peso }}</span>
+              </div>
+            }
+
+            <!-- Descripción completa -->
+            <div class="modal-description-section">
+              <h3>Descripción</h3>
+              <p class="modal-description">
+                {{ productoSeleccionado.descripcion || 'Este producto no tiene descripción disponible.' }}
+              </p>
+            </div>
+
+            <!-- Botón de favorito -->
+            <ion-button
+              fill="outline"
+              expand="block"
+              class="modal-favorite-btn"
+              (click)="toggleFavorito(productoSeleccionado)">
+              <ion-icon
+                slot="start"
+                [name]="esFavorito(productoSeleccionado.id) ? 'heart' : 'heart-outline'"
+                [class.favorited]="esFavorito(productoSeleccionado.id)">
+              </ion-icon>
+              {{ esFavorito(productoSeleccionado.id) ? 'Quitar de favoritos' : 'Agregar a favoritos' }}
+            </ion-button>
+          </div>
+        </ion-content>
+
+        <!-- Footer con botón de agregar al carrito -->
+        <ion-footer class="modal-footer">
+          <ion-toolbar style="--background: white; --padding-start: 16px; --padding-end: 16px;">
+            <ion-button
+              expand="block"
+              class="modal-add-cart-btn"
+              (click)="agregarAlCarritoDesdeModal()"
+              [disabled]="productoSeleccionado.stock === 0">
+              <ion-icon slot="start" [name]="productoSeleccionado.stock === 0 ? 'close-circle' : 'cart'"></ion-icon>
+              {{ productoSeleccionado.stock === 0 ? 'Sin stock disponible' : 'Agregar al carrito - $' + formatearPrecio(productoSeleccionado.precio) }}
+            </ion-button>
+          </ion-toolbar>
+        </ion-footer>
+      }
+    </ng-template>
+  </ion-modal>
 
   <!-- Toast para mensajes -->
   <ion-toast
